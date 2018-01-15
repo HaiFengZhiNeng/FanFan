@@ -1,0 +1,87 @@
+<resources>
+    <string name="app_name">FANFAN</string>
+
+    <string name="app_id">59bca78f</string>
+    <string name="app_youdao_id">4dc7ab44c14b8014</string>
+
+    <string name="welcome">您好，很高兴为您服务，请问有什么可以帮您?</string>
+
+    <string name="tips_not_wifi">You are currently using the mobile network, the player will continue to consume traffic</string>
+    <string name="tips_not_wifi_confirm">Resume</string>
+    <string name="tips_not_wifi_cancel">Stop play</string>
+    <string name="no_url">No mUrl</string>
+
+    <string name="settings">设置</string>
+    <string name="help">帮助</string>
+    <string name="string_help_text">当前应用缺少必要权限。\n\n请点击\"设置\"-\"权限\"-打开所需权限。\n\n最后点击两次后退按钮，即可返回。</string>
+    <string name="quit">退出</string>
+
+    <string name="confirm">确定</string>
+    <string name="cancel">取消</string>
+    <string name="tip_close_camera">关闭摄像头</string>
+    <string name="tip_open_camera">打开摄像头</string>
+    <string name="tip_switch_camera">切换摄像头</string>
+    <string name="tip_close_mic">关闭麦克风</string>
+    <string name="tip_open_mic">打开麦克风</string>
+    <string name="tip_set_speaker">切换到扬声器</string>
+    <string name="tip_set_headset">切换到听筒</string>
+    <string name="tip_set_beauty">设置美颜</string>
+    <string name="invite">邀请</string>
+    <string name="log">日志</string>
+    <string name="invite_tip">输入邀请用户id</string>
+    <string name="tip_end_call">挂断</string>
+
+    <string name="set_type">类型</string>
+    <string name="set_action">执行动作</string>
+    <string name="set_expression">面部表情</string>
+    <string name="set_datatype">类型</string>
+    <string name="set_img">  添加图片  </string>
+    <string name="set_video">  添加视频  </string>
+    <string name="set_voice">  添加语音  </string>
+
+    <string name="title_login">登 陆</string>
+    <string name="title_register">注 册</string>
+    <string name="title_forget">密 码 修 改</string>
+    <string name="title_video_introduction">视 频 介 绍</string>
+    <string name="title_problem_consulting">问 题 咨 询</string>
+    <string name="title_multi_media">多 媒 体</string>
+    <string name="title_set_up">设 置</string>
+    <string name="title_public_number">公 众 号</string>
+    <string name="title_navigation">导 航</string>
+    <string name="title_face_recognition">人 脸 识 别</string>
+    <string name="title_video_detail">视 频 详 情</string>
+    <string name="title_video_set">视 频 设 置</string>
+    <string name="title_video_add">视 频 添 加</string>
+    <string name="title_voice_set">语 音 设 置</string>
+    <string name="title_voice_add">语 音 添 加</string>
+    <string name="title_navigation_set">导 航 设 置</string>
+    <string name="title_navigation_add">导 航 添 加</string>
+    <string name="title_face_data">个 体 列 表</string>
+    <string name="title_person_info">个 体 信 息</string>
+    <string name="title_modify">个 体 修 改</string>
+    <string name="title_dance_add">舞 蹈 添 加</string>
+    <string name="title_instagram_photo">拍 照 分 享</string>
+    <string name="title_face_check_in">人 脸 签 到</string>
+    <string name="title_face_witness_contrast">人 证 对 比</string>
+    <string name="title_face_extraction">人 脸 提 取</string>
+    <string name="title_sing_all">所 有 签 到</string>
+    <string name="title_navigation_exhibition">导 航 展 示</string>
+
+    <string name="open_map">此页面暂不支持打开地图</string>
+    <string name="open_artificial">此页面暂不支持人工客服</string>
+    <string name="open_face">此页面暂不支持人脸识别等功能</string>
+    <string name="open_control">此页面暂不支持上下控制</string>
+
+    <string name="speakText">找不到视频链接</string>
+
+    <string name="tv_artificial_tip">是否没有解答您的疑惑? 联系人工客服帮忙</string>
+    <string name="input_hint">请输入姓名</string>
+    <string name="input_navigation">输入到达地点后的命令词</string>
+    <string name="input_content">此处所注册的姓名用于人脸签到中.</string>
+    <string name="play_time_start">00:00</string>
+
+    <string name="mode_loop">列表循环</string>
+    <string name="mode_shuffle">随机播放</string>
+    <string name="mode_one">单曲循环</string>
+
+</resources>
