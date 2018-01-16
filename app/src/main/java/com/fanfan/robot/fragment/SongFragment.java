@@ -171,6 +171,7 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.fl_play_bar:
+                ((MultimediaActivity)getActivity()).showPlayingFragment();
                 break;
             case R.id.iv_play_bar_play:
                 play();

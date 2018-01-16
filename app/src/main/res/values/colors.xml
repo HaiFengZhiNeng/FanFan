@@ -27,6 +27,8 @@
     <color name="face_recognition_bar2">#BEBCBB</color>
     <color name="face_recognition_bar3">#5E5754</color>
 
+    <color name="fanfan_introduce_bar">#2B2B2B</color>
+
     <color name="setting_bar">#9370db</color>
     <color name="navigation_bar">#F1E3D4</color>
     <color name="navigation">#F7E6D3</color>

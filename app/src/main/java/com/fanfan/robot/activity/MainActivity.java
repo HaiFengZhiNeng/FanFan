@@ -4,11 +4,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.RobotType;
@@ -39,6 +42,7 @@ import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.music.EventCallback;
 import com.fanfan.novel.service.udp.SocketManager;
+import com.fanfan.novel.ui.ChatTextView;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.RobotInfo;
@@ -57,6 +61,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.net.DatagramPacket;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -82,6 +87,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     ImageView ivPublic;
     @BindView(R.id.iv_navigation)
     ImageView ivNavigation;
+    @BindView(R.id.chat_content)
+    ChatTextView chatContent;
 
     private boolean quit;
 
@@ -200,6 +207,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_fanfan:
+                FanFanIntroduceActivity.newInstance(this);
                 break;
             case R.id.iv_video:
                 VideoIntroductionActivity.newInstance(this);
@@ -246,6 +254,10 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private void addSpeakAnswer(String messageContent) {
         mTtsPresenter.doAnswer(messageContent);
+    }
+
+    private void setChatContent(String messageContent) {
+        chatContent.setSpanText(mHandler, messageContent, true);
     }
 
     //**********************************************************************************************
@@ -318,12 +330,21 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
     @Override
     public void onSpeakBegin() {
-
+        Glide.with(this)
+                .load(R.mipmap.fanfan_lift_hand)
+                .apply(new RequestOptions().skipMemoryCache(true))
+                .into(ivFanfan);
+        chatContent.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onRunable() {
-
+        Glide.with(this)
+                .load(R.mipmap.fanfan_hand)
+                .apply(new RequestOptions().skipMemoryCache(true))
+                .into(ivFanfan);
+        chatContent.setVisibility(View.GONE);
+        mSoundPresenter.startRecognizerListener();
     }
 
     //**********************************************************************************************
@@ -414,52 +435,85 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void refHomePage(String question) {
+        List<VoiceBean> voiceBeans = mVoiceDBManager.queryLikeVoiceByQuestion(question);
+        String text = "";
+        if (voiceBeans != null && voiceBeans.size() > 0) {
+            VoiceBean voiceBean = voiceBeans.get(new Random().nextInt(voiceBeans.size()));
+            if (voiceBeans.size() == 1) {
+                text = voiceBean.getVoiceAnswer();
+            } else {
+                text = "为您回答 " + voiceBean.getShowTitle() + "  \n" + voiceBean.getVoiceAnswer();
+            }
+            if (voiceBean.getActionData() != null)
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, voiceBean.getActionData());
+            if (voiceBean.getExpressionData() != null)
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, voiceBean.getExpressionData());
 
+        } else {
+
+            if (new Random().nextBoolean()) {
+                text = resFoFinal(R.array.no_result);
+            } else {
+                text = resFoFinal(R.array.no_voice);
+            }
+        }
+        setChatContent(text);
+        addSpeakAnswer(text);
     }
+
 
     @Override
     public void refHomePage(String question, String finalText) {
-
+        setChatContent(finalText);
     }
 
     @Override
     public void refHomePage(String question, String finalText, String url) {
-
+        setChatContent(finalText);
     }
 
     @Override
     public void refHomePage(String question, News news) {
-
+        setChatContent(news.getContent());
     }
 
     @Override
     public void refHomePage(String question, Radio radio) {
-
+        setChatContent(radio.getDescription());
     }
 
     @Override
     public void refHomePage(String question, Poetry poetry) {
-
+        setChatContent(poetry.getContent());
     }
 
     @Override
     public void refHomePage(String question, Cookbook cookbook) {
-
+        setChatContent(cookbook.getSteps());
     }
 
     @Override
     public void refHomePage(String question, EnglishEveryday englishEveryday) {
-
+        setChatContent(englishEveryday.getContent());
     }
 
     @Override
     public void special(String result, SpecialType type) {
-
+        switch (type) {
+            case Story:
+                break;
+            case Music:
+                break;
+            case Joke:
+                break;
+        }
     }
 
     @Override
-    public void doCallPhone(String value) {
-
+    public void doCallPhone(String phoneNumber) {
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Override

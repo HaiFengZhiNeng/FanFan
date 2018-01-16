@@ -116,6 +116,9 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
         mIatListener = new IatListener(this);
         aiuiListener = new AiuiListener((Activity) mSoundView.getContext(), this);
+
+        queryType = QueryType.noQuery;
+        followType = FollowType.End;
     }
 
     @Override

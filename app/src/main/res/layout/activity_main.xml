@@ -23,7 +23,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
-                android:background="@mipmap/introduce_fanfan" />
+                android:background="@mipmap/fanfan_hand" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -97,4 +97,16 @@
                 android:background="@mipmap/introduce_navigation" />
         </LinearLayout>
     </LinearLayout>
+
+    <com.fanfan.novel.ui.ChatTextView
+        android:id="@+id/chat_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/chatfrom_bg_focused"
+        android:textColor="@color/black"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/y50"
+        android:layout_marginLeft="@dimen/y80"
+        android:textSize="@dimen/x8" />
+
 </RelativeLayout>
