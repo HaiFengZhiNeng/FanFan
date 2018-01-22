@@ -3,9 +3,12 @@ package com.fanfan.novel.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.robot.R;
 
 /**
  * Created by zhangyuanyuan on 2017/11/14.
@@ -166,6 +169,25 @@ public class DialogUtils {
                 .show();
     }
 
+    public static void showLongListDialog(Context context, CharSequence title, int itemsRes,
+                                          MaterialDialog.ListCallback callback, Integer... disabledIndices) {
+        new MaterialDialog.Builder(context)
+                .title(title)
+                .items(itemsRes)
+                .itemsCallback(callback)
+                .itemsDisabledIndices(disabledIndices)
+                .positiveText(android.R.string.cancel)
+                .show();
+    }
+
+    public static void showMultiChoiceDisabledItems(Context context, CharSequence title, int itemsRes, MaterialDialog.ListCallbackSingleChoice callback) {
+        new MaterialDialog.Builder(context)
+                .title(title)
+                .items(itemsRes)
+                .itemsCallbackSingleChoice(2, callback)
+                .positiveText("确定")
+                .show();
+    }
 
     public interface OnNiftyDialogListener {
         void onClickLeft();

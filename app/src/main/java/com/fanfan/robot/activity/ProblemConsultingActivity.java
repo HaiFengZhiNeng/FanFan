@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.fanfan.novel.activity.SimpleCallActivity;
 import com.fanfan.novel.activity.VideoDetailActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
@@ -35,6 +37,7 @@ import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.VoiceAdapter;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
+import com.tencent.callsdk.ILVCallConstants;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -62,9 +65,10 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     @BindView(R.id.iv_voice_image)
     ImageView ivVoiceImage;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, ProblemConsultingActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private VoiceDBManager mVoiceDBManager;
@@ -179,6 +183,9 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_artificial:
+                ArrayList<String> nums = new ArrayList<>();
+                nums.add("hotel002");
+                SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
                 break;
             case R.id.iv_voice_image:
                 break;
@@ -331,4 +338,5 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     public void onMoveStop() {
 
     }
+
 }

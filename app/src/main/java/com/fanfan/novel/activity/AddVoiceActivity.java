@@ -82,12 +82,14 @@ public class AddVoiceActivity extends BarBaseActivity {
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, AddVoiceActivity.class);
         context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     public static void newInstance(Activity context, long id, int requestCode) {
         Intent intent = new Intent(context, AddVoiceActivity.class);
         intent.putExtra(VOICE_ID, id);
         context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private long saveLocalId;

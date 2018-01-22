@@ -131,8 +131,6 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
         mIat.setParameter(SpeechConstant.LOCAL_GRAMMAR, LOCAL_GRAMMAR_NAME);
         mIat.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
         mIat.setParameter(SpeechConstant.RESULT_TYPE, "json");
-        mIat.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
-        mIat.setParameter(SpeechConstant.ACCENT, RobotInfo.getInstance().getIatLocalHear());
         mIat.setParameter(SpeechConstant.VAD_BOS, "99000");
         mIat.setParameter(SpeechConstant.VAD_EOS, "1000");
         mIat.setParameter(SpeechConstant.ASR_PTT, "1");
@@ -199,6 +197,11 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
     }
 
     //**********************************************************************************************
+    @Override
+    public void onTranslate(String result) {
+
+    }
+
     @Override
     public void onRecognResult(String result) {
         Print.e(result);

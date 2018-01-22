@@ -3,11 +3,9 @@ package com.fanfan.robot.presenter;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.common.enums.FollowType;
-import com.fanfan.novel.common.enums.LanguageType;
-import com.fanfan.novel.common.enums.QueryType;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.common.instance.SpeakIat;
 import com.fanfan.novel.model.hotword.HotWord;
@@ -100,15 +98,9 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     private AiuiListener aiuiListener;
 
     private boolean isMedia;
+    private boolean isTrans;
 
-    private FollowType followType;
     private String mOtherText;
-
-    private QueryType queryType;
-    private LanguageType languageType;
-
-    private boolean isTranslation;
-    private String englishQuestion;
 
     public LineSoundPresenter(ILineSoundView baseView) {
         super(baseView);
@@ -116,9 +108,6 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
         mIatListener = new IatListener(this);
         aiuiListener = new AiuiListener((Activity) mSoundView.getContext(), this);
-
-        queryType = QueryType.noQuery;
-        followType = FollowType.End;
     }
 
     @Override
@@ -247,27 +236,30 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
             }
         }
         mIat.setParameter(SpeechConstant.RESULT_TYPE, "json");
-        String mLaguage = PreferencesUtils.getString(mSoundView.getContext(), Constants.IAT_LANGUAGE_PREFERENCE, "mandarin");
-        switch (mLaguage) {
-            case "en_us":
-                mIat.setParameter(SpeechConstant.LANGUAGE, "en_us");
-                mIat.setParameter(SpeechConstant.ACCENT, null);
-                languageType = LanguageType.English;
-                break;
-            case "cantonese":
-                mIat.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
-                mIat.setParameter(SpeechConstant.ACCENT, mLaguage);
-                languageType = LanguageType.Cantonese;
-                break;
-            default:
-                mIat.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
-                mIat.setParameter(SpeechConstant.ACCENT, mLaguage);
-                languageType = LanguageType.Chinese;
-                break;
+
+        if (RobotInfo.getInstance().isTranslateEnable()) {
+            mIat.setParameter(SpeechConstant.ASR_SCH, "1");
+            mIat.setParameter(SpeechConstant.ADD_CAP, "translate");
+            mIat.setParameter(SpeechConstant.TRS_SRC, "its");
         }
+
+        mIat.setParameter(SpeechConstant.LANGUAGE, RobotInfo.getInstance().getLineLanguage());
+        // 设置语言区域
+        mIat.setParameter(SpeechConstant.ACCENT, RobotInfo.getInstance().getIatLineLanguage());
+
+        //英语转中文     是中文不用转
+        if (RobotInfo.getInstance().isTranslateEnable()) {
+            mIat.setParameter(SpeechConstant.ORI_LANG, "en");
+            mIat.setParameter(SpeechConstant.TRANS_LANG, "cn");
+        }
+
+        // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
         mIat.setParameter(SpeechConstant.VAD_BOS, "99000");
+        // 设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入， 自动停止录音
         mIat.setParameter(SpeechConstant.VAD_EOS, "1000");
+        // 设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
         mIat.setParameter(SpeechConstant.ASR_PTT, "1");
+        // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
         mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Constants.GRM_PATH + File.separator + "iat.wav");
     }
@@ -309,24 +301,11 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void aiuiWriteText(String result) {
-
-        if (languageType == LanguageType.English) {
-            englishQuestion = result;
-            queryType = QueryType.isQuerying;
-            query(result, TranslateLanguage.LanguageType.EN, TranslateLanguage.LanguageType.ZH);
-        } else if (languageType == LanguageType.Cantonese) {
-            String params = "data_type=text";
-            AIUIMessage msgWakeup = new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, null, null);
-            mAIUIAgent.sendMessage(msgWakeup);
-            AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, result.trim().getBytes());
-            mAIUIAgent.sendMessage(msg);
-        } else if (languageType == LanguageType.Chinese) {
-            String params = "data_type=text";
-            AIUIMessage msgWakeup = new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, null, null);
-            mAIUIAgent.sendMessage(msgWakeup);
-            AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, result.trim().getBytes());
-            mAIUIAgent.sendMessage(msg);
-        }
+        String params = "data_type=text";
+        AIUIMessage msgWakeup = new AIUIMessage(AIUIConstant.CMD_WAKEUP, 0, 0, null, null);
+        mAIUIAgent.sendMessage(msgWakeup);
+        AIUIMessage msg = new AIUIMessage(AIUIConstant.CMD_WRITE, 0, 0, params, result.trim().getBytes());
+        mAIUIAgent.sendMessage(msg);
     }
 
 
@@ -345,16 +324,18 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         }
     }
 
-
     //**********************************************************************************************
+    @Override
+    public void onTranslate(String result) {
+        Print.e("!!!!---- " + result);
+        stopRecognizerListener();
+        mSoundView.aiuiForLocal(result);
+    }
+
     @Override
     public void onRecognResult(String result) {
         Print.e("!!!!---- " + result);
         stopRecognizerListener();
-        if (followType == FollowType.Start) {
-            followType = FollowType.End;
-        }
-
         mSoundView.aiuiForLocal(result);
     }
 
@@ -405,10 +386,15 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
             onCompleted();
             mSoundView.refHomePage(question, finalText);
         } else {
-            if (queryType == QueryType.isQuerying) {
-                queryType = QueryType.finishQuery;
-                query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-            } else if (queryType == QueryType.noQuery) {
+            if (RobotInfo.getInstance().isQueryLanage()) {
+                if (isTrans) {
+                    isTrans = false;
+                    mSoundView.doAiuiAnwer(finalText);
+                    mSoundView.refHomePage(question, finalText);
+                } else {
+                    query(finalText);
+                }
+            } else {
                 mSoundView.doAiuiAnwer(finalText);
                 mSoundView.refHomePage(question, finalText);
             }
@@ -417,10 +403,19 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void onDoAnswer(String question, String text, News news) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(news.getContent(), TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                if (isMedia) {
+                    playVoice(news.getUrl());
+                    mSoundView.refHomePage(question, news);
+                } else {
+                    mSoundView.doAiuiAnwer(text + ", " + news.getContent());
+                }
+            } else {
+                query(news.getContent());
+            }
+        } else {
             if (isMedia) {
                 playVoice(news.getUrl());
                 mSoundView.refHomePage(question, news);
@@ -432,10 +427,15 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void onDoAnswer(String question, String text, Cookbook cookbook) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(cookbook.getSteps(), TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                mSoundView.doAiuiAnwer(text + ", " + cookbook.getSteps());
+                mSoundView.refHomePage(question, cookbook);
+            } else {
+                query(cookbook.getSteps());
+            }
+        } else {
             mSoundView.doAiuiAnwer(text + ", " + cookbook.getSteps());
             mSoundView.refHomePage(question, cookbook);
         }
@@ -443,10 +443,15 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void onDoAnswer(String question, Poetry poetry) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(poetry.getContent(), TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                mSoundView.doAiuiAnwer(poetry.getContent());
+                mSoundView.refHomePage(question, poetry);
+            } else {
+                query(poetry.getContent());
+            }
+        } else {
             mSoundView.doAiuiAnwer(poetry.getContent());
             mSoundView.refHomePage(question, poetry);
         }
@@ -454,10 +459,25 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void onDoAnswer(String question, String finalText, Joke joke) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                if (isMedia) {
+                    if (TextUtils.isEmpty(joke.getMp3Url())) {
+                        mSoundView.doAiuiAnwer(joke.getTitle() + " : " + joke.getContent());
+                        mSoundView.refHomePage(question, joke.getTitle() + " : " + joke.getContent());
+                    } else {
+                        mSoundView.refHomePage(question, finalText);
+                        playVoice(joke.getMp3Url());
+                    }
+                } else {
+                    stopRecognizerListener();
+                    mSoundView.special(question, SpecialType.Joke);
+                }
+            } else {
+                query(finalText);
+            }
+        } else {
             if (isMedia) {
                 if (TextUtils.isEmpty(joke.getMp3Url())) {
                     mSoundView.doAiuiAnwer(joke.getTitle() + " : " + joke.getContent());
@@ -475,10 +495,20 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void onDoAnswer(String question, String finalText, Story story) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                if (isMedia) {
+                    mSoundView.refHomePage(question, finalText);
+                    playVoice(story.getPlayUrl());
+                } else {
+                    stopRecognizerListener();
+                    mSoundView.special(question, SpecialType.Joke);
+                }
+            } else {
+                query(finalText);
+            }
+        } else {
             if (isMedia) {
                 mSoundView.refHomePage(question, finalText);
                 playVoice(story.getPlayUrl());
@@ -490,11 +520,23 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     }
 
     @Override
-    public void onDoAnswer(String question, String finalText, List<Train> trains, Train train0) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+    public void onDoAnswer(String question, String
+            finalText, List<Train> trains, Train train0) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                mSoundView.doAiuiAnwer(finalText);
+                mSoundView.refHomePage(question, finalText);
+                for (int i = 0; i < trains.size(); i++) {
+                    Train train = trains.get(i);
+                    mSoundView.refHomePage(null, train.getEndtime_for_voice() + "的" + train.getTrainType() + " " + train.getTrainNo() + "" +
+                            " " + train.getOriginStation() + " -- " + train.getTerminalStation()
+                            + " , 运行时间：" + train.getRunTime());
+                }
+            } else {
+                query(finalText);
+            }
+        } else {
             mSoundView.doAiuiAnwer(finalText);
             mSoundView.refHomePage(question, finalText);
             for (int i = 0; i < trains.size(); i++) {
@@ -508,10 +550,27 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void onDoAnswer(String question, String finalText, List<Flight> flights, Flight flight0) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                mSoundView.doAiuiAnwer(finalText);
+                mSoundView.refHomePage(question, finalText);
+                int total;
+                if (flights.size() < 10) {
+                    total = flights.size();
+                } else {
+                    total = 10;
+                }
+                for (int i = 0; i < total; i++) {
+                    Flight flight = flights.get(i);
+                    mSoundView.refHomePage(null, flight.getEndtime_for_voice() + "从" + flight.getDepartCity() + "出发， "
+                            + flight.getEndtime_for_voice() + "到达" + flight.getArriveCity() + ", " +
+                            flight.getCabinInfo() + "价格是：" + flight.getPrice());
+                }
+            } else {
+                query(finalText);
+            }
+        } else {
             mSoundView.doAiuiAnwer(finalText);
             mSoundView.refHomePage(question, finalText);
             int total;
@@ -532,16 +591,25 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     @Override
     public void onNoAnswer(String question, String finalText, String otherText) {
         mOtherText = otherText;
-        followType = FollowType.Start;
         onDoAnswer(question, finalText);
     }
 
     @Override
     public void onDoAnswer(String question, String finalText, Radio radio) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                if (isMedia) {
+                    mSoundView.refHomePage(question, radio);
+                    playVoice(radio.getUrl());
+                } else {
+                    stopRecognizerListener();
+                    mSoundView.special(question, SpecialType.Joke);
+                }
+            } else {
+                query(finalText);
+            }
+        } else {
             if (isMedia) {
                 mSoundView.refHomePage(question, radio);
                 playVoice(radio.getUrl());
@@ -555,14 +623,11 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     @Override
     public void onMusic(String question, String finalText) {
         mOtherText = "音乐播放中...";
-        followType = FollowType.Conduct;
         onDoAnswer(question, finalText);
     }
 
     @Override
     public void onTranslation(String question, String value) {
-        isTranslation = true;
-        queryType = QueryType.isQuerying;
         onDoAnswer(question, value);
         Print.e(value);
     }
@@ -609,22 +674,41 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     }
 
     @Override
-    public void onDoAnswer(String question, String finalText, EnglishEveryday englishEveryday) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+    public void onDoAnswer(String question, String
+            finalText, EnglishEveryday englishEveryday) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                mSoundView.doAiuiAnwer(englishEveryday.getContent());
+                mSoundView.refHomePage(question, englishEveryday);
+            } else {
+                query(finalText);
+            }
+        } else {
             mSoundView.doAiuiAnwer(englishEveryday.getContent());
             mSoundView.refHomePage(question, englishEveryday);
         }
     }
 
     @Override
-    public void onDoAnswer(String question, String finalText, Constellation constellation) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+    public void onDoAnswer(String question, String
+            finalText, Constellation constellation) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                StringBuilder sb = new StringBuilder();
+                List<Fortune> fortunes = constellation.getFortune();
+                sb.append(finalText);
+                for (int i = 0; i < fortunes.size(); i++) {
+                    Fortune fortune = fortunes.get(i);
+                    sb.append(fortune.getName()).append(" : ").append(fortune.getDescription());
+                }
+                mSoundView.doAiuiAnwer(sb.toString());
+                mSoundView.refHomePage(question, sb.toString());
+            } else {
+                query(finalText);
+            }
+        } else {
             StringBuilder sb = new StringBuilder();
             List<Fortune> fortunes = constellation.getFortune();
             sb.append(finalText);
@@ -638,11 +722,30 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     }
 
     @Override
-    public void onDoAnswer(String question, String finalText, Stock stock) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+    public void onDoAnswer(String question, String finalText, Stock
+            stock) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                StringBuilder sb = new StringBuilder();
+                sb.append(finalText);
+                sb.append("\n截止到").append(stock.getUpdateDateTime()).append(", ").append(stock.getName()).append(" ")
+                        .append(stock.getStockCode()).append(", 当前价格为 ： ").append(stock.getOpeningPrice()).append(", 上升率为 ： ")
+                        .append(stock.getRiseRate()).append(" 详情请查看列表信息");
+                mSoundView.doAiuiAnwer(sb.toString());
+
+                sb.append("\n最高价 ： ").append(stock.getHighPrice());
+                sb.append("  最低价 ： ").append(stock.getLowPrice());
+                List<Detail> details = stock.getDetail();
+                for (int i = 0; i < details.size(); i++) {
+                    Detail detail = details.get(i);
+                    sb.append("\n").append(detail.getCount()).append(" ").append(detail.getRole()).append(" ").append(detail.getPrice());
+                }
+                mSoundView.refHomePage(question, sb.toString());
+            } else {
+                query(finalText);
+            }
+        } else {
             StringBuilder sb = new StringBuilder();
             sb.append(finalText);
             sb.append("\n截止到").append(stock.getUpdateDateTime()).append(", ").append(stock.getName()).append(" ")
@@ -662,18 +765,25 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     }
 
     @Override
-    public void onDoAnswer(String question, String finalText, Riddle riddle) {
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+    public void onDoAnswer(String question, String
+            finalText, Riddle riddle) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                mSoundView.doAiuiAnwer(riddle.getTitle() + "\n谜底请查看列表");
+                mSoundView.refHomePage(question, riddle.getTitle() + "\n\n" + riddle.getAnswer() + "\n");
+            } else {
+                query(finalText);
+            }
+        } else {
             mSoundView.doAiuiAnwer(riddle.getTitle() + "\n谜底请查看列表");
             mSoundView.refHomePage(question, riddle.getTitle() + "\n\n" + riddle.getAnswer() + "\n");
         }
     }
 
     @Override
-    public void onDoAnswer(String question, String finalText, WordFinding wordFinding) {
+    public void onDoAnswer(String question, String
+            finalText, WordFinding wordFinding) {
         List<String> results;
         int count = 5;
         StringBuilder sb = new StringBuilder();
@@ -692,10 +802,15 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 sb.append("\n").append(results.get(i));
             }
         }
-        if (queryType == QueryType.isQuerying) {
-            queryType = QueryType.finishQuery;
-            query(finalText, TranslateLanguage.LanguageType.ZH, TranslateLanguage.LanguageType.EN);
-        } else if (queryType == QueryType.noQuery) {
+        if (RobotInfo.getInstance().isQueryLanage()) {
+            if (isTrans) {
+                isTrans = false;
+                mSoundView.doAiuiAnwer(sb.toString());
+                mSoundView.refHomePage(question, sb.toString());
+            } else {
+                query(finalText);
+            }
+        } else {
             mSoundView.doAiuiAnwer(sb.toString());
             mSoundView.refHomePage(question, sb.toString());
         }
@@ -759,67 +874,25 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     }
 
     private void onCompleted() {
-        if (followType == FollowType.Start) {
-            followType = FollowType.Conduct;
-            onDoAnswer(null, mOtherText);
-        } else if (followType == FollowType.Conduct) {
-            followType = FollowType.End;
-            onRecognResult(mOtherText);
-            mOtherText = null;
-        } else if (followType == FollowType.End) {
-            mSoundView.onCompleted();
-        }
+        mSoundView.onCompleted();
     }
 
-    private void query(final String source, TranslateLanguage.LanguageType fromType, TranslateLanguage.LanguageType toType) {
-        String from, to, input;
-        // 源语言或者目标语言其中之一必须为中文,目前只支持中文与其他几个语种的互译
-        if (fromType == TranslateLanguage.LanguageType.EN && toType == TranslateLanguage.LanguageType.ZH) {
-            //英译中
-            from = "英文";
-            to = "中文";
-        } else if (fromType == TranslateLanguage.LanguageType.ZH && toType == TranslateLanguage.LanguageType.EN) {
-            //中译英
-            from = "中文";
-            to = "英文";
-        } else {
-            return;
-        }
-
-        input = source;
-        Language langFrom = LanguageUtils.getLangByName(from);
-        Language langTo = LanguageUtils.getLangByName(to);
+    private void query(final String source) {
+        Language langFrom = LanguageUtils.getLangByName("中文");
+        Language langTo = LanguageUtils.getLangByName("英文");
 
         TranslateParameters tps = new TranslateParameters.Builder()
                 .source("youdao").from(langFrom).to(langTo).timeout(3000).build();// appkey可以省略
 
         Translator translator = Translator.getInstance(tps);
 
-        translator.lookup(input, new TranslateListener() {
+        translator.lookup(source, new TranslateListener() {
 
             @Override
             public void onResult(Translate result, String input) {
                 TranslateData translateData = new TranslateData(System.currentTimeMillis(), result);
-
-                if (languageType == LanguageType.English) {
-                    if (queryType == QueryType.isQuerying) {
-                        aiuiWriteText(translateData.translates());
-                    } else if (queryType == QueryType.finishQuery) {
-                        queryType = QueryType.noQuery;
-                        onDoAnswer(englishQuestion, translateData.translates());
-                    }
-                } else if (languageType == LanguageType.Cantonese) {
-                    Print.e("");
-                } else {
-                    if (isTranslation) {
-                        queryType = QueryType.noQuery;
-                        isTranslation = false;
-                        onDoAnswer(source, translateData.translates());
-                    } else {
-                        aiuiWriteText(translateData.translates());
-                    }
-                }
-
+                isTrans = true;
+                onDoAnswer(source, translateData.translates());
             }
 
             @Override
@@ -863,7 +936,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
                     if (!RobotInfo.getInstance().isCloudUpdatelexicon()) {
                         LocalLexicon localLexicon = new LocalLexicon(mSoundView.getContext());
-                        List<String> words =  localLexicon.getLocalStrings();
+                        List<String> words = localLexicon.getLocalStrings();
 
                         Userword userword = new Userword();
                         userword.setName("userword");

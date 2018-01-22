@@ -36,6 +36,7 @@ public class LoginActivity extends BarBaseActivity implements ILoginPresenter.IL
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, LoginActivity.class);
         context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
 

@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,9 +53,10 @@ public class MultimediaActivity extends BarBaseActivity implements OnPlayerEvent
 
     private boolean isPlayFragmentShow = false;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, MultimediaActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private SongFragment songFragment;
@@ -219,6 +221,9 @@ public class MultimediaActivity extends BarBaseActivity implements OnPlayerEvent
             hidePlayingFragment();
             return;
         }
+        if (songFragment != null && songFragment.isAdded()) {
+            songFragment.stopMusic();
+        }
         super.onBackPressed();
     }
 
@@ -291,4 +296,5 @@ public class MultimediaActivity extends BarBaseActivity implements OnPlayerEvent
             mPlayFragment.onMusicListUpdate();
         }
     }
+
 }

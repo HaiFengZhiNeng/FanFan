@@ -1,5 +1,6 @@
 package com.fanfan.novel.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -32,9 +33,10 @@ public class DataVoiceActivity extends BarBaseActivity {
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, DataVoiceActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private VoiceDBManager mVoiceDBManager;

@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -65,9 +66,10 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     @BindView(R.id.iv_down)
     ImageView ivDown;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, VideoIntroductionActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private VideoDBManager mVideoDBManager;
@@ -113,7 +115,7 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
         videoBeanList = mVideoDBManager.loadAll();
         if (videoBeanList != null && videoBeanList.size() > 0) {
             videoAdapter.refreshData(videoBeanList);
-        }else{
+        } else {
             isEmpty();
         }
     }
@@ -393,4 +395,5 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     public void onMoveStop() {
 
     }
+
 }

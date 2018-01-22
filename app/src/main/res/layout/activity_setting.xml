@@ -190,6 +190,30 @@
                     android:layout_height="wrap_content"
                     android:background="@color/diy_white_bg"
                     android:padding="12dp"
+                    android:text="讯飞"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_xf"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="发言人、听写人等设置"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/diy_white_bg"
+                    android:padding="12dp"
                     android:text="用户"
                     android:textStyle="bold" />
 
@@ -204,6 +228,7 @@
                     android:textColor="@color/diy_red"
                     android:textSize="16sp" />
             </LinearLayout>
+
 
         </LinearLayout>
 

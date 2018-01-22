@@ -7,10 +7,13 @@ import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.IBinder;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
@@ -138,8 +141,10 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     protected void callStop() {
-        super.callStop();
-        stopAll();
+        mTtsPresenter.stopTts();
+        mTtsPresenter.stopHandler();
+        mSoundPresenter.stopRecognizerListener();
+        mSoundPresenter.stopVoice();
     }
 
     @Override
@@ -332,19 +337,50 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     public void onSpeakBegin() {
         Glide.with(this)
                 .load(R.mipmap.fanfan_lift_hand)
-                .apply(new RequestOptions().skipMemoryCache(true))
+                .apply(new RequestOptions().skipMemoryCache(true).placeholder(R.mipmap.fanfan_hand))
+                .transition(new DrawableTransitionOptions().crossFade(1000))
                 .into(ivFanfan);
-        chatContent.setVisibility(View.VISIBLE);
+        setChatView(true);
     }
 
     @Override
     public void onRunable() {
         Glide.with(this)
                 .load(R.mipmap.fanfan_hand)
-                .apply(new RequestOptions().skipMemoryCache(true))
+                .apply(new RequestOptions().skipMemoryCache(true).placeholder(R.mipmap.fanfan_lift_hand))
+                .transition(new DrawableTransitionOptions().crossFade(1000))
                 .into(ivFanfan);
-        chatContent.setVisibility(View.GONE);
+        setChatView(false);
         mSoundPresenter.startRecognizerListener();
+    }
+
+    private void setChatView(final boolean isShow) {
+        AlphaAnimation alphaAnimation;
+        if (isShow) {
+            alphaAnimation = new AlphaAnimation(0, 1);
+            alphaAnimation.setDuration(300);
+        } else {
+            alphaAnimation = new AlphaAnimation(1, 0);
+            alphaAnimation.setDuration(1000);
+        }
+        alphaAnimation.setFillAfter(true);
+        chatContent.startAnimation(alphaAnimation);
+        alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                chatContent.setVisibility(isShow ? View.VISIBLE : View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     //**********************************************************************************************

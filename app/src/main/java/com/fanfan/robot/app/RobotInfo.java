@@ -4,8 +4,11 @@ import android.content.Context;
 
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.utils.PreferencesUtils;
+import com.fanfan.youtu.api.base.Constant;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
+
+import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * Created by android on 2018/1/5.
@@ -37,6 +40,8 @@ public class RobotInfo {
         setTtsLocalTalker(PreferencesUtils.getString(context, Constants.IAT_LOCAL_LANGUAGE_TALKER, "xiaoyan"));
         setIatLineHear(PreferencesUtils.getString(context, Constants.IAT_LINE_LANGUAGE_HEAR, "xiaoyan"));
         setIatLocalHear(PreferencesUtils.getString(context, Constants.IAT_LOCAL_LANGUAGE_HEAR, "xiaoyan"));
+        setIatLineLanguage(PreferencesUtils.getString(context, Constants.IAT_LINE_LANGUAGE, "mandarin"));
+        setQueryLanage(PreferencesUtils.getBoolean(context, Constants.QUERYLANAGE, false));
         isInitialization = PreferencesUtils.getBoolean(context, Constants.IS_INITIALIZATION, false);
         return getInstance();
     }
@@ -143,6 +148,7 @@ public class RobotInfo {
 
     public void setTtsLineTalker(String ttsLineTalker) {
         this.ttsLineTalker = ttsLineTalker;
+        PreferencesUtils.putString(NovelApp.getInstance().getApplicationContext(), Constants.IAT_LINE_LANGUAGE_TALKER, ttsLineTalker);
     }
 
     //离线的发言人
@@ -154,6 +160,7 @@ public class RobotInfo {
 
     public void setTtsLocalTalker(String ttsLocalTalker) {
         this.ttsLocalTalker = ttsLocalTalker;
+        PreferencesUtils.putString(NovelApp.getInstance().getApplicationContext(), Constants.IAT_LOCAL_LANGUAGE_TALKER, ttsLocalTalker);
     }
 
     //在线的监听人
@@ -177,6 +184,60 @@ public class RobotInfo {
     public void setIatLocalHear(String iatLocalHear) {
         this.iatLocalHear = iatLocalHear;
     }
+
+    //在线语言区域（mandarin， en_us）
+    private String iatLineLanguage;
+
+    public String getIatLineLanguage() {
+        return iatLineLanguage;
+    }
+
+    public void setIatLineLanguage(String iatLineLanguage) {
+        this.iatLineLanguage = iatLineLanguage;
+        setLineLanguage(iatLineLanguage);
+        PreferencesUtils.putString(NovelApp.getInstance().getApplicationContext(), Constants.IAT_LINE_LANGUAGE, iatLineLanguage);
+    }
+
+    //在线语言（zh_cn， en_us）
+    private String lineLanguage;
+
+    public String getLineLanguage() {
+        return lineLanguage;
+    }
+
+    public void setLineLanguage(String iatLineLanguage) {
+        if (iatLineLanguage.equals("en_us")) {
+            lineLanguage = "en_us";
+            setTranslateEnable(true);
+        } else {
+            lineLanguage = "zh_cn";
+            setTranslateEnable(false);
+        }
+    }
+
+    //需要翻译
+    private boolean translateEnable;
+
+    public boolean isTranslateEnable() {
+        return translateEnable;
+    }
+
+    public void setTranslateEnable(boolean translateEnable) {
+        this.translateEnable = translateEnable;
+    }
+
+    //是否需要中转英
+    private boolean queryLanage;
+
+    public boolean isQueryLanage() {
+        return queryLanage;
+    }
+
+    public void setQueryLanage(boolean queryLanage) {
+        this.queryLanage = queryLanage;
+        PreferencesUtils.getBoolean(NovelApp.getInstance(), Constants.QUERYLANAGE, queryLanage);
+    }
+
 
     //是否已经构建语法，上传热词等
     private boolean isInitialization;

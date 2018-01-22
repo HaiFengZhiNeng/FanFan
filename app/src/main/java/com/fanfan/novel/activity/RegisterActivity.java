@@ -26,6 +26,7 @@ public class RegisterActivity extends BarBaseActivity implements IRegisterPresen
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, RegisterActivity.class);
         context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     @BindView(R.id.usernameWrapper)

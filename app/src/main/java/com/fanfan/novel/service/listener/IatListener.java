@@ -3,6 +3,7 @@ package com.fanfan.novel.service.listener;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.fanfan.novel.model.local.Trans;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.novel.model.local.Asr;
 import com.fanfan.novel.model.local.Cw;
@@ -76,23 +77,27 @@ public class IatListener implements RecognizerListener {
 
         } else if (engineType.equals(SpeechConstant.TYPE_CLOUD)) {
 
-            Asr line = GsonUtil.GsonToBean(recognizerResult.getResultString(), Asr.class);
-            List<Ws> wsList = line.getWs();
-            for (int i = 0; i < wsList.size(); i++) {
-                Ws ws = wsList.get(i);
-                List<Cw> cwList = ws.getCw();
-                for (int j = 0; j < cwList.size(); j++) {
-                    Cw cw = cwList.get(j);
-                    mosaicSb.append(cw.getW());
+            if (RobotInfo.getInstance().isTranslateEnable()) {
+                Trans trans = GsonUtil.GsonToBean(recognizerResult.getResultString(), Trans.class);
+                recognListener.onTranslate(trans.getTrans_result().getDst());
+            } else {
+                Asr line = GsonUtil.GsonToBean(recognizerResult.getResultString(), Asr.class);
+                List<Ws> wsList = line.getWs();
+                for (int i = 0; i < wsList.size(); i++) {
+                    Ws ws = wsList.get(i);
+                    List<Cw> cwList = ws.getCw();
+                    for (int j = 0; j < cwList.size(); j++) {
+                        Cw cw = cwList.get(j);
+                        mosaicSb.append(cw.getW());
+                    }
+                }
+
+                if (isHas) {
+                    mosaicComplete(mosaicSb.toString());
+                    mosaicSb.delete(0, mosaicSb.length());
                 }
             }
-
-            if (isHas) {
-                mosaicComplete(mosaicSb.toString());
-                mosaicSb.delete(0, mosaicSb.length());
-            }
         }
-
     }
 
     private void mosaicComplete(String mosaic) {
@@ -109,7 +114,7 @@ public class IatListener implements RecognizerListener {
 
     @Override
     public void onError(SpeechError speechError) {
-        if(recognListener != null){
+        if (recognListener != null) {
             recognListener.onErrInfo(speechError.getErrorCode());
         }
     }
@@ -121,6 +126,8 @@ public class IatListener implements RecognizerListener {
     private RecognListener recognListener;
 
     public interface RecognListener {
+
+        void onTranslate(String result);
 
         void onRecognResult(String result);
 

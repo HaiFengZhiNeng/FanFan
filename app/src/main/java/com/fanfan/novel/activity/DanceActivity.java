@@ -1,5 +1,6 @@
 package com.fanfan.novel.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,10 +33,11 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
 
     public static final String DANCE_ID = "DANCE_ID";
 
-    public static void newInstance(Context context, long danceId) {
+    public static void newInstance(Activity context, long danceId) {
         Intent intent = new Intent(context, DanceActivity.class);
         intent.putExtra(DANCE_ID, danceId);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private Dance dance;
@@ -82,7 +84,7 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
     @OnClick(R.id.iv_splash_back)
     public void onViewClicked() {
         mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, STOP_DANCE);
-        DanceUtils.getInstance().stopDance();
+        DanceUtils.getInstance().stopPlay();
         finish();
     }
 
@@ -127,7 +129,7 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ACTION_NONE_CLOSE)) {
                 mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, STOP_DANCE);
-                DanceUtils.getInstance().stopDance();
+                DanceUtils.getInstance().stopPlay();
                 finish();
             }
         }

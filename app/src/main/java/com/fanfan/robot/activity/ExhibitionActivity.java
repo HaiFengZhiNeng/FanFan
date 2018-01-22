@@ -47,6 +47,7 @@ public class ExhibitionActivity extends BarBaseActivity implements RangeClickIma
         Intent intent = new Intent(context, ExhibitionActivity.class);
         intent.putExtra(FILE_NAME, name);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private String fileName;

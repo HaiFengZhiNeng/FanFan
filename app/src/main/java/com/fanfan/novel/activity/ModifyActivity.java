@@ -42,6 +42,7 @@ public class ModifyActivity extends BarBaseActivity {
         intent.putExtra("code", requestCode);
         intent.putExtra("etTxt", etTxt);
         activity.startActivityForResult(intent, requestCode);
+        activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private Youtucode youtucode;

@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.ImageView;
@@ -37,9 +38,10 @@ import butterknife.BindView;
 public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
         ISerialPresenter.ISerialView{
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, FanFanIntroduceActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     @BindView(R.id.iv_introduce)

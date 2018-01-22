@@ -26,6 +26,7 @@ public class ForgetActivity extends BarBaseActivity implements IForgetPresenter.
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, ForgetActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     @BindView(R.id.usernameWrapper)

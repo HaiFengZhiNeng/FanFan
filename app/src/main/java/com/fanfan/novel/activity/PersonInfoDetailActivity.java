@@ -60,6 +60,7 @@ public class PersonInfoDetailActivity extends BarBaseActivity {
         Intent intent = new Intent(context, PersonInfoDetailActivity.class);
         intent.putExtra("userInfoId", userInfoId);
         context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private String userInfoId;

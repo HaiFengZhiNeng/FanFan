@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -74,16 +75,18 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
     public static final String AUTHID = "authId";
     public static final String FACE_AUTH_ID = "face_auth_id";
 
-    public static void newInstance(Context context, String authId) {
+    public static void newInstance(Activity context, String authId) {
         Intent intent = new Intent(context, FaceRegisterActivity.class);
         intent.putExtra(AUTHID, authId);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
-    public static void newInstance(Context context, long id) {
+    public static void newInstance(Activity context, long id) {
         Intent intent = new Intent(context, FaceRegisterActivity.class);
         intent.putExtra(FACE_AUTH_ID, id);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private CameraPresenter mCameraPresenter;

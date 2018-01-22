@@ -63,12 +63,14 @@ public class AddVideoActivity extends BarBaseActivity {
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, AddVideoActivity.class);
         context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     public static void newInstance(Activity context, long id, int requestCode) {
         Intent intent = new Intent(context, AddVideoActivity.class);
         intent.putExtra(VIDEO_ID, id);
         context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private long saveLocalId;

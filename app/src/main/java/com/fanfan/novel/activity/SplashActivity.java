@@ -142,16 +142,6 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
                 });
     }
 
-//    ViewPropertyAnimation.Animator animationObject = new ViewPropertyAnimation.Animator() {
-//        @Override
-//        public void animate(View view) {
-//            view.setAlpha(0f);
-//
-//            ObjectAnimator fadeAnim = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
-//            fadeAnim.setDuration(2000);
-//            fadeAnim.start();
-//        }
-//    };
 
     @Override
     protected void initData() {

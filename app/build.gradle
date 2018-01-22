@@ -102,4 +102,5 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.flaviofaria:kenburnsview:1.0.7'
     compile 'com.jpardogo.materialtabstrip:library:1.1.0'
+    compile 'cn.bingoogolapple:bga-swipebacklayout:1.1.0@aar'
 }

@@ -1,5 +1,6 @@
 package com.fanfan.novel.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -20,10 +21,11 @@ public class VideoDetailActivity extends BarBaseActivity {
     @BindView(R.id.jc_video)
     JCVideoPlayerStandard mJcVideo;
 
-    public static void newInstance(Context context, String url) {
+    public static void newInstance(Activity context, String url) {
         Intent intent = new Intent(context, VideoDetailActivity.class);
         intent.putExtra(VIDEO_URL, url);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
 

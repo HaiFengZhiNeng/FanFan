@@ -1,6 +1,7 @@
 package com.fanfan.robot.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -72,9 +73,11 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
     @BindView(R.id.tv_sign_all)
     TextView tvSignAll;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, FaceCheckinActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
     }
 
     //opencv

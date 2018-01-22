@@ -41,20 +41,23 @@ public class DanceAddActivity extends BarBaseActivity {
     public static final int ADD_DANCE_REQUESTCODE = 225;
     public static final int ADD_DANCE_RESULTCODE = 225;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, DanceAddActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
-    public static void newInstance(Context context, Fragment fragment, int requestCode) {
+    public static void newInstance(Activity context, Fragment fragment, int requestCode) {
         Intent intent = new Intent(context, DanceAddActivity.class);
         fragment.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     public static void newInstance(Activity context, Fragment fragment, long id, int requestCode) {
         Intent intent = new Intent(context, DanceAddActivity.class);
         intent.putExtra(DANCE_ID, id);
         fragment.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private long saveLocalId;

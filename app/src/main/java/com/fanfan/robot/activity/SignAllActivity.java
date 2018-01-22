@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -59,9 +60,10 @@ public class SignAllActivity extends BarBaseActivity {
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, SignAllActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private CheckInDBManager mCheckInDBManager;
@@ -190,4 +192,5 @@ public class SignAllActivity extends BarBaseActivity {
         return localBeanList;
 
     }
+
 }

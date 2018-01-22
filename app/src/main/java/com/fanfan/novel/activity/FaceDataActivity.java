@@ -1,6 +1,7 @@
 package com.fanfan.novel.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -47,9 +48,10 @@ public class FaceDataActivity extends BarBaseActivity {
     @BindView(R.id.recycler_face)
     RecyclerView recyclerFace;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, FaceDataActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
 

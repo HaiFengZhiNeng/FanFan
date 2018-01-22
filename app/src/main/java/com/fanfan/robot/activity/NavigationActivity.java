@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -57,9 +58,10 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     @BindView(R.id.iv_navigation)
     RangeClickImageView ivNavigation;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, NavigationActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private LocalSoundPresenter mSoundPresenter;
@@ -329,4 +331,5 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         }
         return false;
     }
+
 }

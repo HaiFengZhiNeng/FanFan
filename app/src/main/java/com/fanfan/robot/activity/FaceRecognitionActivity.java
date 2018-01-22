@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -59,9 +60,10 @@ public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSo
     @BindView(R.id.iv_face_extraction)
     ImageView ivFaceExtraction;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, FaceRecognitionActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private String mInput;

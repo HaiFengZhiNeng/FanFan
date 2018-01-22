@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -45,9 +46,10 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     @BindView(R.id.iv_code)
     ImageView ivCode;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, PublicNumberActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private LocalSoundPresenter mSoundPresenter;
@@ -246,5 +248,4 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     public void onMoveStop() {
 
     }
-
 }

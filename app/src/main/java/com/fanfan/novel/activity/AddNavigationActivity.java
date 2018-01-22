@@ -75,12 +75,14 @@ public class AddNavigationActivity extends BarBaseActivity {
         Intent intent = new Intent(context, AddNavigationActivity.class);
         intent.putExtra(NAVIGATION_TITLE, title);
         context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     public static void newInstance(Activity context, long id, int requestCode) {
         Intent intent = new Intent(context, AddNavigationActivity.class);
         intent.putExtra(NAVIGATION_ID, id);
         context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private long saveLocalId;

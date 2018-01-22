@@ -14,6 +14,7 @@ import com.fanfan.novel.activity.DataVoiceActivity;
 import com.fanfan.novel.activity.FaceDataActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.robot.R;
+import com.fanfan.robot.fragment.XfFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,12 +39,15 @@ public class SettingActivity extends BarBaseActivity {
     RelativeLayout rlFace;
     @BindView(R.id.rl_dance)
     RelativeLayout rlDance;
+    @BindView(R.id.tv_xf)
+    TextView tvXf;
     @BindView(R.id.logout)
     TextView logout;
 
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, SettingActivity.class);
         context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
 
@@ -58,7 +62,7 @@ public class SettingActivity extends BarBaseActivity {
     }
 
 
-    @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.rl_face, R.id.rl_dance, R.id.logout})
+    @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.add_video:
@@ -76,10 +80,15 @@ public class SettingActivity extends BarBaseActivity {
             case R.id.rl_dance:
                 DanceAddActivity.newInstance(this);
                 break;
+            case R.id.tv_xf:
+                XfFragment xfFragment = XfFragment.newInstance();
+                xfFragment.show(getSupportFragmentManager(), "CHANNEL");
+                break;
             case R.id.logout:
                 setResult(LOGOUT_TO_MAIN_RESULTCODE);
                 finish();
                 break;
         }
     }
+
 }

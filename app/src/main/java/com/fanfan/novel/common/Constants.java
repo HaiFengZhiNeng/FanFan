@@ -41,7 +41,10 @@ public class Constants {
     public static final String IAT_CLOUD_UPDATELEXICON = "iat_cloud_updatelexicon";
     public static final String IAT_LOCAL_UPDATELEXICON = "iat_local_updatelexicon";
 
-    public static final String IAT_LANGUAGE_PREFERENCE = "iat_language_preference";
+    public static final String QUERYLANAGE = "query_lanage";
+
+    public static final String IAT_LINE_LANGUAGE = "iat_line_language";
+    public static final String IAT_LOCAL_LANGUAGE = "iat_local_language";
 
     public static final String IAT_LINE_LANGUAGE_TALKER = "iat_line_language_talker";
     public static final String IAT_LOCAL_LANGUAGE_TALKER = "iat_local_language_talker";

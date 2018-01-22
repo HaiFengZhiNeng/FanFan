@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -84,9 +85,10 @@ public class AuthenticationActivity extends BarBaseActivity implements SurfaceHo
     @BindView(R.id.person_info_layout)
     LinearLayout infoLayout;
 
-    public static void newInstance(Context context) {
+    public static void newInstance(Activity context) {
         Intent intent = new Intent(context, AuthenticationActivity.class);
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     //opencv
