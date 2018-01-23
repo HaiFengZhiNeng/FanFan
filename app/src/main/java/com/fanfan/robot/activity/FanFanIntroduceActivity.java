@@ -36,7 +36,7 @@ import butterknife.BindView;
  */
 
 public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
-        ISerialPresenter.ISerialView{
+        ISerialPresenter.ISerialView {
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, FanFanIntroduceActivity.class);
@@ -222,6 +222,7 @@ public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSo
     public void refLocalPage(String result) {
 
     }
+
     @Override
     public void stopAll() {
         super.stopAll();

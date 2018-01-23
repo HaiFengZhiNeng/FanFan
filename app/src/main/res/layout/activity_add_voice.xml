@@ -42,7 +42,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/y30"
             android:orientation="horizontal">
 
 
@@ -57,13 +57,13 @@
                 android:textColor="@color/white"
                 android:textColorHint="@color/gray"
                 android:textCursorDrawable="@drawable/edit_cursor_color"
-                android:textSize="40px" />
+                android:textSize="@dimen/x8" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/y30"
             android:orientation="horizontal">
 
             <EditText
@@ -76,12 +76,12 @@
                 android:textColor="@color/white"
                 android:textColorHint="@color/gray"
                 android:textCursorDrawable="@drawable/edit_cursor_color"
-                android:textSize="40px" />
+                android:textSize="@dimen/x8" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/y30"
             android:orientation="horizontal">
 
             <TextView
@@ -90,7 +90,7 @@
                 android:layout_gravity="center"
                 android:text="@string/set_expression"
                 android:textColor="@color/white"
-                android:textSize="40px" />
+                android:textSize="@dimen/x8" />
 
             <TextView
                 android:id="@+id/tv_expression"
@@ -102,12 +102,12 @@
                 android:hint="点击选择表情"
                 android:textColor="@color/white"
                 android:textColorHint="@color/gray"
-                android:textSize="36px" />
+                android:textSize="@dimen/x8" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/y30"
             android:layout_weight="1"
             android:orientation="horizontal">
 
@@ -117,7 +117,7 @@
                 android:layout_gravity="center"
                 android:text="@string/set_action"
                 android:textColor="@color/white"
-                android:textSize="40px" />
+                android:textSize="@dimen/x8" />
 
             <TextView
                 android:id="@+id/tv_action"
@@ -129,7 +129,7 @@
                 android:hint="点击选择动作"
                 android:textColor="@color/white"
                 android:textColorHint="@color/gray"
-                android:textSize="36px" />
+                android:textSize="@dimen/x8" />
         </LinearLayout>
 
         <RelativeLayout
@@ -140,22 +140,22 @@
 
             <TextView
                 android:id="@+id/tv_img"
-                android:layout_width="300px"
-                android:layout_height="70dp"
+                android:layout_width="@dimen/y75"
+                android:layout_height="@dimen/y45"
                 android:background="@mipmap/choose_long_btn"
                 android:gravity="center"
                 android:text="@string/set_img"
                 android:textColor="@color/white"
-                android:textSize="40px" />
+                android:textSize="@dimen/x10" />
 
         </RelativeLayout>
 
         <ImageView
-            android:layout_marginTop="@dimen/y15"
             android:id="@+id/img_voice"
-            android:layout_width="500px"
-            android:layout_height="500px"
+            android:layout_width="@dimen/y150"
+            android:layout_height="@dimen/y150"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/y15"
             android:scaleType="centerCrop"
             android:visibility="gone" />
 

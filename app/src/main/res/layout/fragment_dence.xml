@@ -17,6 +17,6 @@
         android:text="暂无本地舞蹈"
         android:textColor="@color/grey"
         android:textSize="14sp"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
 </RelativeLayout>

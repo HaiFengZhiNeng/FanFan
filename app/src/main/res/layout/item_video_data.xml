@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/x80"
     android:orientation="vertical"
-    android:padding="@dimen/y6">
+    android:padding="@dimen/y8">
 
     <ImageView
         android:id="@+id/iv_video_image"
@@ -13,7 +13,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/y6"
+        android:layout_marginLeft="@dimen/y8"
         android:layout_toRightOf="@+id/iv_video_image"
         android:orientation="vertical">
 
@@ -28,7 +28,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:textColor="@color/black"
-                android:textSize="@dimen/x12" />
+                android:textSize="@dimen/x9" />
 
             <TextView
                 android:id="@+id/save_time"
@@ -36,7 +36,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:gravity="center_vertical"
-                android:textSize="@dimen/x7" />
+                android:textSize="@dimen/x6" />
         </RelativeLayout>
 
         <TextView
@@ -46,6 +46,6 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:lines="2"
-            android:textSize="@dimen/x9" />
+            android:textSize="@dimen/x7" />
     </LinearLayout>
 </RelativeLayout>

@@ -94,7 +94,7 @@ public class RangeClickImageView extends ImageView implements RequestListener<Bi
         mPaint.setColor(Color.RED);
         mPaint.setStyle(Paint.Style.STROKE);
 
-        finishBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_finish_black);
+        finishBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.range_finish);
     }
 
     @Override

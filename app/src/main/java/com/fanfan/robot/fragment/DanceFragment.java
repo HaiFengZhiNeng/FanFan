@@ -93,10 +93,11 @@ public class DanceFragment extends BaseFragment {
     protected void initData() {
         mDanceDBManager = new DanceDBManager();
         dances = mDanceDBManager.loadAll();
-        if (dances != null) {
+        if (dances != null && dances.size() > 0) {
+            tvEmpty.setVisibility(View.GONE);
             mAdapter.refreshData(dances);
         } else {
-            tvEmpty.setVisibility(View.GONE);
+            tvEmpty.setVisibility(View.VISIBLE);
         }
     }
 

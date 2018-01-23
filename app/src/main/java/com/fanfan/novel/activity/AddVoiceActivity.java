@@ -133,12 +133,12 @@ public class AddVoiceActivity extends BarBaseActivity {
             curAction = valueForArray(R.array.action_order, voiceBean.getActionData());
             String savePath = voiceBean.getImgUrl();
             if (savePath != null) {
-                    if (new File(savePath).exists()) {
-                        imgVoice.setVisibility(View.VISIBLE);
-                        Glide.with(AddVoiceActivity.this).load(savePath)
-                                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
-                                .into(imgVoice);
-                    }
+                if (new File(savePath).exists()) {
+                    imgVoice.setVisibility(View.VISIBLE);
+                    Glide.with(AddVoiceActivity.this).load(savePath)
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .into(imgVoice);
+                }
             }
         } else {
             voiceBean = new VoiceBean();
@@ -204,7 +204,7 @@ public class AddVoiceActivity extends BarBaseActivity {
                     showToast("答案不能为空！");
                     break;
                 }
-                if(etQuestion.getText().toString().trim().length() > 20){
+                if (etQuestion.getText().toString().trim().length() > 20) {
                     showToast("输入 20 字以内");
                     break;
                 }
@@ -241,17 +241,15 @@ public class AddVoiceActivity extends BarBaseActivity {
                 break;
             case PICTURE_CUT://裁剪完成
                 isClickCamera = true;
-                Bitmap bitmap = null;
-                try {
-                    if (isClickCamera) {
-                        bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(outputUri));
-                    } else {
-                        bitmap = BitmapFactory.decodeFile(imagePath);
-                    }
+                if (isClickCamera) {
                     imgVoice.setVisibility(View.VISIBLE);
-                    imgVoice.setImageBitmap(bitmap);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    Glide.with(AddVoiceActivity.this).load(outputUri)
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .into(imgVoice);
+                } else {
+                    Glide.with(AddVoiceActivity.this).load(outputUri)
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .into(imgVoice);
                 }
                 break;
         }

@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fanfan.novel.adapter.UserInfoAdapter;
@@ -47,6 +48,8 @@ public class FaceDataActivity extends BarBaseActivity {
 
     @BindView(R.id.recycler_face)
     RecyclerView recyclerFace;
+    @BindView(R.id.tv_empty)
+    TextView tvEmpty;
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, FaceDataActivity.class);
@@ -63,6 +66,8 @@ public class FaceDataActivity extends BarBaseActivity {
     private FaceAuthDBManager mFaceAuthDBManager;
 
     private MaterialDialog materialDialog;
+
+    private FaceAuth delFaceAuth;
 
     @Override
     protected int getLayoutId() {
@@ -119,8 +124,8 @@ public class FaceDataActivity extends BarBaseActivity {
         userInfoAdapter.setOnItemLongClickListener(new BaseRecyclerAdapter.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(View view, int position) {
-                String personId = faceAuths.get(position).getPersonId();
-                showDialog(personId);
+                delFaceAuth = faceAuths.get(position);
+                showDialog();
                 return true;
             }
         });
@@ -134,13 +139,18 @@ public class FaceDataActivity extends BarBaseActivity {
             Print.e(facePersonid);
             if (facePersonid.getErrorcode() == 0) {
                 List<String> personIds = facePersonid.getPerson_ids();
-                for (String personId : personIds) {
-                    FaceAuth faceAuth = mFaceAuthDBManager.queryByPersonId(personId);
-                    if (faceAuth == null) {
-                        faceAuth = new FaceAuth();
-                        faceAuth.setPersonId(personId);
+                if(personIds.size() > 0) {
+                    tvEmpty.setVisibility(View.GONE);
+                    for (String personId : personIds) {
+                        FaceAuth faceAuth = mFaceAuthDBManager.queryByPersonId(personId);
+                        if (faceAuth == null) {
+                            faceAuth = new FaceAuth();
+                            faceAuth.setPersonId(personId);
+                        }
+                        userInfoAdapter.addData(faceAuth);
                     }
-                    userInfoAdapter.addData(faceAuth);
+                }else{
+                    tvEmpty.setVisibility(View.VISIBLE);
                 }
             } else {
                 onError(facePersonid.getErrorcode(), facePersonid.getErrormsg());
@@ -150,7 +160,7 @@ public class FaceDataActivity extends BarBaseActivity {
         }
     }
 
-    private void showDialog(final String personId) {
+    private void showDialog() {
         DialogUtils.showBasicNoTitleDialog(this, "确定要删除此人脸信息吗？", "取消", "确定",
                 new DialogUtils.OnNiftyDialogListener() {
                     @Override
@@ -159,7 +169,7 @@ public class FaceDataActivity extends BarBaseActivity {
 
                     @Override
                     public void onClickRight() {
-                        youtucode.delPerson(personId);
+                        youtucode.delPerson(delFaceAuth.getPersonId());
                     }
                 });
     }
@@ -173,11 +183,9 @@ public class FaceDataActivity extends BarBaseActivity {
             if (delperson.getErrorcode() == 0) {
                 String personId = delperson.getPerson_id();
                 showToast("删除 ：" + delperson.getDeleted() + " 张人脸");
-                FaceAuth faceAuth = new FaceAuth();
-                faceAuth.setPersonId(personId);
-                int position = faceAuths.indexOf(faceAuth);
-                faceAuths.remove(position);
-                userInfoAdapter.removeItem(faceAuth);
+                faceAuths.remove(delFaceAuth);
+//                userInfoAdapter.removeItem(delFaceAuth);
+                userInfoAdapter.notifyDataSetChanged();
             } else {
                 onError(delperson.getErrorcode(), delperson.getErrormsg());
             }

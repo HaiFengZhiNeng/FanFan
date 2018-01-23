@@ -292,7 +292,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 .translationX(0, 200, 0)
                 .translationY(0, 300, 0)
                 .interpolator(new LinearInterpolator())
-                .duration(1000)
+                .duration(1200)
                 .start();
     }
 

@@ -21,11 +21,13 @@
         android:visibility="visible" />
 
     <RelativeLayout
-        android:background="@color/white"
         android:id="@+id/fl_play_bar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"

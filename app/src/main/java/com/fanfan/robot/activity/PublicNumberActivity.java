@@ -65,7 +65,7 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
 
         RequestOptions options = new RequestOptions()
                 .centerCrop()
-                .override(Constants.displayWidth, Constants.displayHeight - toolbar.getHeight())
+//                .override(Constants.displayWidth, Constants.displayHeight - toolbar.getHeight())
                 .placeholder(R.mipmap.splash_bg)
                 .error(R.mipmap.splash_bg)
                 .skipMemoryCache(true)
