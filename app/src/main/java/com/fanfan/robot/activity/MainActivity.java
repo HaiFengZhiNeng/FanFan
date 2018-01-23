@@ -6,10 +6,16 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.IBinder;
+import android.support.constraint.Guideline;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
@@ -52,6 +58,8 @@ import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.presenter.LineSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 import com.fanfan.youtu.utils.GsonUtil;
+import com.github.florent37.viewanimator.AnimationListener;
+import com.github.florent37.viewanimator.ViewAnimator;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
 import com.tencent.TIMCallBack;
@@ -109,7 +117,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_main1;
     }
 
     @Override
@@ -136,7 +144,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         mVideoDBManager = new VideoDBManager();
         mNavigationDBManager = new NavigationDBManager();
 
-
+        Glide.with(this)
+                .load(R.mipmap.fanfan_hand)
+                .apply(new RequestOptions().skipMemoryCache(true))
+                .transition(new DrawableTransitionOptions().crossFade(1000))
+                .into(ivFanfan);
     }
 
     @Override
@@ -212,7 +224,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_fanfan:
-                FanFanIntroduceActivity.newInstance(this);
+                animateSequentially(ivFanfan);
                 break;
             case R.id.iv_video:
                 VideoIntroductionActivity.newInstance(this);
@@ -263,6 +275,25 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private void setChatContent(String messageContent) {
         chatContent.setSpanText(mHandler, messageContent, true);
+    }
+
+    //************************anim****************************
+    protected void animateSequentially(View view) {
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                FanFanIntroduceActivity.newInstance(MainActivity.this);
+            }
+        }, 400);
+        ViewAnimator
+                .animate(view)
+                .scale(1f, 1.3f, 1f)
+                .alpha(1, 0.3f, 1)
+                .translationX(0, 200, 0)
+                .translationY(0, 300, 0)
+                .interpolator(new LinearInterpolator())
+                .duration(1000)
+                .start();
     }
 
     //**********************************************************************************************

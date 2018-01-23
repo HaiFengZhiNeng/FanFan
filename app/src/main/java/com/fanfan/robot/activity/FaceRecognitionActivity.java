@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -30,6 +31,8 @@ import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.R;
+import com.github.florent37.viewanimator.AnimationListener;
+import com.github.florent37.viewanimator.ViewAnimator;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
@@ -159,18 +162,51 @@ public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSo
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_face_check_in:
-                FaceCheckinActivity.newInstance(this);
+                viewAnimator(ivFaceCheckIn, -30, -30, new AnimationListener.Stop() {
+                    @Override
+                    public void onStop() {
+                        FaceCheckinActivity.newInstance(FaceRecognitionActivity.this);
+                    }
+                });
                 break;
             case R.id.iv_face_instagram:
-                InstagramPhotoActivity.newInstance(this);
+                viewAnimator(ivFaceInstagram, 30, -30, new AnimationListener.Stop() {
+                    @Override
+                    public void onStop() {
+                        InstagramPhotoActivity.newInstance(FaceRecognitionActivity.this);
+                    }
+                });
                 break;
             case R.id.iv_face_witness_contrast:
-                AuthenticationActivity.newInstance(this);
+                viewAnimator(ivFaceWitnessContrast, -30, 30, new AnimationListener.Stop() {
+                    @Override
+                    public void onStop() {
+                        AuthenticationActivity.newInstance(FaceRecognitionActivity.this);
+                    }
+                });
                 break;
             case R.id.iv_face_extraction:
-                startExtraction();
+                viewAnimator(ivFaceExtraction, 30, 30, new AnimationListener.Stop() {
+                    @Override
+                    public void onStop() {
+                        startExtraction();
+                    }
+                });
                 break;
         }
+    }
+
+    private void viewAnimator(View view, int x, int y, AnimationListener.Stop stop) {
+        ViewAnimator
+                .animate(view)
+                .scale(1f, 1.1f, 1f)
+                .alpha(1, 0.7f, 1)
+                .translationX(0, x, 0)
+                .translationY(0, y, 0)
+                .interpolator(new LinearInterpolator())
+                .duration(500)
+                .start()
+                .onStop(stop);
     }
 
     private void addSpeakAnswer(String messageContent) {
@@ -304,16 +340,36 @@ public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSo
     public void face(SpecialType type, String result) {
         switch (type) {
             case Face_lifting_area:
-                startExtraction();
+                viewAnimator(ivFaceExtraction, 30, 30, new AnimationListener.Stop() {
+                    @Override
+                    public void onStop() {
+                        startExtraction();
+                    }
+                });
                 break;
             case Face_check_in:
-                FaceCheckinActivity.newInstance(this);
+                viewAnimator(ivFaceCheckIn, -30, -30, new AnimationListener.Stop() {
+                    @Override
+                    public void onStop() {
+                        FaceCheckinActivity.newInstance(FaceRecognitionActivity.this);
+                    }
+                });
                 break;
             case Instagram:
-                InstagramPhotoActivity.newInstance(this);
+                viewAnimator(ivFaceInstagram, 30, -30, new AnimationListener.Stop() {
+                    @Override
+                    public void onStop() {
+                        InstagramPhotoActivity.newInstance(FaceRecognitionActivity.this);
+                    }
+                });
                 break;
             case Witness_contrast:
-                AuthenticationActivity.newInstance(this);
+                viewAnimator(ivFaceWitnessContrast, -30, 30, new AnimationListener.Stop() {
+                    @Override
+                    public void onStop() {
+                        AuthenticationActivity.newInstance(FaceRecognitionActivity.this);
+                    }
+                });
                 break;
         }
     }

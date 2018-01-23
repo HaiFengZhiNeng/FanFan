@@ -230,6 +230,7 @@ public class AuthenticationActivity extends BarBaseActivity implements SurfaceHo
 
     @Override
     protected void onDestroy() {
+        mHandler.removeCallbacks(testRun);
         super.onDestroy();
         mHsOtgPresenter.finish();
     }
@@ -439,7 +440,8 @@ public class AuthenticationActivity extends BarBaseActivity implements SurfaceHo
 
     private void setPersonInfo() {
         infoLayout.setVisibility(View.VISIBLE);
-        Glide.with(this).load(personInfo.getHeadUrl())
+        Glide.with(AuthenticationActivity.this)
+                .load(personInfo.getHeadUrl())
                 .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE))
                 .into(ivHead);
         tvName.setText(personInfo.getName());
