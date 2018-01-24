@@ -79,7 +79,7 @@
                         android:layout_centerInParent="true"
                         android:text="3"
                         android:textColor="@color/white"
-                        android:textSize="20sp" />
+                        android:textSize="@dimen/x8" />
                 </RelativeLayout>
 
             </RelativeLayout>
@@ -94,7 +94,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/y3"
+                android:layout_margin="@dimen/y5"
                 android:gravity="center"
                 android:text="点击再次拍照"
                 android:textColor="#7F868E"
@@ -130,7 +130,7 @@
                     android:gravity="center"
                     android:text="返回"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/x12" />
+                    android:textSize="@dimen/x8" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -147,7 +147,7 @@
                     android:gravity="center"
                     android:text="分享"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/x12" />
+                    android:textSize="@dimen/x8" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -171,7 +171,7 @@
                     android:gravity="center"
                     android:text="继续"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/x12" />
+                    android:textSize="@dimen/x8" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -181,7 +181,7 @@
                     android:gravity="center"
                     android:text="扫描二维码获取照片"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/x10" />
+                    android:textSize="@dimen/x8" />
             </RelativeLayout>
 
             <ImageView

@@ -390,6 +390,7 @@ public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSo
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
+        addSpeakAnswer("你好，这里是人脸识别页面");
     }
 
     @Override

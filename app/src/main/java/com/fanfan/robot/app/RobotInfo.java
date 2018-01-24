@@ -42,6 +42,7 @@ public class RobotInfo {
         setIatLocalHear(PreferencesUtils.getString(context, Constants.IAT_LOCAL_LANGUAGE_HEAR, "xiaoyan"));
         setIatLineLanguage(PreferencesUtils.getString(context, Constants.IAT_LINE_LANGUAGE, "mandarin"));
         setQueryLanage(PreferencesUtils.getBoolean(context, Constants.QUERYLANAGE, false));
+        setLineSpeed(PreferencesUtils.getInt(NovelApp.getInstance().getApplicationContext(), Constants.LINE_SPEED, 60));
         isInitialization = PreferencesUtils.getBoolean(context, Constants.IS_INITIALIZATION, false);
         return getInstance();
     }
@@ -249,5 +250,16 @@ public class RobotInfo {
     public void setInitialization(boolean initialization) {
         isInitialization = initialization;
         PreferencesUtils.putBoolean(NovelApp.getInstance().getApplicationContext(), Constants.IS_INITIALIZATION, isInitialization);
+    }
+
+    private int lineSpeed;
+
+    public int getLineSpeed() {
+        return lineSpeed;
+    }
+
+    public void setLineSpeed(int speed) {
+        lineSpeed = speed;
+        PreferencesUtils.putInt(NovelApp.getInstance().getApplicationContext(), Constants.LINE_SPEED, speed);
     }
 }

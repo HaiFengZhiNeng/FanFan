@@ -183,9 +183,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_artificial:
-                ArrayList<String> nums = new ArrayList<>();
-                nums.add("hotel002");
-                SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
+                artificial();
                 break;
             case R.id.iv_voice_image:
                 break;
@@ -292,7 +290,9 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
 
     @Override
     public void artificial() {
-        addSpeakAnswer(R.string.open_artificial);
+        ArrayList<String> nums = new ArrayList<>();
+        nums.add("hotel003");
+        SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
     }
 
     @Override
@@ -332,6 +332,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
+        addSpeakAnswer("你好，这里是问题咨询页面，点击上方列表或说出列表中问题可得到答案");
     }
 
     @Override

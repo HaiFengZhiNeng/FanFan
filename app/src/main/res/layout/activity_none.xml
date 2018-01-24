@@ -21,8 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="@dimen/y130"
         android:text="点我或者喊我都能叫醒小咸哦！"
         android:textColor="@color/white"
-        android:textSize="30px" />
+        android:textSize="@dimen/x12" />
 </RelativeLayout>

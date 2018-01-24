@@ -13,5 +13,5 @@
         android:layout_marginLeft="@dimen/y14"
         android:layout_marginTop="@dimen/y5"
         android:text="group"
-        android:textSize="@dimen/x9" />
+        android:textSize="@dimen/x7" />
 </LinearLayout>

@@ -8,14 +8,21 @@ import android.content.IntentFilter;
 import android.widget.ImageView;
 
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
 import com.fanfan.novel.service.SerialService;
+import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.utils.music.DanceUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.FaceRegisterActivity;
 import com.fanfan.robot.db.DanceDBManager;
 import com.fanfan.robot.model.Dance;
+import com.seabreeze.log.Print;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -26,7 +33,7 @@ import butterknife.OnClick;
 
 public class DanceActivity extends BarBaseActivity implements ISerialPresenter.ISerialView {
 
-    public static final String STOP_DANCE = "A5038005AA";
+    public static final String STOP_DANCE = "A50C80E2AA";
 
     @BindView(R.id.iv_splash_back)
     ImageView ivSplashBack;
@@ -67,6 +74,22 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(ServiceToActivityEvent event) {
+        if (event.isOk()) {
+            SerialBean serialBean = event.getBean();
+            mSerialPresenter.onDataReceiverd(serialBean);
+        } else {
+            Print.e("ReceiveEvent error");
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -81,11 +104,15 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
         unregisterReceiver(noneReceiver);
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
     @OnClick(R.id.iv_splash_back)
     public void onViewClicked() {
-        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, STOP_DANCE);
-        DanceUtils.getInstance().stopPlay();
-        finish();
+        stopAll();
     }
 
     @Override
@@ -115,7 +142,9 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
 
     @Override
     public void stopAll() {
-
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, STOP_DANCE);
+        DanceUtils.getInstance().stopPlay();
+        finish();
     }
 
     @Override
@@ -128,9 +157,7 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ACTION_NONE_CLOSE)) {
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, STOP_DANCE);
-                DanceUtils.getInstance().stopPlay();
-                finish();
+                stopAll();
             }
         }
     }

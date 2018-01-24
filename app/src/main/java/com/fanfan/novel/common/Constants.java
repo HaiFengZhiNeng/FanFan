@@ -52,6 +52,9 @@ public class Constants {
     public static final String IAT_LOCAL_LANGUAGE_HEAR = "iat_local_language_hear";
 
     public static final String IS_INITIALIZATION = "is_initialization";
+
+    public static final String LINE_SPEED = "line_speed";
+
     //udp
     public static String IP;
     public static int PORT;

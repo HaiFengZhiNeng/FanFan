@@ -8,7 +8,9 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -27,7 +29,7 @@ import butterknife.Unbinder;
  * Created by android on 2018/1/19.
  */
 
-public class XfFragment extends DialogFragment {
+public class XfFragment extends DialogFragment implements SeekBar.OnSeekBarChangeListener{
 
     Unbinder unbinder;
     @BindView(R.id.tv_line_talker)
@@ -42,6 +44,10 @@ public class XfFragment extends DialogFragment {
     TextView tvLineHear;
     @BindView(R.id.line_hear_layout)
     RelativeLayout lineHearLayout;
+    @BindView(R.id.line_speed_bar)
+    SeekBar lineSpeedBar;
+    @BindView(R.id.tv_line_speed)
+    TextView tvLineSpeed;
 
     public static XfFragment newInstance() {
         XfFragment xfFragment = new XfFragment();
@@ -84,6 +90,10 @@ public class XfFragment extends DialogFragment {
         int localTalkerIndex = valueForArray(R.array.local_talker, RobotInfo.getInstance().getTtsLocalTalker());
         if (localTalkerIndex > -1)
             tvLocalTalker.setText(resArray(R.array.local_talker_show)[localTalkerIndex]);
+
+        tvLineSpeed.setText(String.valueOf(RobotInfo.getInstance().getLineSpeed()));
+        lineSpeedBar.setProgress(RobotInfo.getInstance().getLineSpeed());
+        lineSpeedBar.setOnSeekBarChangeListener(this);
     }
 
 
@@ -161,4 +171,21 @@ public class XfFragment extends DialogFragment {
         return Arrays.asList(arrays).indexOf(compare);
     }
 
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (seekBar == lineSpeedBar) {
+            RobotInfo.getInstance().setLineSpeed(progress);
+            tvLineSpeed.setText(String.valueOf(RobotInfo.getInstance().getLineSpeed()));
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
+    }
 }

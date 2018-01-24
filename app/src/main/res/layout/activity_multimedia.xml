@@ -39,7 +39,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/y25"
             android:background="@color/white"
             android:fitsSystemWindows="true"
             android:minHeight="?attr/actionBarSize">
@@ -51,7 +51,7 @@
                 android:orientation="horizontal">
 
                 <RelativeLayout
-                    android:layout_width="80dp"
+                    android:layout_width="@dimen/x80"
                     android:layout_height="match_parent">
 
                     <TextView
@@ -62,7 +62,7 @@
                         android:gravity="center"
                         android:text="歌曲"
                         android:textColor="@drawable/music_tab_bar_text_color_selector"
-                        android:textSize="13sp" />
+                        android:textSize="@dimen/x7" />
 
                     <View
                         android:id="@+id/v_music_select"
@@ -77,7 +77,7 @@
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:layout_width="80dp"
+                    android:layout_width="@dimen/x80"
                     android:layout_height="match_parent">
 
                     <TextView
@@ -88,7 +88,7 @@
                         android:gravity="center"
                         android:text="舞蹈"
                         android:textColor="@drawable/music_tab_bar_text_color_selector"
-                        android:textSize="13sp" />
+                        android:textSize="@dimen/x7" />
 
                     <View
                         android:id="@+id/v_dance_select"

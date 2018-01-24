@@ -389,6 +389,7 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
+        addSpeakAnswer("你好，这里是视频介绍页面，点击上下方列表或说出视屏名称可播放视频");
     }
 
     @Override

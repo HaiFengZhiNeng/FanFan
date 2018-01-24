@@ -77,7 +77,7 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
         mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
 
         mTts.setParameter(SpeechConstant.VOICE_NAME, RobotInfo.getInstance().getTtsLineTalker());
-        mTts.setParameter(SpeechConstant.SPEED, "60");
+        mTts.setParameter(SpeechConstant.SPEED, String.valueOf(RobotInfo.getInstance().getLineSpeed()));
         mTts.setParameter(SpeechConstant.PITCH, "50");
         mTts.setParameter(SpeechConstant.VOLUME, "100");
         mTts.setParameter(SpeechConstant.STREAM_TYPE, "3");

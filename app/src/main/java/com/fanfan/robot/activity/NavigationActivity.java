@@ -300,6 +300,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
+        addSpeakAnswer("你好，这里是导航页面，点击红圈可到达指定区域");
     }
 
     @Override

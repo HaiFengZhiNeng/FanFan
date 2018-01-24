@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.fanfan.novel.presenter.CameraPresenter;
 import com.seabreeze.log.Print;
 
 import org.opencv.core.Rect;
@@ -76,12 +77,20 @@ public class DetectOpenFaceView extends View {
             float y;
             float width;
             float height;
-            x = getWidth() - face.x * wRatio;
+            if (CameraPresenter.unusual) {
+                x = getWidth() - face.x * wRatio;
+            } else {
+                x = face.x * wRatio;
+            }
             y = face.y * hRatio;
             width = face.width * wRatio;
             height = face.height * hRatio;
 
-            mRectF.set(x - width, y, x, y + height);
+            if (CameraPresenter.unusual) {
+                mRectF.set(x - width, y, x, y + height);
+            }else{
+                mRectF.set(x + width, y, x, y + height);
+            }
             matrix.mapRect(mRectF);//Matrix 的值映射到RecF
             Print.e("mRectF : (" + mRectF.left + ", " + mRectF.top + "), (" + mRectF.right + ", " + mRectF.bottom + ")" + ", mDisplayOrientation : " + mDisplayOrientation);
 

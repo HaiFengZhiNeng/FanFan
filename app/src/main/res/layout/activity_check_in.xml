@@ -68,7 +68,7 @@
             android:gravity="center"
             android:text="正对摄像头，保持微笑"
             android:textColor="@color/white"
-            android:textSize="@dimen/x15" />
+            android:textSize="@dimen/x12" />
 
         <TextView
             android:id="@+id/tv_sign_all"
@@ -79,7 +79,7 @@
             android:gravity="center"
             android:text="查看全部签到"
             android:textColor="@color/white"
-            android:textSize="@dimen/x15" />
+            android:textSize="@dimen/x12" />
 
     </RelativeLayout>
 

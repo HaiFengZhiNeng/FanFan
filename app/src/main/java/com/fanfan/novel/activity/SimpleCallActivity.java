@@ -95,7 +95,7 @@ public class SimpleCallActivity extends BaseActivity implements
     private int mCallId;
     private int mCallType;
 
-    private int mCurCameraId = ILiveConstants.FRONT_CAMERA;
+    private int mCurCameraId = ILiveConstants.BACK_CAMERA;
 
     private ILVCallOption ilvCallOption;
 
