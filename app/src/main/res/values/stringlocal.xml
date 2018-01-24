@@ -109,15 +109,15 @@
         <item>海风智能科技创客实验室是一个可以让创造力得到无限发挥的地方。开设以教学为核心、实践为基础、项目为主线的创客教育课程，旨在提高学生动手能力培养，树立创新思维意识，利用智能硬件激发学生兴趣的同时引导建立良好的自学习惯。</item>
     </string-array>
 
-    <string-array name="local_video_question">
-        <item>公司简介</item>
-        <item>你会唱歌吗</item>
-    </string-array>
+    <!--<string-array name="local_video_question">-->
+        <!--<item>公司简介</item>-->
+        <!--<item>你会唱歌吗</item>-->
+    <!--</string-array>-->
 
-    <string-array name="local_video_answer">
-        <item>公司简介的url</item>
-        <item>唱歌的url</item>
-    </string-array>
+    <!--<string-array name="local_video_answer">-->
+        <!--<item>公司简介的url</item>-->
+        <!--<item>唱歌的url</item>-->
+    <!--</string-array>-->
 
     <string-array name="local_navigation">
         <item>服务大厅</item>

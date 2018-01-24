@@ -71,6 +71,8 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
 
     private String fileName = "image_navigation.png";
 
+    private NavigationBean mNavigationBean;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_navigation;
@@ -192,6 +194,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     }
 
     private void refNavigation(NavigationBean itemData, int position) {
+        addSpeakAnswer(itemData.getGuide());
         if (itemData.getNavigationData() != null) {
             mSerialPresenter.receiveMotion(SerialService.CRUISE_BAUDRATE, itemData.getNavigationData());
         }
@@ -286,11 +289,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
             int index = navigationBeans.indexOf(itemData);
             refNavigation(itemData, index);
         } else {
-            if (new Random().nextBoolean()) {
-                addSpeakAnswer(resFoFinal(R.array.no_result));
-            } else {
-                addSpeakAnswer(resFoFinal(R.array.no_voice));
-            }
+            addSpeakAnswer("点击地图上地点，我也可以带你去");
         }
     }
 
@@ -300,12 +299,14 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
-        addSpeakAnswer("你好，这里是导航页面，点击红圈可到达指定区域");
+        addSpeakAnswer("你好，这里是导航页面，点击地图上地点可到达指定区域");
     }
 
     @Override
     public void onMoveStop() {
-
+        if (mNavigationBean != null) {
+            addSpeakAnswer(mNavigationBean.getDatail());
+        }
     }
 
     @Override

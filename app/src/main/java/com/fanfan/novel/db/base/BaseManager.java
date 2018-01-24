@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import com.fanfan.novel.db.DaoMaster;
 import com.fanfan.novel.db.DaoSession;
 import com.fanfan.novel.db.interfaces.IDatabase;
+import com.fanfan.novel.db.upgrade.MyOpenHelper;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.query.Query;
@@ -26,6 +27,7 @@ public abstract class BaseManager<M, K> implements IDatabase<M, K> {
 
     public static final String DEFAULT_DATABASE_NAME = "hotel.db";
     private static DaoMaster.DevOpenHelper mHelper;
+    private static DaoMaster mDaoMaster;
     protected static DaoSession daoSession;
 
     /**
@@ -35,6 +37,11 @@ public abstract class BaseManager<M, K> implements IDatabase<M, K> {
      */
     public static void initOpenHelper(@NonNull Context context) {
         mHelper = getOpenHelper(context, DEFAULT_DATABASE_NAME);
+        MyOpenHelper helper = new MyOpenHelper(context, DEFAULT_DATABASE_NAME,null);
+
+//        mDaoMaster = new DaoMaster(getReadableDatabase());
+        mDaoMaster = new DaoMaster(helper.getWritableDatabase());
+
         openWritableDb();
     }
 
@@ -53,14 +60,14 @@ public abstract class BaseManager<M, K> implements IDatabase<M, K> {
      * Query for readable DB
      */
     protected static void openReadableDb() throws SQLiteException {
-        daoSession = new DaoMaster(getReadableDatabase()).newSession();
+        daoSession = mDaoMaster.newSession();
     }
 
     /**
      * Query for writable DB
      */
     protected static void openWritableDb() throws SQLiteException {
-        daoSession = new DaoMaster(getWritableDatabase()).newSession();
+        daoSession = mDaoMaster.newSession();
     }
 
     private static SQLiteDatabase getWritableDatabase() {

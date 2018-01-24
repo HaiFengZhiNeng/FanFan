@@ -20,6 +20,8 @@ public class NavigationBean extends BaseItemData {
     private long saveTime;
     @Property(nameInDb = "title")
     private String title;
+    @Property(nameInDb = "guide")
+    private String guide;
     @Property(nameInDb = "datail")
     private String datail;
     @Property(nameInDb = "posX")
@@ -32,13 +34,14 @@ public class NavigationBean extends BaseItemData {
     private String navigation;
     @Property(nameInDb = "navigationData")
     private String navigationData;
-    @Generated(hash = 2033403746)
-    public NavigationBean(Long id, long saveTime, String title, String datail,
-            int posX, int posY, String imgUrl, String navigation,
+    @Generated(hash = 1829186153)
+    public NavigationBean(Long id, long saveTime, String title, String guide,
+            String datail, int posX, int posY, String imgUrl, String navigation,
             String navigationData) {
         this.id = id;
         this.saveTime = saveTime;
         this.title = title;
+        this.guide = guide;
         this.datail = datail;
         this.posX = posX;
         this.posY = posY;
@@ -102,6 +105,14 @@ public class NavigationBean extends BaseItemData {
     }
     public void setNavigationData(String navigationData) {
         this.navigationData = navigationData;
+    }
+
+    public String getGuide() {
+        return guide;
+    }
+
+    public void setGuide(String guide) {
+        this.guide = guide;
     }
 
     @Override

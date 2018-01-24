@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -13,7 +14,9 @@ import com.fanfan.novel.activity.DataVideoActivity;
 import com.fanfan.novel.activity.DataVoiceActivity;
 import com.fanfan.novel.activity.FaceDataActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.robot.R;
+import com.fanfan.robot.fragment.ImportFragment;
 import com.fanfan.robot.fragment.XfFragment;
 
 import butterknife.BindView;
@@ -35,6 +38,8 @@ public class SettingActivity extends BarBaseActivity {
     RelativeLayout addVoice;
     @BindView(R.id.add_navigation)
     RelativeLayout addNavigation;
+    @BindView(R.id.import_layout)
+    RelativeLayout importLayout;
     @BindView(R.id.rl_face)
     RelativeLayout rlFace;
     @BindView(R.id.rl_dance)
@@ -62,7 +67,8 @@ public class SettingActivity extends BarBaseActivity {
     }
 
 
-    @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout})
+    @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.import_layout,
+            R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.add_video:
@@ -73,6 +79,10 @@ public class SettingActivity extends BarBaseActivity {
                 break;
             case R.id.add_navigation:
                 DataNavigationActivity.newInstance(this);
+                break;
+            case R.id.import_layout:
+                ImportFragment importFragment = ImportFragment.newInstance();
+                importFragment.show(getSupportFragmentManager(), "IMPORT");
                 break;
             case R.id.rl_face:
                 FaceDataActivity.newInstance(this);

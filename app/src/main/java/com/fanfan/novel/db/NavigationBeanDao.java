@@ -27,12 +27,13 @@ public class NavigationBeanDao extends AbstractDao<NavigationBean, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property SaveTime = new Property(1, long.class, "saveTime", false, "saveTime");
         public final static Property Title = new Property(2, String.class, "title", false, "title");
-        public final static Property Datail = new Property(3, String.class, "datail", false, "datail");
-        public final static Property PosX = new Property(4, int.class, "posX", false, "posX");
-        public final static Property PosY = new Property(5, int.class, "posY", false, "posY");
-        public final static Property ImgUrl = new Property(6, String.class, "imgUrl", false, "imgUrl");
-        public final static Property Navigation = new Property(7, String.class, "navigation", false, "navigation");
-        public final static Property NavigationData = new Property(8, String.class, "navigationData", false, "navigationData");
+        public final static Property Guide = new Property(3, String.class, "guide", false, "guide");
+        public final static Property Datail = new Property(4, String.class, "datail", false, "datail");
+        public final static Property PosX = new Property(5, int.class, "posX", false, "posX");
+        public final static Property PosY = new Property(6, int.class, "posY", false, "posY");
+        public final static Property ImgUrl = new Property(7, String.class, "imgUrl", false, "imgUrl");
+        public final static Property Navigation = new Property(8, String.class, "navigation", false, "navigation");
+        public final static Property NavigationData = new Property(9, String.class, "navigationData", false, "navigationData");
     }
 
 
@@ -51,12 +52,13 @@ public class NavigationBeanDao extends AbstractDao<NavigationBean, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"saveTime\" INTEGER NOT NULL ," + // 1: saveTime
                 "\"title\" TEXT," + // 2: title
-                "\"datail\" TEXT," + // 3: datail
-                "\"posX\" INTEGER NOT NULL ," + // 4: posX
-                "\"posY\" INTEGER NOT NULL ," + // 5: posY
-                "\"imgUrl\" TEXT," + // 6: imgUrl
-                "\"navigation\" TEXT," + // 7: navigation
-                "\"navigationData\" TEXT);"); // 8: navigationData
+                "\"guide\" TEXT," + // 3: guide
+                "\"datail\" TEXT," + // 4: datail
+                "\"posX\" INTEGER NOT NULL ," + // 5: posX
+                "\"posY\" INTEGER NOT NULL ," + // 6: posY
+                "\"imgUrl\" TEXT," + // 7: imgUrl
+                "\"navigation\" TEXT," + // 8: navigation
+                "\"navigationData\" TEXT);"); // 9: navigationData
     }
 
     /** Drops the underlying database table. */
@@ -80,26 +82,31 @@ public class NavigationBeanDao extends AbstractDao<NavigationBean, Long> {
             stmt.bindString(3, title);
         }
  
+        String guide = entity.getGuide();
+        if (guide != null) {
+            stmt.bindString(4, guide);
+        }
+ 
         String datail = entity.getDatail();
         if (datail != null) {
-            stmt.bindString(4, datail);
+            stmt.bindString(5, datail);
         }
-        stmt.bindLong(5, entity.getPosX());
-        stmt.bindLong(6, entity.getPosY());
+        stmt.bindLong(6, entity.getPosX());
+        stmt.bindLong(7, entity.getPosY());
  
         String imgUrl = entity.getImgUrl();
         if (imgUrl != null) {
-            stmt.bindString(7, imgUrl);
+            stmt.bindString(8, imgUrl);
         }
  
         String navigation = entity.getNavigation();
         if (navigation != null) {
-            stmt.bindString(8, navigation);
+            stmt.bindString(9, navigation);
         }
  
         String navigationData = entity.getNavigationData();
         if (navigationData != null) {
-            stmt.bindString(9, navigationData);
+            stmt.bindString(10, navigationData);
         }
     }
 
@@ -118,26 +125,31 @@ public class NavigationBeanDao extends AbstractDao<NavigationBean, Long> {
             stmt.bindString(3, title);
         }
  
+        String guide = entity.getGuide();
+        if (guide != null) {
+            stmt.bindString(4, guide);
+        }
+ 
         String datail = entity.getDatail();
         if (datail != null) {
-            stmt.bindString(4, datail);
+            stmt.bindString(5, datail);
         }
-        stmt.bindLong(5, entity.getPosX());
-        stmt.bindLong(6, entity.getPosY());
+        stmt.bindLong(6, entity.getPosX());
+        stmt.bindLong(7, entity.getPosY());
  
         String imgUrl = entity.getImgUrl();
         if (imgUrl != null) {
-            stmt.bindString(7, imgUrl);
+            stmt.bindString(8, imgUrl);
         }
  
         String navigation = entity.getNavigation();
         if (navigation != null) {
-            stmt.bindString(8, navigation);
+            stmt.bindString(9, navigation);
         }
  
         String navigationData = entity.getNavigationData();
         if (navigationData != null) {
-            stmt.bindString(9, navigationData);
+            stmt.bindString(10, navigationData);
         }
     }
 
@@ -152,12 +164,13 @@ public class NavigationBeanDao extends AbstractDao<NavigationBean, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.getLong(offset + 1), // saveTime
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // title
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // datail
-            cursor.getInt(offset + 4), // posX
-            cursor.getInt(offset + 5), // posY
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // imgUrl
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // navigation
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // navigationData
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // guide
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // datail
+            cursor.getInt(offset + 5), // posX
+            cursor.getInt(offset + 6), // posY
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // imgUrl
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // navigation
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9) // navigationData
         );
         return entity;
     }
@@ -167,12 +180,13 @@ public class NavigationBeanDao extends AbstractDao<NavigationBean, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setSaveTime(cursor.getLong(offset + 1));
         entity.setTitle(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setDatail(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setPosX(cursor.getInt(offset + 4));
-        entity.setPosY(cursor.getInt(offset + 5));
-        entity.setImgUrl(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setNavigation(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setNavigationData(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setGuide(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setDatail(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setPosX(cursor.getInt(offset + 5));
+        entity.setPosY(cursor.getInt(offset + 6));
+        entity.setImgUrl(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setNavigation(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setNavigationData(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
      }
     
     @Override

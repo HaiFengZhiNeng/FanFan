@@ -35,7 +35,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
+                android:layout_marginLeft="20dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -46,7 +46,7 @@
                     android:singleLine="true"
                     android:text="无音乐"
                     android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/x9" />
 
                 <TextView
                     android:id="@+id/tv_artist"
@@ -55,7 +55,7 @@
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:textColor="@color/grey"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/x7" />
             </LinearLayout>
         </LinearLayout>
 

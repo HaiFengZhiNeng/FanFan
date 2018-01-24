@@ -23,16 +23,21 @@
 package com.fanfan.novel.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.media.ThumbnailUtils;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
+import android.provider.MediaStore;
 import android.support.v4.os.EnvironmentCompat;
 import android.text.TextUtils;
 
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.model.StorageBean;
 import com.fanfan.robot.model.Music;
+import com.fanfan.youtu.api.base.Constant;
 import com.seabreeze.log.Print;
 
 import java.io.BufferedReader;
@@ -510,4 +515,60 @@ public class FileUtil {
         return dir;
     }
 
+
+    /**
+     * 获取视频文件截图
+     *
+     * @param path 视频文件的路径
+     * @return Bitmap 返回获取的Bitmap
+     */
+    public static Bitmap getVideoThumb(String path) {
+        MediaMetadataRetriever media = new MediaMetadataRetriever();
+        media.setDataSource(path);
+        return media.getFrameAtTime();
+    }
+
+    /**
+     * 获取视频文件缩略图 API>=8(2.2)
+     *
+     * @param path 视频文件的路径
+     * @param kind 缩略图的分辨率：MINI_KIND、MICRO_KIND、FULL_SCREEN_KIND
+     * @return Bitmap 返回获取的Bitmap
+     */
+    public static Bitmap getVideoThumb2(String path, int kind) {
+        return ThumbnailUtils.createVideoThumbnail(path, kind);
+    }
+
+    public static Bitmap getVideoThumb2(String path) {
+        return getVideoThumb2(path, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND);
+    }
+
+
+    /**
+     * 获取指定文件大小(单位：字节)
+     *
+     * @param file
+     * @return
+     * @throws Exception
+     */
+    public static long getFileSize(File file) {
+        if (file == null) {
+            return 0;
+        }
+        long size = 0;
+        if (file.exists()) {
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(file);
+                size = fis.available();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return 0;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return 0;
+            }
+        }
+        return size;
+    }
 }

@@ -42,7 +42,7 @@ android {
 
     greendao {
         //版本号，升级时可配置
-        schemaVersion 1
+        schemaVersion 2
         daoPackage 'com.fanfan.novel.db'  //设置DaoMaster、DaoSession、Dao包名
         targetGenDir 'src/main/java' //设置DaoMaster、DaoSession、Dao目录
     }

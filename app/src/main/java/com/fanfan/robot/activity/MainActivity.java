@@ -124,7 +124,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     protected void initView() {
         super.initView();
 
-
         mChatPresenter = new ChatPresenter(this, TIMConversationType.C2C, RobotInfo.getInstance().getControlId());
         mChatPresenter.start();
 

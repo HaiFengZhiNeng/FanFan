@@ -5,15 +5,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.RobotInfo;
@@ -29,9 +32,11 @@ import butterknife.Unbinder;
  * Created by android on 2018/1/19.
  */
 
-public class XfFragment extends DialogFragment implements SeekBar.OnSeekBarChangeListener{
+public class XfFragment extends DialogFragment implements SeekBar.OnSeekBarChangeListener {
 
     Unbinder unbinder;
+    @BindView(R.id.iv_back)
+    ImageView ivBack;
     @BindView(R.id.tv_line_talker)
     TextView tvLineTalker;
     @BindView(R.id.line_talker_layout)
@@ -103,9 +108,12 @@ public class XfFragment extends DialogFragment implements SeekBar.OnSeekBarChang
         unbinder.unbind();
     }
 
-    @OnClick({R.id.line_talker_layout, R.id.local_talker_layout, R.id.line_hear_layout})
+    @OnClick({R.id.iv_back, R.id.line_talker_layout, R.id.local_talker_layout, R.id.line_hear_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.iv_back:
+                dismiss();
+                break;
             case R.id.line_hear_layout:
                 DialogUtils.showLongListDialog(getContext(), "选择在线监听语言", R.array.line_iat_language_show, new MaterialDialog.ListCallback() {
                     @Override

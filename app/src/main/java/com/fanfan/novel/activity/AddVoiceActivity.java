@@ -55,7 +55,7 @@ import butterknife.OnClick;
  * Created by android on 2018/1/8.
  */
 
-public class AddVoiceActivity extends BarBaseActivity {
+public class AddVoiceActivity extends BarBaseActivity implements LocalLexicon.RobotLexiconListener {
 
 
     @BindView(R.id.et_question)
@@ -94,11 +94,7 @@ public class AddVoiceActivity extends BarBaseActivity {
 
     private long saveLocalId;
 
-    private SpeechRecognizer mIat;
-
-    private VideoDBManager mVideoDBManager;
     private VoiceDBManager mVoiceDBManager;
-    private NavigationDBManager mNavigationDBManager;
 
     private int curExpression;
     private int curAction;
@@ -118,11 +114,7 @@ public class AddVoiceActivity extends BarBaseActivity {
     protected void initData() {
         saveLocalId = getIntent().getLongExtra(VOICE_ID, -1);
 
-        mIat = SpeakIat.getInstance().mIat();
-
-        mVideoDBManager = new VideoDBManager();
         mVoiceDBManager = new VoiceDBManager();
-        mNavigationDBManager = new NavigationDBManager();
 
         if (saveLocalId != -1) {
 
@@ -288,7 +280,7 @@ public class AddVoiceActivity extends BarBaseActivity {
             mVoiceDBManager.update(voiceBean);
         }
         updateLocalVoicePreference();
-        updateLocalLexiconContents();
+        LocalLexicon.getInstance().init(this).setListener(this).updateContents();
     }
 
     private void setVoiceimg(VoiceBean bean) {
@@ -306,32 +298,6 @@ public class AddVoiceActivity extends BarBaseActivity {
         } else {
             PreferencesUtils.putInt(this, "LocalVoice", version + 1);
         }
-    }
-
-    private void updateLocalLexiconContents() {
-        StringBuilder lexiconContents = new StringBuilder();
-        //本地语音
-        List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
-        for (VoiceBean voiceBean : voiceBeanList) {
-            lexiconContents.append(voiceBean.getShowTitle()).append("\n");
-        }
-        //本地视频
-        List<VideoBean> videoBeanList = mVideoDBManager.loadAll();
-        for (VideoBean videoBean : videoBeanList) {
-            lexiconContents.append(videoBean.getShowTitle()).append("\n");
-        }
-        //本地导航
-        List<NavigationBean> navigationBeanList = mNavigationDBManager.loadAll();
-        for (NavigationBean navigationBean : navigationBeanList) {
-            lexiconContents.append(navigationBean.getTitle()).append("\n");
-        }
-
-        LocalLexicon localLexicon = new LocalLexicon(this);
-        List<String> words = localLexicon.getLocalStrings();
-        for (String anArrStandard : words) {
-            lexiconContents.append(anArrStandard).append("\n");
-        }
-        updateLocation(lexiconContents.toString());
     }
 
 
@@ -352,34 +318,14 @@ public class AddVoiceActivity extends BarBaseActivity {
         return textView.getText().toString().trim();
     }
 
-    public void updateLocation(String lexiconContents) {
-        mIat.setParameter(SpeechConstant.PARAMS, null);
-        // 设置引擎类型
-        mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
-        // 指定资源路径
-        mIat.setParameter(ResourceUtil.ASR_RES_PATH,
-                ResourceUtil.generateResourcePath(this, ResourceUtil.RESOURCE_TYPE.assets, "asr/common.jet"));
-        // 指定语法路径
-        mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
-        // 指定语法名字
-        mIat.setParameter(SpeechConstant.GRAMMAR_LIST, "local");
-        // 设置文本编码格式
-        mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8");
-        // lexiconName 为词典名字，lexiconContents 为词典内容，lexiconListener 为回调监听器
-        int ret = mIat.updateLexicon("voice", lexiconContents, new LexiconListener() {
-            @Override
-            public void onLexiconUpdated(String lexiconId, SpeechError error) {
-                if (error == null) {
-                    Print.e("词典更新成功");
-                    setResult(RESULT_OK);
-                    finish();
-                } else {
-                    Print.e("词典更新失败,错误码：" + error.getErrorCode());
-                }
-            }
-        });
-        if (ret != ErrorCode.SUCCESS) {
-            Print.e("更新词典失败,错误码：" + ret);
-        }
+    @Override
+    public void onLexiconSuccess() {
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    @Override
+    public void onLexiconError(String error) {
+        showToast(error);
     }
 }

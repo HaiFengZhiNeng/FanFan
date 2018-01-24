@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -34,6 +35,7 @@ import com.fanfan.novel.service.music.OnPlayerEventListener;
 import com.fanfan.novel.service.music.PlayModeEnum;
 import com.fanfan.novel.ui.AlbumCoverView;
 import com.fanfan.novel.ui.MediaPlayView;
+import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.novel.utils.ScreenUtil;
@@ -106,6 +108,7 @@ public class PlayFragment extends BaseFragment implements OnPlayerEventListener,
             int top = ScreenUtil.getStatusBarHeight(getActivity());
             llContent.setPadding(0, top, 0, 0);
         }
+        AppUtil.setColor(getActivity(), ContextCompat.getColor(getActivity(), android.R.color.black));
 
         View coverView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_play_page_cover, null);
         albumCoverView = coverView.findViewById(R.id.album_cover_view);
@@ -180,7 +183,7 @@ public class PlayFragment extends BaseFragment implements OnPlayerEventListener,
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_back:
-                ((MultimediaActivity)getActivity()).onBackPressed();
+                ((MultimediaActivity) getActivity()).onBackPressed();
                 ivBack.setEnabled(false);
                 mHandler.postDelayed(new Runnable() {
                     @Override
