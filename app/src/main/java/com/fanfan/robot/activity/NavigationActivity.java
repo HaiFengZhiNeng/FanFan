@@ -135,6 +135,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onResultEvent(ServiceToActivityEvent event) {
         if (event.isOk()) {
+            showToast("导航有消息");
             SerialBean serialBean = event.getBean();
             mSerialPresenter.onDataReceiverd(serialBean);
         } else {
@@ -194,6 +195,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     }
 
     private void refNavigation(NavigationBean itemData, int position) {
+        mNavigationBean = itemData;
         addSpeakAnswer(itemData.getGuide());
         if (itemData.getNavigationData() != null) {
             mSerialPresenter.receiveMotion(SerialService.CRUISE_BAUDRATE, itemData.getNavigationData());
@@ -305,7 +307,9 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     @Override
     public void onMoveStop() {
         if (mNavigationBean != null) {
+            Print.e(mNavigationBean.getDatail());
             addSpeakAnswer(mNavigationBean.getDatail());
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
         }
     }
 

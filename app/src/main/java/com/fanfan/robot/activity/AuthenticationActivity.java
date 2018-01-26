@@ -179,7 +179,7 @@ public class AuthenticationActivity extends BarBaseActivity implements SurfaceHo
 
         mHsOtgPresenter.start();
 
-        mHandler.postDelayed(testRun, 5000);
+//        mHandler.postDelayed(testRun, 5000);
     }
 
     Runnable testRun = new Runnable() {

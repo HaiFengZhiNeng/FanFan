@@ -59,6 +59,7 @@ import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.music.EventCallback;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.ChatTextView;
+import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.RobotInfo;
@@ -76,6 +77,7 @@ import com.tencent.TIMMessage;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.net.DatagramPacket;
 import java.util.List;
@@ -469,10 +471,10 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         RobotType robotType = bean.getType();
         switch (robotType) {
             case AutoAction:
-
                 break;
             case VoiceSwitch:
-
+                boolean isSpeech = bean.getOrder().equals("语音开") ? true : false;
+                mSoundPresenter.setSpeech(isSpeech);
                 break;
             case Text:
 
@@ -484,7 +486,34 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, bean.getOrder());
                 break;
             case GETIP:
-
+                Constants.CONNECT_IP = bean.getOrder();
+                if (Constants.IP != null && Constants.PORT > 0) {
+                    try {
+                        JSONObject object = new JSONObject();
+                        object.put("robotIp", Constants.IP);
+                        object.put("robotPort", Constants.PORT);
+                        RobotBean robotBean = new RobotBean();
+                        robotBean.setOrder(object.toString());
+                        robotBean.setType(RobotType.GETIP);
+                        Print.e("发送: " + object.toString());
+                        mChatPresenter.sendCustomMessage(robotBean);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        JSONObject object = new JSONObject();
+                        object.put("robotIp", "");
+                        object.put("robotPort", Constants.PORT);
+                        RobotBean robotBean = new RobotBean();
+                        robotBean.setOrder(object.toString());
+                        robotBean.setType(RobotType.GETIP);
+                        Print.e("发送: " + object.toString());
+                        mChatPresenter.sendCustomMessage(robotBean);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
             case LocalVoice:
 

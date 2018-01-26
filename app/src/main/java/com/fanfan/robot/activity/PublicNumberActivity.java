@@ -243,6 +243,7 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
         addSpeakAnswer("识别图中二维码");
+//        mSoundPresenter.doAnswer(resFoFinal(R.array.wake_up));
     }
 
     @Override

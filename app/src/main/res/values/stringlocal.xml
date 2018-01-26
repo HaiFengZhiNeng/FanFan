@@ -120,9 +120,9 @@
     <!--</string-array>-->
 
     <string-array name="local_navigation">
-        <item>服务大厅</item>
-        <item>业务办理</item>
-        <item>公共厕所</item>
+        <item>去展示墙</item>
+        <item>去展示区</item>
+        <item>回去吧</item>
         <item>无</item>
     </string-array>
 
