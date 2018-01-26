@@ -51,7 +51,7 @@ import butterknife.Unbinder;
  * Created by android on 2018/1/19.
  */
 
-public class ImportFragment extends DialogFragment implements LocalLexicon.RobotLexiconListener{
+public class ImportFragment extends DialogFragment implements LocalLexicon.RobotLexiconListener {
 
     Unbinder unbinder;
     @BindView(R.id.iv_back)
@@ -215,7 +215,7 @@ public class ImportFragment extends DialogFragment implements LocalLexicon.Robot
                 mVoiceDBManager.deleteAll();
                 mVoiceDBManager.insertList(voiceBeanList);
 
-                LocalLexicon.getInstance().init(getActivity()).setListener(this).updateContents();
+                LocalLexicon.getInstance().initDBManager(getActivity()).setListener(this).updateContents();
                 break;
         }
     }

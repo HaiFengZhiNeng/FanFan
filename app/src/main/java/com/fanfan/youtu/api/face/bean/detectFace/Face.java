@@ -6,21 +6,30 @@ package com.fanfan.youtu.api.face.bean.detectFace;
 
 public class Face {
 
-    private int x;
-    private int y;
-    private int height;
-    private int width;
-    private int pitch;
-    private int roll;
-    private int yaw;
-    private int age;
-    private int gender;
-    private boolean glass;
-    private int expression;
-    private int glasses;
+    @Override
+    public String toString() {
+        return "年龄 ： " + age +
+                ", 性别 ： " + gender +
+                ", 微笑 ： " + expression +
+                ", 眼镜 ： " + glasses +
+                ", 魅力 ： " + beauty;
+    }
+
+    private int x;              //人脸框左上角x
+    private int y;              //人脸框左上角y
+    private int height;         //人脸框高度
+    private int width;          //人脸框宽度
+    private int pitch;          //上下偏移[-30,30]
+    private int roll;           //平面旋转[-180,180]
+    private int yaw;            //左右偏移[-30,30]
+    private int age;            //年龄[0~100]
+    private int gender;         //性别[0/(female)~100(male)]
+    private boolean glass;      //眼镜    原字段
+    private int expression;     //微笑[0(normal)~50(smile)~100(laugh)]
+    private int glasses;        //眼镜[0不戴眼镜 1戴眼镜 2戴墨镜] 注：替代原glass（Bool）字段
     private int mask;
     private int hat;
-    private int beauty;
+    private int beauty;         //魅力[0~100]
     private Face_shape face_shape;
 
     public int getX() {

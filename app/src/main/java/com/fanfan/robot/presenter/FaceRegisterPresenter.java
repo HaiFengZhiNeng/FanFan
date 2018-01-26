@@ -10,7 +10,9 @@ import com.fanfan.robot.presenter.ipersenter.ITakePresenter;
 import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.face.bean.AddFace;
 import com.fanfan.youtu.api.face.bean.Newperson;
+import com.fanfan.youtu.api.face.bean.detectFace.DetectFace;
 import com.fanfan.youtu.api.face.event.AddPersonEvent;
+import com.fanfan.youtu.api.face.event.DetectFaceEvent;
 import com.fanfan.youtu.api.face.event.NewPersonEvent;
 import com.seabreeze.log.Print;
 
@@ -36,6 +38,8 @@ public class FaceRegisterPresenter extends IFaceRegisterPresenter {
 
     private boolean isnewPerson;
     private boolean isAddface;
+
+    private boolean isDetect;
 
     public FaceRegisterPresenter(IFaceRegView baseView, String authId) {
         super(baseView);
@@ -127,5 +131,29 @@ public class FaceRegisterPresenter extends IFaceRegisterPresenter {
         isAddface = false;
     }
 
+    @Override
+    public void detectFace(Bitmap bitmap) {
+        if (isDetect)
+            return;
+        isDetect = true;
+        youtucode.detectFace(bitmap, 1);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(DetectFaceEvent event) {
+        if (event.isOk()) {
+            DetectFace detectFace = event.getBean();
+            Print.e(detectFace);
+            if (detectFace.getErrorcode() == 0) {
+
+            } else {
+                mFaceRegView.onError(detectFace.getErrorcode(), detectFace.getErrormsg());
+                isDetect = false;
+            }
+        } else {
+            mFaceRegView.onError(event);
+            isDetect = false;
+        }
+    }
 
 }

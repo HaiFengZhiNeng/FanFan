@@ -3,6 +3,7 @@ package com.fanfan.robot.presenter.ipersenter;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.common.presenter.BasePresenter;
 import com.fanfan.novel.common.presenter.BaseView;
+import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.model.xf.service.Cookbook;
 import com.fanfan.novel.model.xf.service.News;
 import com.fanfan.novel.model.xf.service.Poetry;
@@ -46,7 +47,7 @@ public abstract class ILineSoundPresenter implements BasePresenter {
 
         void doAiuiAnwer(String anwer);
 
-        void refHomePage(String question);
+        void refHomePage(VoiceBean voiceBean);
 
         void refHomePage(String question, String finalText);
 

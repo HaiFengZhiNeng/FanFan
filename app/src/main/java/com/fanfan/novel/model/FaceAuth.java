@@ -22,48 +22,29 @@ public class FaceAuth {
     private String authId;
     @Property(nameInDb = "faceCount")
     private int faceCount;
-    @Generated(hash = 855729107)
+    @Property(nameInDb = "job")
+    private String job;
+    @Property(nameInDb = "synopsis")
+    private String synopsis;
+
+
+    @Generated(hash = 66025072)
     public FaceAuth(Long id, long saveTime, String personId, String authId,
-            int faceCount) {
+            int faceCount, String job, String synopsis) {
         this.id = id;
         this.saveTime = saveTime;
         this.personId = personId;
         this.authId = authId;
         this.faceCount = faceCount;
+        this.job = job;
+        this.synopsis = synopsis;
     }
+
+
     @Generated(hash = 1722875808)
     public FaceAuth() {
     }
-    public Long getId() {
-        return this.id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public long getSaveTime() {
-        return this.saveTime;
-    }
-    public void setSaveTime(long saveTime) {
-        this.saveTime = saveTime;
-    }
-    public String getPersonId() {
-        return this.personId;
-    }
-    public void setPersonId(String personId) {
-        this.personId = personId;
-    }
-    public String getAuthId() {
-        return this.authId;
-    }
-    public void setAuthId(String authId) {
-        this.authId = authId;
-    }
-    public int getFaceCount() {
-        return this.faceCount;
-    }
-    public void setFaceCount(int faceCount) {
-        this.faceCount = faceCount;
-    }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -78,5 +59,75 @@ public class FaceAuth {
             }
         }
         return false;
+    }
+
+
+    public Long getId() {
+        return this.id;
+    }
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
+    public long getSaveTime() {
+        return this.saveTime;
+    }
+
+
+    public void setSaveTime(long saveTime) {
+        this.saveTime = saveTime;
+    }
+
+
+    public String getPersonId() {
+        return this.personId;
+    }
+
+
+    public void setPersonId(String personId) {
+        this.personId = personId;
+    }
+
+
+    public String getAuthId() {
+        return this.authId;
+    }
+
+
+    public void setAuthId(String authId) {
+        this.authId = authId;
+    }
+
+
+    public int getFaceCount() {
+        return this.faceCount;
+    }
+
+
+    public void setFaceCount(int faceCount) {
+        this.faceCount = faceCount;
+    }
+
+
+    public String getJob() {
+        return this.job;
+    }
+
+
+    public void setJob(String job) {
+        this.job = job;
+    }
+
+
+    public String getSynopsis() {
+        return this.synopsis;
+    }
+
+
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
     }
 }

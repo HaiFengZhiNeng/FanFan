@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -18,6 +19,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.fanfan.novel.common.Constants;
+import com.seabreeze.log.Print;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -361,5 +363,90 @@ public class BitmapUtils {
      */
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param bitmap
+     * @param imageW 480
+     * @param imageH 640
+     * @param x      134
+     * @param y      304
+     * @param width  195
+     * @param height 195
+     * @return
+     */
+    public static Bitmap cropBitmap(Bitmap bitmap, int imageW, int imageH, int x, int y, int width, int height) {
+        int made = 100;
+        //先确定xy
+        if (x - made < 0) {
+            x = 0;
+        } else {
+            x = x - made;
+        }
+        if (y - made < 0) {
+            y = 0;
+        } else {
+            y = y - made;
+        }
+
+        if (x + width + made + made >= imageW) {
+            width = imageW - x;
+        } else {
+            width = width + made + made;
+        }
+        if (y + height + made + made >= imageH) {
+            height = imageH - y;
+        } else {
+            height = height + made + made;
+        }
+
+        Print.e("x : " + x + " y : " + y + " w : " + width + " h : " + height);
+        return Bitmap.createBitmap(bitmap, x, y, width, height, null, false);
+    }
+
+    /**
+     * 按宽/高缩放图片到指定大小并进行裁剪得到中间部分图片 <br>
+     * 方 法 名：zoomBitmap <br>
+     * 创 建 人： <br>
+     * 创建时间：2016-6-7 下午12:02:52 <br>
+     * 修 改 人： <br>
+     * 修改日期： <br>
+     *
+     * @param bitmap 源bitmap
+     * @param w      缩放后指定的宽度
+     * @param h      缩放后指定的高度
+     * @return 缩放后的中间部分图片 Bitmap
+     */
+    public static Bitmap zoomBitmap(Bitmap bitmap, int w, int h) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        Log.i("TAG", "zoomBitmap---" + "width:" + width + "---" + "height:" + height);
+        float scaleWidht, scaleHeight, x, y;
+        Bitmap newbmp;
+        Matrix matrix = new Matrix();
+        if (width > height) {
+            scaleWidht = ((float) h / height);
+            scaleHeight = ((float) h / height);
+            x = (width - w * height / h) / 2;// 获取bitmap源文件中x做表需要偏移的像数大小
+            y = 0;
+        } else if (width < height) {
+            scaleWidht = ((float) w / width);
+            scaleHeight = ((float) w / width);
+            x = 0;
+            y = (height - h * width / w) / 2;// 获取bitmap源文件中y做表需要偏移的像数大小
+        } else {
+            scaleWidht = ((float) w / width);
+            scaleHeight = ((float) w / width);
+            x = 0;
+            y = 0;
+        }
+        matrix.postScale(scaleWidht, scaleHeight);
+        try {
+            newbmp = Bitmap.createBitmap(bitmap, (int) x, (int) y, (int) (width - x), (int) (height - y), matrix, true);// createBitmap()方法中定义的参数x+width要小于或等于bitmap.getWidth()，y+height要小于或等于bitmap.getHeight()
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return newbmp;
     }
 }

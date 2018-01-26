@@ -49,11 +49,16 @@ public class LocalLexicon {
     public LocalLexicon() {
     }
 
-    public LocalLexicon init(Context context) {
+    public LocalLexicon initDBManager(Context context) {
         mContext = context;
         mVideoDBManager = new VideoDBManager();
         mVoiceDBManager = new VoiceDBManager();
         mNavigationDBManager = new NavigationDBManager();
+        return this;
+    }
+
+    public LocalLexicon initContext(Context context) {
+        mContext = context;
         return this;
     }
 
@@ -101,6 +106,7 @@ public class LocalLexicon {
 
     @NonNull
     public List<String> getLocalStrings() {
+
         List<String> words = new ArrayList<>();
         words.add(mContext.getResources().getString(R.string.Video));
 

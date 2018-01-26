@@ -7,18 +7,27 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.db.manager.FaceAuthDBManager;
 import com.fanfan.novel.model.FaceAuth;
 import com.fanfan.novel.presenter.CameraPresenter;
 import com.fanfan.novel.presenter.ipresenter.ICameraPresenter;
+import com.fanfan.novel.ui.CircleImageView;
 import com.fanfan.novel.ui.camera.DetectOpenFaceView;
 import com.fanfan.novel.ui.camera.DetectionFaceView;
 import com.fanfan.novel.utils.TimeUtils;
@@ -29,6 +38,7 @@ import com.fanfan.robot.presenter.FaceCheckinPresenter;
 import com.fanfan.robot.presenter.ipersenter.IFaceCheckinPresenter;
 import com.fanfan.youtu.api.face.bean.FaceIdentify;
 import com.fanfan.youtu.api.face.bean.GetInfo;
+import com.fanfan.youtu.api.face.bean.detectFace.Face;
 import com.seabreeze.log.Print;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -42,14 +52,15 @@ import org.opencv.facedetect.DetectionBasedTracker;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,6 +83,27 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
     TextView tvSignInfo;
     @BindView(R.id.tv_sign_all)
     TextView tvSignAll;
+    @BindView(R.id.ic_head)
+    CircleImageView icHead;
+    @BindView(R.id.tv_confirm)
+    TextView tvConfirm;
+    @BindView(R.id.tv_again)
+    TextView tvAgain;
+    @BindView(R.id.confirm_layout)
+    LinearLayout confirmLayout;
+    @BindView(R.id.tv_name)
+    TextView tvName;
+    @BindView(R.id.tv_job)
+    TextView tvJob;
+    @BindView(R.id.tv_synopsis)
+    TextView tvSynopsis;
+    @BindView(R.id.beauty_layout)
+    LinearLayout beautyLayout;
+    @BindView(R.id.ic_beauty_head)
+    ImageView icBeautyHead;
+    @BindView(R.id.tv_beauty)
+    TextView tvBeauty;
+
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, FaceCheckinActivity.class);
@@ -137,11 +169,36 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
         }
     };
 
+    public enum State {
+        CONFIRM, BEAUTY, CAMERA
+    }
+
     private CameraPresenter mCameraPresenter;
     private FaceCheckinPresenter mCheckinPresenter;
 
     private FaceAuthDBManager mFaceAuthDBManager;
     private CheckInDBManager mCheckInDBManager;
+
+    private State state = State.CAMERA;
+
+    private void changeConfirm() {
+        state = State.CONFIRM;
+        beautyLayout.setVisibility(View.GONE);
+        confirmLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void changeBeauty() {
+        state = State.BEAUTY;
+        beautyLayout.setVisibility(View.VISIBLE);
+        confirmLayout.setVisibility(View.GONE);
+    }
+
+    private void changeCamera() {
+        state = State.CAMERA;
+        beautyLayout.setVisibility(View.GONE);
+        confirmLayout.setVisibility(View.GONE);
+    }
+
 
     @Override
     protected int getLayoutId() {
@@ -163,6 +220,8 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
         mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
 
         mCheckinPresenter = new FaceCheckinPresenter(this);
+
+        confirmLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -189,14 +248,41 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
         mCheckinPresenter.finish();
     }
 
+    @Override
+    protected void setResult() {
+        if (state != State.CAMERA) {
+            changeCamera();
+            mCheckinPresenter.setFaceIdentify();
+            return;
+        }
+        super.setResult();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (state != State.CAMERA) {
+            changeCamera();
+            mCheckinPresenter.setFaceIdentify();
+            return;
+        }
+        super.onBackPressed();
+    }
+
     @SuppressLint("NewApi")
-    @OnClick({R.id.tv_sign_info, R.id.tv_sign_all})
+    @OnClick({R.id.tv_sign_info, R.id.tv_sign_all, R.id.tv_confirm, R.id.tv_again})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_sign_info:
                 break;
             case R.id.tv_sign_all:
                 SignAllActivity.newInstance(this);
+                break;
+            case R.id.tv_confirm:
+                mCheckinPresenter.confirmChinkIn();
+                break;
+            case R.id.tv_again:
+                confirmLayout.setVisibility(View.GONE);
+                mCheckinPresenter.setFaceIdentify();
                 break;
         }
     }
@@ -330,11 +416,25 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
     }
 
     @Override
-    public void identifyFaceFinish(String person) {
+    public void compareFaceAuth(String person) {
         FaceAuth faceAuth = mFaceAuthDBManager.queryByPersonId(person);
         if (faceAuth != null) {
             List<CheckIn> checkIns = mCheckInDBManager.queryByName(faceAuth.getAuthId());
-            mCheckinPresenter.signToday(faceAuth, checkIns);
+            if (checkIns == null || checkIns.size() == 0) {
+                mCheckinPresenter.setFaceAuth(faceAuth);
+                mCheckinPresenter.detectFace();
+                return;
+            }
+            Print.e(checkIns);
+            Collections.sort(checkIns);
+
+            CheckIn checkIn = checkIns.get(0);
+            if (TimeUtils.isToday(checkIn.getTime())) {
+                isToday();
+            } else {
+                mCheckinPresenter.setFaceAuth(faceAuth);
+                mCheckinPresenter.detectFace();
+            }
         } else {
             mCheckinPresenter.getPersonInfo(person);
         }
@@ -352,13 +452,33 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
     }
 
     @Override
-    public void chinkInSuccess(String authId) {
+    public void showConfirm(Bitmap circleBitmap, FaceAuth faceAuth) {
+        changeConfirm();
+        icHead.setImageBitmap(circleBitmap);
+        tvName.setText(faceAuth.getAuthId());
+        if (faceAuth.getJob() != null) {
+            tvJob.setText(faceAuth.getJob());
+            tvJob.setVisibility(View.VISIBLE);
+        } else {
+            tvJob.setVisibility(View.GONE);
+        }
+        if (faceAuth.getSynopsis() != null) {
+            tvSynopsis.setText(faceAuth.getSynopsis());
+            tvSynopsis.setVisibility(View.VISIBLE);
+        } else {
+            tvSynopsis.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void confirmChinkIn(Bitmap bitmap, String authId, Face face) {
+
         CheckIn checkIn = new CheckIn();
         checkIn.setName(authId);
         checkIn.setTime(System.currentTimeMillis());
         boolean insert = mCheckInDBManager.insert(checkIn);
         if (insert) {
-            tvSignInfo.setText(String.format("%s 已签到", authId));
+            tvSignInfo.setText(String.format("%s 签到成功", authId));
             List<CheckIn> checkIns = mCheckInDBManager.queryByName(authId);
             List<CheckIn> screenIns = new ArrayList<>();
             for (CheckIn in : checkIns) {
@@ -372,12 +492,16 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
                     mCheckInDBManager.delete(screenIns.get(i));
                 }
             }
+            changeBeauty();
+            icBeautyHead.setImageBitmap(bitmap);
+            tvBeauty.setText(face.toString());
         }
     }
 
     @Override
     public void isToday() {
         tvSignInfo.setText("今日您已签到");
+        mCheckinPresenter.setFaceIdentify();
     }
 
     @Override
@@ -387,10 +511,9 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
         faceAuth.setPersonId(getInfo.getPerson_id());
         faceAuth.setFaceCount(1);
         faceAuth.setSaveTime(System.currentTimeMillis());
-        boolean insert = mFaceAuthDBManager.insert(faceAuth);
-        if (insert) {
-            chinkInSuccess(getInfo.getPerson_name());
-            mCheckinPresenter.setFaceIdentify();
-        }
+
+        mCheckinPresenter.setFaceAuth(faceAuth);
+        mCheckinPresenter.detectFace();
     }
+
 }

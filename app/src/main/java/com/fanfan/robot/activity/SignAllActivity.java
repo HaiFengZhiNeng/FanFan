@@ -111,9 +111,9 @@ public class SignAllActivity extends BarBaseActivity {
                     }
                 } else if (itemData instanceof CheckIn) {
                     CheckIn in = (CheckIn) itemData;
-                    if (in.getTime() > System.currentTimeMillis()) {
+//                    if (in.getTime() > System.currentTimeMillis()) {
                         showDialog(in, position);
-                    }
+//                    }
                 }
             }
         });
@@ -137,20 +137,18 @@ public class SignAllActivity extends BarBaseActivity {
     }
 
     private void showDialog(final CheckIn itemData, final int position) {
-        if (itemData.getTime() > System.currentTimeMillis()) {
-            DialogUtils.showBasicNoTitleDialog(this, "确定要删除此此条签到信息吗？", "取消", "确定",
-                    new DialogUtils.OnNiftyDialogListener() {
-                        @Override
-                        public void onClickLeft() {
-                        }
+        DialogUtils.showBasicNoTitleDialog(this, "确定要删除此此条签到信息吗？", "取消", "确定",
+                new DialogUtils.OnNiftyDialogListener() {
+                    @Override
+                    public void onClickLeft() {
+                    }
 
-                        @Override
-                        public void onClickRight() {
-                            mCheckInDBManager.delete(itemData);
-                            mTreeRecyclerAdapter.getItemManager().removeItem(position);
-                        }
-                    });
-        }
+                    @Override
+                    public void onClickRight() {
+                        mCheckInDBManager.delete(itemData);
+                        mTreeRecyclerAdapter.getItemManager().removeItem(position);
+                    }
+                });
 
     }
 

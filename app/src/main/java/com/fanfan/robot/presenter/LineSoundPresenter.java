@@ -927,13 +927,13 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                         RobotInfo.getInstance().setLocalBuild();
                         structure();
                     } else {
-                        String lexiconContents = LocalLexicon.getInstance().words2Contents();
+                        String lexiconContents = LocalLexicon.getInstance().initContext(mSoundView.getContext()).words2Contents();
                         updateLocation("voice", lexiconContents);
                     }
                 } else if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_CLOUD)) {
 
                     if (!RobotInfo.getInstance().isCloudUpdatelexicon()) {
-                        List<String> words = LocalLexicon.getInstance().getLocalStrings();
+                        List<String> words = LocalLexicon.getInstance().initContext(mSoundView.getContext()).getLocalStrings();
 
                         Userword userword = new Userword();
                         userword.setName("userword");

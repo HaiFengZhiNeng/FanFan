@@ -229,7 +229,7 @@ public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSo
                 .positiveText(R.string.confirm)
                 .inputRange(2, 6)
                 .alwaysCallInputCallback()
-                .input(getString(R.string.input_hint), mInput, false, new MaterialDialog.InputCallback() {
+                .input(getString(R.string.input_hint), "", false, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         Print.e(input);

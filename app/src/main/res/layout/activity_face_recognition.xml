@@ -227,8 +227,9 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignEnd="@+id/face_extraction_line"
+                        android:layout_alignRight="@+id/face_extraction_line"
                         android:layout_below="@+id/face_extraction_line"
-                        android:layout_alignParentRight="true"
                         android:text="@string/title_face_extraction"
                         android:visibility="visible" />
 

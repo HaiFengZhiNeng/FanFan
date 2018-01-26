@@ -46,4 +46,9 @@ public class DetectFace extends BaseError {
     public void setFace(List<Face> face) {
         this.face = face;
     }
+
+    @Override
+    public String toString() {
+        return face.toString();
+    }
 }

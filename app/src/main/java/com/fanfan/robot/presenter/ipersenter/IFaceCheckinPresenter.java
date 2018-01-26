@@ -9,6 +9,7 @@ import com.fanfan.robot.model.CheckIn;
 import com.fanfan.youtu.api.base.event.BaseEvent;
 import com.fanfan.youtu.api.face.bean.FaceIdentify;
 import com.fanfan.youtu.api.face.bean.GetInfo;
+import com.fanfan.youtu.api.face.bean.detectFace.Face;
 
 import java.util.List;
 
@@ -32,9 +33,13 @@ public abstract class IFaceCheckinPresenter implements BasePresenter {
 
     public abstract void compareFace(FaceIdentify faceIdentify);
 
-    public abstract void signToday(FaceAuth faceAuth, List<CheckIn> checkIns);
-
     public abstract void getPersonInfo(String person);
+
+    public abstract void setFaceAuth(FaceAuth faceAuth);
+
+    public abstract void detectFace();
+
+    public abstract void confirmChinkIn();
 
     public interface ICheckinView extends BaseView {
 
@@ -42,13 +47,15 @@ public abstract class IFaceCheckinPresenter implements BasePresenter {
 
         void onError(int code, String msg);
 
-        void identifyFaceFinish(String person);
+        void compareFaceAuth(String person);
 
         void identifyNoFace();
 
         void confidenceLow(FaceIdentify.IdentifyItem identifyItem);
 
-        void chinkInSuccess(String authId);
+        void showConfirm(Bitmap circleBitmap, FaceAuth faceAuth);
+
+        void confirmChinkIn(Bitmap bitmap, String authId, Face face);
 
         void isToday();
 

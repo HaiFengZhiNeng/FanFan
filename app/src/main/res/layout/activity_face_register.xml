@@ -30,6 +30,7 @@
 
     </RelativeLayout>
 
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/Toolbar.MyStyle"
@@ -76,7 +77,7 @@
                     android:id="@+id/tv_tip"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/y20"
+                    android:layout_marginTop="@dimen/y10"
                     android:gravity="center"
                     android:textColor="@color/white"
                     android:textSize="@dimen/x12" />
@@ -107,6 +108,31 @@
                         android:textColor="@color/white"
                         android:textSize="@dimen/x10" />
                 </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/tv_job"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/y3"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="点击添加职位"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/x10" />
+
+                <TextView
+                    android:id="@+id/tv_synopsis"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/y3"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="点击添加介绍"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/x10" />
+
+
             </LinearLayout>
 
             <RelativeLayout

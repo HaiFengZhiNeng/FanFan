@@ -29,6 +29,8 @@ public class FaceAuthDao extends AbstractDao<FaceAuth, Long> {
         public final static Property PersonId = new Property(2, String.class, "personId", false, "personId");
         public final static Property AuthId = new Property(3, String.class, "authId", false, "authId");
         public final static Property FaceCount = new Property(4, int.class, "faceCount", false, "faceCount");
+        public final static Property Job = new Property(5, String.class, "job", false, "job");
+        public final static Property Synopsis = new Property(6, String.class, "synopsis", false, "synopsis");
     }
 
 
@@ -48,7 +50,9 @@ public class FaceAuthDao extends AbstractDao<FaceAuth, Long> {
                 "\"saveTime\" INTEGER NOT NULL ," + // 1: saveTime
                 "\"personId\" TEXT," + // 2: personId
                 "\"authId\" TEXT," + // 3: authId
-                "\"faceCount\" INTEGER NOT NULL );"); // 4: faceCount
+                "\"faceCount\" INTEGER NOT NULL ," + // 4: faceCount
+                "\"job\" TEXT," + // 5: job
+                "\"synopsis\" TEXT);"); // 6: synopsis
     }
 
     /** Drops the underlying database table. */
@@ -77,6 +81,16 @@ public class FaceAuthDao extends AbstractDao<FaceAuth, Long> {
             stmt.bindString(4, authId);
         }
         stmt.bindLong(5, entity.getFaceCount());
+ 
+        String job = entity.getJob();
+        if (job != null) {
+            stmt.bindString(6, job);
+        }
+ 
+        String synopsis = entity.getSynopsis();
+        if (synopsis != null) {
+            stmt.bindString(7, synopsis);
+        }
     }
 
     @Override
@@ -99,6 +113,16 @@ public class FaceAuthDao extends AbstractDao<FaceAuth, Long> {
             stmt.bindString(4, authId);
         }
         stmt.bindLong(5, entity.getFaceCount());
+ 
+        String job = entity.getJob();
+        if (job != null) {
+            stmt.bindString(6, job);
+        }
+ 
+        String synopsis = entity.getSynopsis();
+        if (synopsis != null) {
+            stmt.bindString(7, synopsis);
+        }
     }
 
     @Override
@@ -113,7 +137,9 @@ public class FaceAuthDao extends AbstractDao<FaceAuth, Long> {
             cursor.getLong(offset + 1), // saveTime
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // personId
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // authId
-            cursor.getInt(offset + 4) // faceCount
+            cursor.getInt(offset + 4), // faceCount
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // job
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6) // synopsis
         );
         return entity;
     }
@@ -125,6 +151,8 @@ public class FaceAuthDao extends AbstractDao<FaceAuth, Long> {
         entity.setPersonId(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setAuthId(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setFaceCount(cursor.getInt(offset + 4));
+        entity.setJob(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setSynopsis(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
      }
     
     @Override

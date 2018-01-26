@@ -75,13 +75,13 @@
         android:id="@+id/chat_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/chatfrom_bg_focused"
-        android:layout_marginTop="@dimen/y50"
         android:layout_marginLeft="@dimen/x120"
         android:layout_marginRight="@dimen/x20"
+        android:layout_marginTop="@dimen/y50"
+        android:background="@drawable/chatfrom_bg_focused"
         android:maxWidth="200dp"
         android:textColor="@color/black"
         android:textSize="@dimen/x8"
-        android:visibility="gone" />
+        android:visibility="invisible" />
 
 </RelativeLayout>

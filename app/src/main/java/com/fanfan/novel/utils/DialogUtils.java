@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.InputType;
 import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fanfan.robot.R;
+import com.seabreeze.log.Print;
 
 /**
  * Created by zhangyuanyuan on 2017/11/14.
@@ -202,4 +204,5 @@ public class DialogUtils {
 
         void positiveText();
     }
+
 }

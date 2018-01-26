@@ -26,6 +26,8 @@ public abstract class IFaceRegisterPresenter implements BasePresenter {
 
     public abstract void setAddface();
 
+    public abstract void detectFace(Bitmap bitmap);
+
     public interface IFaceRegView extends BaseView {
 
         void onError(int code, String msg);

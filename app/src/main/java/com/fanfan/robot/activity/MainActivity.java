@@ -4,8 +4,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.constraint.Guideline;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -21,6 +24,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.RobotType;
@@ -143,11 +150,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         mVideoDBManager = new VideoDBManager();
         mNavigationDBManager = new NavigationDBManager();
 
-        Glide.with(this)
-                .load(R.mipmap.fanfan_hand)
-                .apply(new RequestOptions().skipMemoryCache(true))
-                .transition(new DrawableTransitionOptions().crossFade(1000))
-                .into(ivFanfan);
+        loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
     }
 
     @Override
@@ -270,10 +273,21 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private void addSpeakAnswer(String messageContent) {
         mTtsPresenter.doAnswer(messageContent);
+        speakingAddAction(messageContent.length());
     }
 
     private void setChatContent(String messageContent) {
         chatContent.setSpanText(mHandler, messageContent, true);
+    }
+
+    private void speakingAddAction(int length) {
+        if (length <= 13) {
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
+        } else if (length > 13 && length <= 40) {
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8003AA");
+        } else {
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8021AA");
+        }
     }
 
     //************************anim****************************
@@ -365,24 +379,31 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
     @Override
     public void onSpeakBegin() {
-        Glide.with(this)
-                .load(R.mipmap.fanfan_lift_hand)
-                .apply(new RequestOptions().skipMemoryCache(true).placeholder(R.mipmap.fanfan_hand))
-                .transition(new DrawableTransitionOptions().crossFade(1000))
-                .into(ivFanfan);
         setChatView(true);
+        loadImage(R.mipmap.fanfan_lift_hand, R.mipmap.fanfan_hand);
     }
 
     @Override
     public void onRunable() {
-        Glide.with(this)
-                .load(R.mipmap.fanfan_hand)
-                .apply(new RequestOptions().skipMemoryCache(true).placeholder(R.mipmap.fanfan_lift_hand))
-                .transition(new DrawableTransitionOptions().crossFade(1000))
-                .into(ivFanfan);
         setChatView(false);
+        loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
         mSoundPresenter.startRecognizerListener();
     }
+
+    private void loadImage(int load, int place) {
+        Glide.with(this)
+                .load(load)
+                .apply(new RequestOptions().skipMemoryCache(true).placeholder(place))
+                .transition(new DrawableTransitionOptions().crossFade(1000))
+                .into(new SimpleTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                        ivFanfan.setScaleType(ImageView.ScaleType.FIT_XY);
+                        ivFanfan.setImageDrawable(resource);
+                    }
+                });
+    }
+
 
     private void setChatView(final boolean isShow) {
         AlphaAnimation alphaAnimation;
@@ -394,6 +415,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             alphaAnimation.setDuration(1000);
         }
         alphaAnimation.setFillAfter(true);
+        chatContent.bringToFront();
         chatContent.startAnimation(alphaAnimation);
         alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -403,7 +425,16 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                chatContent.setVisibility(isShow ? View.VISIBLE : View.GONE);
+                if (isShow) {
+                    if (chatContent.getText().equals("")) {
+                        chatContent.setVisibility(View.GONE);
+                    } else {
+                        chatContent.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    setChatContent("");
+                    chatContent.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -486,7 +517,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         if (voiceBeanList != null && voiceBeanList.size() > 0) {
             for (VoiceBean voiceBean : voiceBeanList) {
                 if (voiceBean.getVoiceAnswer().equals(result)) {
-                    refHomePage(result);
+                    refHomePage(voiceBean);
                     return;
                 }
             }
@@ -500,31 +531,14 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     @Override
-    public void refHomePage(String question) {
-        List<VoiceBean> voiceBeans = mVoiceDBManager.queryLikeVoiceByQuestion(question);
-        String text = "";
-        if (voiceBeans != null && voiceBeans.size() > 0) {
-            VoiceBean voiceBean = voiceBeans.get(new Random().nextInt(voiceBeans.size()));
-            if (voiceBeans.size() == 1) {
-                text = voiceBean.getVoiceAnswer();
-            } else {
-                text = "为您回答 " + voiceBean.getShowTitle() + "  \n" + voiceBean.getVoiceAnswer();
-            }
-            if (voiceBean.getActionData() != null)
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, voiceBean.getActionData());
-            if (voiceBean.getExpressionData() != null)
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, voiceBean.getExpressionData());
+    public void refHomePage(VoiceBean voiceBean) {
+        if (voiceBean.getActionData() != null)
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, voiceBean.getActionData());
+        if (voiceBean.getExpressionData() != null)
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, voiceBean.getExpressionData());
 
-        } else {
-
-            if (new Random().nextBoolean()) {
-                text = resFoFinal(R.array.no_result);
-            } else {
-                text = resFoFinal(R.array.no_voice);
-            }
-        }
-        setChatContent(text);
-        addSpeakAnswer(text);
+        setChatContent(voiceBean.getVoiceAnswer());
+        addSpeakAnswer(voiceBean.getVoiceAnswer());
     }
 
 

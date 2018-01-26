@@ -33,7 +33,6 @@ public class BaseCallback<T> implements Callback<T> {
      */
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
-        Print.e(response.body());
         if (response.isSuccessful())
             EventBus.getDefault().post(event.setEvent(response.code(), response.body()));
         else {

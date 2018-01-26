@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.support.annotation.NonNull;
+import android.text.InputType;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -12,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.db.manager.FaceAuthDBManager;
 import com.fanfan.novel.model.FaceAuth;
@@ -19,12 +23,14 @@ import com.fanfan.novel.presenter.CameraPresenter;
 import com.fanfan.novel.presenter.ipresenter.ICameraPresenter;
 import com.fanfan.novel.ui.camera.DetectOpenFaceView;
 import com.fanfan.novel.ui.camera.DetectionFaceView;
+import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.presenter.FaceRegisterPresenter;
 import com.fanfan.robot.presenter.ipersenter.IFaceRegisterPresenter;
 import com.fanfan.youtu.api.base.event.BaseEvent;
 import com.fanfan.youtu.api.face.bean.AddFace;
+import com.seabreeze.log.Print;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -70,6 +76,10 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
     TextView tvFaceNum;
     @BindView(R.id.iv_add_face)
     ImageView ivAddFace;
+    @BindView(R.id.tv_synopsis)
+    TextView tvSynopsis;
+    @BindView(R.id.tv_job)
+    TextView tvJob;
 
 
     public static final String AUTHID = "authId";
@@ -159,6 +169,8 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
         NEWPERSON, ADDFACE
     }
 
+    private String mInput;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_face_register;
@@ -177,6 +189,7 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
         mCameraPresenter = new CameraPresenter(this, holder);
 
         mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+
     }
 
     @Override
@@ -192,14 +205,31 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
                 addFaceLayout.setVisibility(View.GONE);
                 tvTip.setText("已超过注册上线");
             }
+            if (faceAuth.getJob() != null) {
+                tvJob.setText(faceAuth.getJob());
+            }
+            if (faceAuth.getSynopsis() != null) {
+                tvSynopsis.setText(faceAuth.getSynopsis());
+            }
             addFaceLayout.setVisibility(View.VISIBLE);
         } else {
             mAuthId = getIntent().getStringExtra(AUTHID);
             state = NEWPERSON;
             tvFaceNum.setText(String.format("%d 张", faceAuth == null ? 0 : faceAuth.getFaceCount()));
+            if (faceAuth.getJob() != null) {
+                tvJob.setText(faceAuth.getJob());
+            }
+            if (faceAuth.getSynopsis() != null) {
+                tvSynopsis.setText(faceAuth.getSynopsis());
+            }
             addFaceLayout.setVisibility(View.GONE);
         }
         mFaceRegisterPresenter = new FaceRegisterPresenter(this, mAuthId);
+
+        if (state == NEWPERSON) {
+            tvJob.setVisibility(View.GONE);
+            tvSynopsis.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -220,7 +250,7 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
         mFaceRegisterPresenter.finish();
     }
 
-    @OnClick({R.id.iv_add_face})
+    @OnClick({R.id.iv_add_face, R.id.tv_synopsis, R.id.tv_job})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_add_face:
@@ -228,7 +258,58 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
                 addFaceLayout.setVisibility(View.GONE);
                 mFaceRegisterPresenter.setAddface();
                 break;
+            case R.id.tv_synopsis:
+                shiwSynopsis(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        faceAuth.setSynopsis(mInput);
+                        mFaceAuthDBManager.update(faceAuth);
+                        tvSynopsis.setText(faceAuth.getSynopsis());
+                    }
+                });
+                break;
+            case R.id.tv_job:
+                showJob(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        faceAuth.setJob(mInput);
+                        mFaceAuthDBManager.update(faceAuth);
+                        tvJob.setText(faceAuth.getJob());
+                    }
+                });
+                break;
         }
+    }
+
+    private void showJob(MaterialDialog.SingleButtonCallback callback) {
+        showInputDialog("职位", 2, 10, callback);
+    }
+
+    private void shiwSynopsis(MaterialDialog.SingleButtonCallback callback) {
+        showInputDialog("简介", 10, 20, callback);
+    }
+
+    private void showInputDialog(String title, int min, int max, MaterialDialog.SingleButtonCallback callback) {
+        new MaterialDialog.Builder(this)
+                .title(title)
+                .inputType(
+                        InputType.TYPE_CLASS_TEXT
+                                | InputType.TYPE_TEXT_VARIATION_PERSON_NAME
+                                | InputType.TYPE_TEXT_FLAG_CAP_WORDS)
+                .positiveText(R.string.confirm)
+                .inputRange(min, max)
+                .alwaysCallInputCallback()
+                .input("请输入" + title, "", false, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                        Print.e(input);
+                        mInput = String.valueOf(input);
+                    }
+                })
+                .onPositive(callback)
+                .build()
+                .show();
+
     }
 
     @Override
@@ -308,6 +389,7 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
 
         mFaceRegisterPresenter.uploadFace(faceAuth, bitmap);
 
+        mFaceRegisterPresenter.detectFace(bitmap);
 
         if (!CameraPresenter.unusual) {
             opencvDraw(bitmap);
@@ -356,6 +438,8 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
         faceAuth.setFaceCount(1);
         faceAuth.setSaveTime(System.currentTimeMillis());
         boolean insert = mFaceAuthDBManager.insert(faceAuth);
+        tvJob.setVisibility(View.VISIBLE);
+        tvSynopsis.setVisibility(View.VISIBLE);
         if (insert) {
             tvTip.setText("添加个人信息成功");
             tvFaceNum.setText(String.format("%d 张", faceAuth.getFaceCount()));
