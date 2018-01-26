@@ -4,11 +4,13 @@ import com.fanfan.novel.db.CheckInDao;
 import com.fanfan.novel.db.FaceAuthDao;
 import com.fanfan.novel.db.base.BaseManager;
 import com.fanfan.novel.model.FaceAuth;
+import com.fanfan.novel.utils.TimeUtils;
 import com.fanfan.robot.model.CheckIn;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.query.Query;
 
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -32,4 +34,18 @@ public class CheckInDBManager extends BaseManager<CheckIn, Long> {
         }
         return build.list();
     }
+
+    public List<CheckIn> queryByToday() {
+
+        Query<CheckIn> build = null;
+        try {
+            build = getAbstractDao().queryBuilder()
+                    .where(CheckInDao.Properties.Time.between(TimeUtils.getTimesmorning(), TimeUtils.getTimesnight()))
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return build.list();
+    }
+
 }

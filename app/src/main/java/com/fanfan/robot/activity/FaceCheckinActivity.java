@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
@@ -98,11 +100,15 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
     @BindView(R.id.tv_synopsis)
     TextView tvSynopsis;
     @BindView(R.id.beauty_layout)
-    LinearLayout beautyLayout;
+    RelativeLayout beautyLayout;
     @BindView(R.id.ic_beauty_head)
     ImageView icBeautyHead;
     @BindView(R.id.tv_beauty)
     TextView tvBeauty;
+    @BindView(R.id.tv_face)
+    TextView tvFace;
+    @BindView(R.id.tv_checkin)
+    TextView tvCheckIn;
 
 
     public static void newInstance(Activity context) {
@@ -180,25 +186,6 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
     private CheckInDBManager mCheckInDBManager;
 
     private State state = State.CAMERA;
-
-    private void changeConfirm() {
-        state = State.CONFIRM;
-        beautyLayout.setVisibility(View.GONE);
-        confirmLayout.setVisibility(View.VISIBLE);
-    }
-
-    private void changeBeauty() {
-        state = State.BEAUTY;
-        beautyLayout.setVisibility(View.VISIBLE);
-        confirmLayout.setVisibility(View.GONE);
-    }
-
-    private void changeCamera() {
-        state = State.CAMERA;
-        beautyLayout.setVisibility(View.GONE);
-        confirmLayout.setVisibility(View.GONE);
-    }
-
 
     @Override
     protected int getLayoutId() {
@@ -294,6 +281,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -302,6 +290,24 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void changeConfirm() {
+        state = State.CONFIRM;
+        beautyLayout.setVisibility(View.GONE);
+        confirmLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void changeBeauty() {
+        state = State.BEAUTY;
+        beautyLayout.setVisibility(View.VISIBLE);
+        confirmLayout.setVisibility(View.GONE);
+    }
+
+    private void changeCamera() {
+        state = State.CAMERA;
+        beautyLayout.setVisibility(View.GONE);
+        confirmLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -494,7 +500,31 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
             }
             changeBeauty();
             icBeautyHead.setImageBitmap(bitmap);
-            tvBeauty.setText(face.toString());
+            tvBeauty.setText(String.format("%d分", face.getBeauty()));
+            StringBuilder builder = new StringBuilder();
+            builder.append("FAN FAN 识别报告 ： \n");
+            builder.append("您的年龄大约 ").append(face.getAge()).append(" , ");
+            if (face.getGender() > 50) {
+                builder.append("性别 男 , ");
+            } else {
+                builder.append("性别 女 , ");
+            }
+            if (face.getGlasses() == 0) {
+                builder.append("不戴眼镜\n");
+            } else if (face.getGlasses() == 1) {
+                builder.append("佩戴眼镜\n");
+            } else if (face.getGlasses() == 2) {
+                builder.append("佩戴墨镜\n");
+            }
+            builder.append("微笑指数：").append(face.getExpression()).append(" , 请保持微笑");
+            tvFace.setText(builder.toString());
+
+            List<CheckIn> todayList = mCheckInDBManager.queryByToday();
+            if (todayList == null || todayList.size() == 0) {
+                tvCheckIn.setText(String.format("今日第 %d 位签到", 1));
+            } else {
+                tvCheckIn.setText(String.format("今日第 %d%d 位签到", todayList.size(), 1));
+            }
         }
     }
 
