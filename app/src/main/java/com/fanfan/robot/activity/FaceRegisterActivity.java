@@ -216,12 +216,6 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
             mAuthId = getIntent().getStringExtra(AUTHID);
             state = NEWPERSON;
             tvFaceNum.setText(String.format("%d 张", faceAuth == null ? 0 : faceAuth.getFaceCount()));
-            if (faceAuth.getJob() != null) {
-                tvJob.setText(faceAuth.getJob());
-            }
-            if (faceAuth.getSynopsis() != null) {
-                tvSynopsis.setText(faceAuth.getSynopsis());
-            }
             addFaceLayout.setVisibility(View.GONE);
         }
         mFaceRegisterPresenter = new FaceRegisterPresenter(this, mAuthId);
@@ -262,6 +256,10 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
                 shiwSynopsis(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if(faceAuth == null){
+                            showToast("请先注册人脸");
+                            return;
+                        }
                         faceAuth.setSynopsis(mInput);
                         mFaceAuthDBManager.update(faceAuth);
                         tvSynopsis.setText(faceAuth.getSynopsis());
@@ -272,6 +270,10 @@ public class FaceRegisterActivity extends BarBaseActivity implements SurfaceHold
                 showJob(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if(faceAuth == null){
+                            showToast("请先注册人脸");
+                            return;
+                        }
                         faceAuth.setJob(mInput);
                         mFaceAuthDBManager.update(faceAuth);
                         tvJob.setText(faceAuth.getJob());

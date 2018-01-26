@@ -1,5 +1,9 @@
 package com.fanfan.robot.fragment;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -16,8 +20,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseFragment;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.glide.GlideRoundTransform;
@@ -79,7 +87,7 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
 
     @Override
     protected void initView(View view) {
-
+        super.initView(view);
     }
 
     @Override
@@ -171,7 +179,7 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.fl_play_bar:
-                ((MultimediaActivity)getActivity()).showPlayingFragment();
+                ((MultimediaActivity) getActivity()).showPlayingFragment();
                 break;
             case R.id.iv_play_bar_play:
                 play();

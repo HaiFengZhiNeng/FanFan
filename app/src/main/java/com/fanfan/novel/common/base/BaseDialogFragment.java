@@ -1,13 +1,15 @@
 package com.fanfan.novel.common.base;
 
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,36 +25,41 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.fanfan.novel.common.glide.GlideRoundTransform;
-import com.fanfan.novel.service.PlayService;
-import com.fanfan.novel.service.cache.MusicCache;
 import com.fanfan.robot.R;
 
+import java.util.Arrays;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
-
 /**
- * @description: 基础类
- * @author: Andruby
- * @time: 2016/9/3 16:19
+ * Created by android on 2018/1/26.
  */
-public abstract class BaseFragment extends Fragment {
 
+public abstract class BaseDialogFragment extends DialogFragment {
+
+    protected View rootView;
     protected BaseActivity mContext;
     protected Handler mHandler = new Handler();
-    protected View rootView;
-
-    private Unbinder unbinder;
+    Unbinder unbinder;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Black_NoTitleBar);
         mContext = (BaseActivity) getActivity();
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            //添加动画
+            dialog.getWindow().setWindowAnimations(R.style.dialogSlideAnim);
+        }
         if (getLayoutId() != 0) {
             rootView = inflater.inflate(getLayoutId(), container, false);
         } else {
@@ -64,8 +71,6 @@ public abstract class BaseFragment extends Fragment {
         }
         unbinder = ButterKnife.bind(this, rootView);
         initView(rootView);
-        initData();
-        setListener(rootView);
         return rootView;
     }
 
@@ -75,14 +80,16 @@ public abstract class BaseFragment extends Fragment {
         unbinder.unbind();
     }
 
-    /**
-     * 返回当前界面布局文件
-     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initData();
+        setListener(rootView);
+    }
+
+
     protected abstract int getLayoutId();
 
-    /**
-     * 此方法描述的是： 初始化所有view
-     */
     protected void initView(View view) {
         final RelativeLayout fragmentBg = view.findViewById(R.id.fragment_bg);
         if (fragmentBg != null) {
@@ -108,17 +115,20 @@ public abstract class BaseFragment extends Fragment {
                         }
                     });
         }
+        ImageView ivBack = view.findViewById(R.id.iv_back);
+        if (ivBack != null) {
+            ivBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismiss();
+                }
+            });
+        }
     }
 
-    /**
-     * 此方法描述的是： 初始化所有数据的方法
-     */
     protected abstract void initData();
 
-    /**
-     * 此方法描述的是： 设置所有事件监听
-     */
-    protected abstract void setListener(View view);
+    protected abstract void setListener(View rootView);
 
     /**
      * 显示toast
@@ -129,10 +139,6 @@ public abstract class BaseFragment extends Fragment {
         showToast(getString(resId));
     }
 
-
-    public <T extends View> T obtainView(int resId) {
-        return (T) rootView.findViewById(resId);
-    }
 
     /**
      * 显示toast
@@ -159,12 +165,14 @@ public abstract class BaseFragment extends Fragment {
         return toast;
     }
 
-    protected PlayService getPlayService() {
-        PlayService playService = MusicCache.get().getPlayService();
-        if (playService == null) {
-            throw new NullPointerException("play service is null");
-        }
-        return playService;
+    @NonNull
+    protected String[] resArray(int resId) {
+        return getResources().getStringArray(resId);
     }
 
+
+    protected int valueForArray(int resId, String compare) {
+        String[] arrays = resArray(resId);
+        return Arrays.asList(arrays).indexOf(compare);
+    }
 }

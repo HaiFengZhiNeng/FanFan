@@ -120,11 +120,4 @@
 
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/iv_fragment_bg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-
 </RelativeLayout>

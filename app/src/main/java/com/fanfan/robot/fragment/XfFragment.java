@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.novel.common.base.BaseDialogFragment;
 import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.R;
@@ -32,11 +33,8 @@ import butterknife.Unbinder;
  * Created by android on 2018/1/19.
  */
 
-public class XfFragment extends DialogFragment implements SeekBar.OnSeekBarChangeListener {
+public class XfFragment extends BaseDialogFragment implements SeekBar.OnSeekBarChangeListener {
 
-    Unbinder unbinder;
-    @BindView(R.id.iv_back)
-    ImageView ivBack;
     @BindView(R.id.tv_line_talker)
     TextView tvLineTalker;
     @BindView(R.id.line_talker_layout)
@@ -62,27 +60,12 @@ public class XfFragment extends DialogFragment implements SeekBar.OnSeekBarChang
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Black_NoTitleBar);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            //添加动画
-            dialog.getWindow().setWindowAnimations(R.style.dialogSlideAnim);
-        }
-        View view = inflater.inflate(R.layout.dialog_xf, null);
-        unbinder = ButterKnife.bind(this, view);
-        return view;
+    protected int getLayoutId() {
+        return R.layout.dialog_xf;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void initData() {
         int lineTalkerIndex = valueForArray(R.array.line_talker, RobotInfo.getInstance().getTtsLineTalker());
         if (lineTalkerIndex > -1)
             tvLineTalker.setText(resArray(R.array.line_talker_show)[lineTalkerIndex]);
@@ -98,22 +81,18 @@ public class XfFragment extends DialogFragment implements SeekBar.OnSeekBarChang
 
         tvLineSpeed.setText(String.valueOf(RobotInfo.getInstance().getLineSpeed()));
         lineSpeedBar.setProgress(RobotInfo.getInstance().getLineSpeed());
+
+    }
+
+    @Override
+    protected void setListener(View rootView) {
         lineSpeedBar.setOnSeekBarChangeListener(this);
     }
 
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-    }
-
-    @OnClick({R.id.iv_back, R.id.line_talker_layout, R.id.local_talker_layout, R.id.line_hear_layout})
+    @OnClick({R.id.line_talker_layout, R.id.local_talker_layout, R.id.line_hear_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.iv_back:
-                dismiss();
-                break;
             case R.id.line_hear_layout:
                 DialogUtils.showLongListDialog(getContext(), "选择在线监听语言", R.array.line_iat_language_show, new MaterialDialog.ListCallback() {
                     @Override
@@ -167,17 +146,6 @@ public class XfFragment extends DialogFragment implements SeekBar.OnSeekBarChang
         }
     }
 
-
-    @NonNull
-    private String[] resArray(int resId) {
-        return getResources().getStringArray(resId);
-    }
-
-
-    private int valueForArray(int resId, String compare) {
-        String[] arrays = resArray(resId);
-        return Arrays.asList(arrays).indexOf(compare);
-    }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

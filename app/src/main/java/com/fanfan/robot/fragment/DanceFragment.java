@@ -62,6 +62,7 @@ public class DanceFragment extends BaseFragment {
 
     @Override
     protected void initView(View view) {
+        super.initView(view);
         mAdapter = new LocalDanceAdapter(getActivity(), dances);
 
         recyclerView.setHasFixedSize(true);

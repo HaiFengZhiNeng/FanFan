@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.fanfan.novel.adapter.VideoDataAdapter;
 import com.fanfan.novel.adapter.VoiceDataAdapter;
 import com.fanfan.novel.common.Constants;
+import com.fanfan.novel.common.base.BaseDialogFragment;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.instance.SpeakIat;
 import com.fanfan.novel.db.manager.NavigationDBManager;
@@ -51,11 +52,8 @@ import butterknife.Unbinder;
  * Created by android on 2018/1/19.
  */
 
-public class ImportFragment extends DialogFragment implements LocalLexicon.RobotLexiconListener {
+public class ImportFragment extends BaseDialogFragment implements LocalLexicon.RobotLexiconListener {
 
-    Unbinder unbinder;
-    @BindView(R.id.iv_back)
-    ImageView ivBack;
     @BindView(R.id.voice_view)
     RecyclerView voiceView;
     @BindView(R.id.video_view)
@@ -92,28 +90,12 @@ public class ImportFragment extends DialogFragment implements LocalLexicon.Robot
     private VoiceDBManager mVoiceDBManager;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Black_NoTitleBar);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            //添加动画
-            dialog.getWindow().setWindowAnimations(R.style.dialogSlideAnim);
-        }
-        View view = inflater.inflate(R.layout.dialog_import, null);
-        unbinder = ButterKnife.bind(this, view);
-        return view;
+    protected int getLayoutId() {
+        return R.layout.dialog_import;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    protected void initData() {
         loadFile("Music");
 
         action = resArray(R.array.action);
@@ -133,6 +115,11 @@ public class ImportFragment extends DialogFragment implements LocalLexicon.Robot
         mVoiceDBManager = new VoiceDBManager();
 
         setAdapter();
+    }
+
+    @Override
+    protected void setListener(View rootView) {
+
     }
 
     private void loadVoice() {
@@ -197,18 +184,10 @@ public class ImportFragment extends DialogFragment implements LocalLexicon.Robot
         voiceView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-    }
 
-    @OnClick({R.id.iv_back, R.id.tv_import})
+    @OnClick({R.id.tv_import})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.iv_back:
-                dismiss();
-                break;
             case R.id.tv_import:
                 mVideoDBManager.deleteAll();
                 mVideoDBManager.insertList(videoBeanList);
@@ -220,16 +199,6 @@ public class ImportFragment extends DialogFragment implements LocalLexicon.Robot
         }
     }
 
-    @NonNull
-    private String[] resArray(int resId) {
-        return getResources().getStringArray(resId);
-    }
-
-
-    private int valueForArray(int resId, String compare) {
-        String[] arrays = resArray(resId);
-        return Arrays.asList(arrays).indexOf(compare);
-    }
 
     private void loadFile(String dirName) {//Music
 

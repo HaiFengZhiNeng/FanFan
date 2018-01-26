@@ -75,23 +75,6 @@ public class MultimediaActivity extends BarBaseActivity implements OnPlayerEvent
     protected void initView() {
         super.initView();
 
-        ImageView imageView = findViewById(R.id.iv_fragment_bg);
-        if (imageView != null) {
-            RequestOptions options = new RequestOptions()
-                    .centerCrop()
-                    .override(720, 1280)
-                    .placeholder(R.mipmap.fragment_bg)
-                    .error(R.mipmap.fragment_bg)
-                    .priority(Priority.HIGH)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                    .transform(new GlideRoundTransform());
-            Glide.with(this)
-                    .load(R.mipmap.fragment_bg)
-                    .apply(options)
-                    .into(imageView);
-        }
-
         songFragment = SongFragment.newInstance();
         danceFragment = DanceFragment.newInstance();
 

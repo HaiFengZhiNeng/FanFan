@@ -103,7 +103,6 @@ public class PlayFragment extends BaseFragment implements OnPlayerEventListener,
 
     @Override
     protected void initView(View view) {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             int top = ScreenUtil.getStatusBarHeight(getActivity());
             llContent.setPadding(0, top, 0, 0);
