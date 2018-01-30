@@ -174,8 +174,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     protected void onResume() {
         super.onResume();
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
-//        mTtsPresenter.buildTts();
-//        mSoundPresenter.buildIat();
+        mTtsPresenter.buildTts();
+        mSoundPresenter.buildIat();
     }
 
     @Override
