@@ -33,6 +33,7 @@ import com.fanfan.novel.utils.BitmapUtils;
 import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.LocalLexicon;
 import com.fanfan.novel.utils.MediaFile;
+import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
 import com.iflytek.cloud.SpeechRecognizer;
 import com.seabreeze.log.Print;
@@ -144,6 +145,7 @@ public class ImportFragment extends BaseDialogFragment implements LocalLexicon.R
             voiceBeanList.add(voiceBean);
         }
     }
+
 
     private void loadVideo() {
         if (videoFiles == null || videoFiles.size() == 0) {

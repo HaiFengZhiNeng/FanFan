@@ -1,5 +1,6 @@
 package com.fanfan.novel.common;
 
+import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.novel.utils.FileUtil;
 
@@ -57,7 +58,7 @@ public class Constants {
 
     //udp
     public static String IP;
-    public static int PORT;
+    public static int PORT = SocketManager.DEFAULT_UDPSERVER_PORT;
     public static String CONNECT_IP = null;
 
     public static int CONNECT_PORT = 0;

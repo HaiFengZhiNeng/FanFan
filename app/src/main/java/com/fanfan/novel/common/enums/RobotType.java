@@ -13,7 +13,6 @@ public enum RobotType {
     Motion,//移动
     GETIP,
     LocalVoice,
-    File,
     Anwser
 
 }

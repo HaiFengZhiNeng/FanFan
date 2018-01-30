@@ -279,7 +279,6 @@ public class AddVoiceActivity extends BarBaseActivity implements LocalLexicon.Ro
             voiceBean.setId(saveLocalId);
             mVoiceDBManager.update(voiceBean);
         }
-        updateLocalVoicePreference();
         LocalLexicon.getInstance().initDBManager(this).setListener(this).updateContents();
     }
 
@@ -288,15 +287,6 @@ public class AddVoiceActivity extends BarBaseActivity implements LocalLexicon.Ro
             String imagePath = BitmapUtils.getPathByUri4kitkat(AddVoiceActivity.this, outputUri);
             Print.e(imagePath);
             bean.setImgUrl(imagePath);
-        }
-    }
-
-    private void updateLocalVoicePreference() {
-        int version = PreferencesUtils.getInt(this, "LocalVoice", -1);
-        if (version == -1) {
-            PreferencesUtils.putInt(this, "LocalVoice", 1);
-        } else {
-            PreferencesUtils.putInt(this, "LocalVoice", version + 1);
         }
     }
 

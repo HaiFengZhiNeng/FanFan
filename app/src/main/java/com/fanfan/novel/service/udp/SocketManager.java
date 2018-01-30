@@ -1,6 +1,7 @@
 package com.fanfan.novel.service.udp;
 
 import com.fanfan.novel.common.Constants;
+import com.fanfan.youtu.api.base.Constant;
 import com.seabreeze.log.Print;
 
 import java.io.IOException;
@@ -21,9 +22,6 @@ import java.util.concurrent.TimeUnit;
 public class SocketManager {
 
     public final static int DEFAULT_UDPSERVER_PORT = 8985;
-
-    private int mPort = DEFAULT_UDPSERVER_PORT;
-
 
     private DatagramSocket mDatagramSocket;
 
@@ -64,7 +62,7 @@ public class SocketManager {
         }
         if (mDatagramSocket == null) {
             try {
-                InetSocketAddress inetSocketAddress = new InetSocketAddress(Constants.IP, mPort);
+                InetSocketAddress inetSocketAddress = new InetSocketAddress(Constants.IP, Constants.PORT);
                 mDatagramSocket = new DatagramSocket(inetSocketAddress);
             } catch (SocketException e) {
                 Print.e("mDatagramSocket is null try create DatagramSocket object");

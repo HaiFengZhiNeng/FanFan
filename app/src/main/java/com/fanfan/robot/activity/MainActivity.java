@@ -80,6 +80,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.net.DatagramPacket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
@@ -173,8 +174,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     protected void onResume() {
         super.onResume();
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
-        mTtsPresenter.buildTts();
-        mSoundPresenter.buildIat();
+//        mTtsPresenter.buildTts();
+//        mSoundPresenter.buildIat();
     }
 
     @Override
@@ -320,12 +321,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 SocketManager.getInstance().setUdpIp(packet.getAddress().getHostAddress(), packet.getPort());
             }
             String recvStr = new String(packet.getData(), 0, packet.getLength());
-            if (recvStr.contains("udp")) {
-                Print.e(recvStr);
-            } else {
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, recvStr);
-            }
-            Print.e(recvStr);
+            Print.e("udp发送过来消息 ： " + recvStr);
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, recvStr);
         } else {
             Print.e("ReceiveEvent error");
         }
@@ -473,7 +470,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             case AutoAction:
                 break;
             case VoiceSwitch:
-                boolean isSpeech = bean.getOrder().equals("语音开") ? true : false;
+                boolean isSpeech = bean.getOrder().equals("语音开");
                 mSoundPresenter.setSpeech(isSpeech);
                 break;
             case Text:
@@ -496,6 +493,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                         robotBean.setOrder(object.toString());
                         robotBean.setType(RobotType.GETIP);
                         Print.e("发送: " + object.toString());
+                        showToast("发送: " + object.toString());
                         mChatPresenter.sendCustomMessage(robotBean);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -516,13 +514,21 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 }
                 break;
             case LocalVoice:
-
-                break;
-            case File:
-
+                List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
+                List<String> anwers = new ArrayList<>();
+                if (voiceBeanList != null && voiceBeanList.size() > 0) {
+                    for (VoiceBean voiceBean : voiceBeanList) {
+                        anwers.add(voiceBean.getShowTitle());
+                    }
+                    String voiceJson = GsonUtil.GsonString(anwers);
+                    RobotBean localVoice = new RobotBean();
+                    localVoice.setType(RobotType.LocalVoice);
+                    localVoice.setOrder(voiceJson);
+                    mChatPresenter.sendCustomMessage(localVoice);
+                }
                 break;
             case Anwser:
-
+                aiuiForLocal(bean.getOrder());
                 break;
         }
     }
@@ -545,7 +551,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
         if (voiceBeanList != null && voiceBeanList.size() > 0) {
             for (VoiceBean voiceBean : voiceBeanList) {
-                if (voiceBean.getVoiceAnswer().equals(result)) {
+                if (voiceBean.getShowTitle().equals(result)) {
                     refHomePage(voiceBean);
                     return;
                 }

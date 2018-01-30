@@ -33,4 +33,5 @@ public class DataGroupItem extends TreeItemGroup<Data> {
     public void onBindViewHolder(ViewHolder holder) {
         holder.setText(R.id.tv_content, TimeUtils.getGroupTime(data.getData()));
     }
+
 }
