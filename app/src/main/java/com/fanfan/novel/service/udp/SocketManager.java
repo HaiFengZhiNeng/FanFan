@@ -78,9 +78,12 @@ public class SocketManager {
 
 
     public void unregisterUdpServer() {
-        mDatagramSocket.close();
-        executorService.shutdown();
-        executorService = null;
+        if (mDatagramSocket != null)
+            mDatagramSocket.close();
+        if (executorService != null) {
+            executorService.shutdown();
+            executorService = null;
+        }
     }
 
     public synchronized ExecutorService getExecutorService() {
