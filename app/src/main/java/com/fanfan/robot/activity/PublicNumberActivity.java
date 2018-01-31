@@ -132,7 +132,7 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onResultEvent(ReceiveEvent event) {
         if (event.isOk()) {
             DatagramPacket packet = event.getBean();
@@ -180,6 +180,7 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
         return this;
     }
 
+    //**********************************************************************************************
     @Override
     public void spakeMove(SpecialType type, String result) {
         mSoundPresenter.onCompleted();
@@ -233,7 +234,7 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
 
     @Override
     public void refLocalPage(String result) {
-
+        addSpeakAnswer(R.string.open_local);
     }
 
     @Override

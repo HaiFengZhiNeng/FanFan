@@ -21,10 +21,20 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.common.glide.GlideRoundTransform;
 import com.fanfan.novel.model.PersonInfo;
+import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.CameraPresenter;
+import com.fanfan.novel.presenter.LocalSoundPresenter;
+import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ICameraPresenter;
+import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
+import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
+import com.fanfan.novel.service.SerialService;
+import com.fanfan.novel.service.event.ReceiveEvent;
+import com.fanfan.novel.service.event.ServiceToActivityEvent;
+import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.camera.DetectOpenFaceView;
 import com.fanfan.novel.ui.camera.DetectionFaceView;
 import com.fanfan.robot.R;
@@ -37,6 +47,9 @@ import com.fanfan.youtu.utils.ErrorMsg;
 import com.huashi.otg.sdk.HsOtgService;
 import com.seabreeze.log.Print;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.Utils;
@@ -52,6 +65,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.DatagramPacket;
 import java.text.SimpleDateFormat;
 
 import butterknife.BindView;
@@ -61,8 +75,13 @@ import butterknife.ButterKnife;
  * Created by android on 2018/1/10.
  */
 
-public class AuthenticationActivity extends BarBaseActivity implements SurfaceHolder.Callback,
-        ICameraPresenter.ICameraView, IFaceVerifPresenter.IFaceverifView, IHsOtgPresenter.IHsOtgView {
+public class AuthenticationActivity extends BarBaseActivity implements
+        SurfaceHolder.Callback,
+        ICameraPresenter.ICameraView,
+        IFaceVerifPresenter.IFaceverifView,
+        IHsOtgPresenter.IHsOtgView,
+        ILocalSoundPresenter.ILocalSoundView,
+        ISerialPresenter.ISerialView {
 
     @BindView(R.id.camera_surfaceview)
     SurfaceView cameraSurfaceView;
@@ -152,6 +171,9 @@ public class AuthenticationActivity extends BarBaseActivity implements SurfaceHo
     private FaceVerifPresenter mFaceVerifPresenter;
     private HsOtgPresenter mHsOtgPresenter;
 
+    private LocalSoundPresenter mSoundPresenter;
+    private SerialPresenter mSerialPresenter;
+
     private PersonInfo personInfo;
     private Bitmap bitmapB;
 
@@ -175,8 +197,12 @@ public class AuthenticationActivity extends BarBaseActivity implements SurfaceHo
 
         mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
 
-        mHsOtgPresenter = new HsOtgPresenter(this);
+        mSoundPresenter = new LocalSoundPresenter(this);
+        mSoundPresenter.start();
+        mSerialPresenter = new SerialPresenter(this);
+        mSerialPresenter.start();
 
+        mHsOtgPresenter = new HsOtgPresenter(this);
         mHsOtgPresenter.start();
 
 //        mHandler.postDelayed(testRun, 5000);
@@ -211,19 +237,32 @@ public class AuthenticationActivity extends BarBaseActivity implements SurfaceHo
     @Override
     protected void onStart() {
         super.onStart();
+        EventBus.getDefault().register(this);
+        mSoundPresenter.startRecognizerListener();
         mFaceVerifPresenter.start();
         mHsOtgPresenter.onStart();
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mSoundPresenter.buildTts();
+        mSoundPresenter.buildIat();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
+        mSoundPresenter.stopTts();
+        mSoundPresenter.stopRecognizerListener();
+        mSoundPresenter.stopHandler();
         mCameraPresenter.closeCamera();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        EventBus.getDefault().unregister(this);
         mFaceVerifPresenter.finish();
         mHsOtgPresenter.onStop();
     }
@@ -233,6 +272,40 @@ public class AuthenticationActivity extends BarBaseActivity implements SurfaceHo
         mHandler.removeCallbacks(testRun);
         super.onDestroy();
         mHsOtgPresenter.finish();
+        mSoundPresenter.finish();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(ServiceToActivityEvent event) {
+        if (event.isOk()) {
+            SerialBean serialBean = event.getBean();
+            mSerialPresenter.onDataReceiverd(serialBean);
+        } else {
+            Print.e("ReceiveEvent error");
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onResultEvent(ReceiveEvent event) {
+        if (event.isOk()) {
+            DatagramPacket packet = event.getBean();
+            if (!SocketManager.getInstance().isGetTcpIp) {
+                SocketManager.getInstance().setUdpIp(packet.getAddress().getHostAddress(), packet.getPort());
+            }
+            String recvStr = new String(packet.getData(), 0, packet.getLength());
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, recvStr);
+            Print.e(recvStr);
+        } else {
+            Print.e("ReceiveEvent error");
+        }
+    }
+
+    private void addSpeakAnswer(String messageContent) {
+        mSoundPresenter.doAnswer(messageContent);
+    }
+
+    private void addSpeakAnswer(int res) {
+        mSoundPresenter.doAnswer(getResources().getString(res));
     }
 
     @Override
@@ -457,4 +530,74 @@ public class AuthenticationActivity extends BarBaseActivity implements SurfaceHo
         mHsOtgPresenter.authFail();
     }
 
+    //**********************************************************************************************
+    @Override
+    public void spakeMove(SpecialType type, String result) {
+        mSoundPresenter.onCompleted();
+        switch (type) {
+            case Forward:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038002AA");
+                break;
+            case Backoff:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038008AA");
+                break;
+            case Turnleft:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038004AA");
+                break;
+            case Turnright:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038006AA");
+                break;
+        }
+    }
+
+    @Override
+    public void openMap() {
+        addSpeakAnswer(R.string.open_map);
+    }
+
+    @Override
+    public void stopListener() {
+        mSoundPresenter.stopTts();
+        mSoundPresenter.stopRecognizerListener();
+        mSoundPresenter.stopHandler();
+    }
+
+    @Override
+    public void back() {
+        finish();
+    }
+
+    @Override
+    public void artificial() {
+        addSpeakAnswer(R.string.open_artificial);
+    }
+
+    @Override
+    public void face(SpecialType type, String result) {
+        addSpeakAnswer(R.string.open_face);
+    }
+
+    @Override
+    public void control(SpecialType type, String result) {
+        addSpeakAnswer(R.string.open_control);
+    }
+
+    @Override
+    public void refLocalPage(String result) {
+        addSpeakAnswer(R.string.open_local);
+    }
+
+    @Override
+    public void stopAll() {
+        super.stopAll();
+        mSoundPresenter.stopTts();
+        mSoundPresenter.stopRecognizerListener();
+        mSoundPresenter.stopHandler();
+        mSoundPresenter.doAnswer(resFoFinal(R.array.wake_up));
+    }
+
+    @Override
+    public void onMoveStop() {
+
+    }
 }

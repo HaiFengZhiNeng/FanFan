@@ -164,7 +164,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onResultEvent(ReceiveEvent event) {
         if (event.isOk()) {
             DatagramPacket packet = event.getBean();

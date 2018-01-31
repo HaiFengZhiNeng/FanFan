@@ -17,11 +17,28 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.common.enums.SpecialType;
+import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.CameraPresenter;
+import com.fanfan.novel.presenter.LocalSoundPresenter;
+import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ICameraPresenter;
+import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
+import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
+import com.fanfan.novel.service.SerialService;
+import com.fanfan.novel.service.event.ReceiveEvent;
+import com.fanfan.novel.service.event.ServiceToActivityEvent;
+import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.robot.R;
 import com.fanfan.robot.presenter.TakePresenter;
 import com.fanfan.robot.presenter.ipersenter.ITakePresenter;
+import com.seabreeze.log.Print;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.net.DatagramPacket;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -30,8 +47,12 @@ import butterknife.OnClick;
  * Created by android on 2018/1/9.
  */
 
-public class InstagramPhotoActivity extends BarBaseActivity implements SurfaceHolder.Callback,
-        ICameraPresenter.ICameraView, ITakePresenter.ITakeView {
+public class InstagramPhotoActivity extends BarBaseActivity implements
+        SurfaceHolder.Callback,
+        ICameraPresenter.ICameraView,
+        ITakePresenter.ITakeView,
+        ILocalSoundPresenter.ILocalSoundView,
+        ISerialPresenter.ISerialView {
 
     @BindView(R.id.camera_surfaceview)
     SurfaceView cameraSurfaceView;
@@ -66,6 +87,9 @@ public class InstagramPhotoActivity extends BarBaseActivity implements SurfaceHo
     private CameraPresenter mCameraPresenter;
     private TakePresenter mTakePresenter;
 
+    private LocalSoundPresenter mSoundPresenter;
+    private SerialPresenter mSerialPresenter;
+
     private String mSavePath;
 
     @Override
@@ -83,6 +107,11 @@ public class InstagramPhotoActivity extends BarBaseActivity implements SurfaceHo
         mCameraPresenter = new CameraPresenter(this, holder);
         mTakePresenter = new TakePresenter(this);
 
+        mSoundPresenter = new LocalSoundPresenter(this);
+        mSoundPresenter.start();
+        mSerialPresenter = new SerialPresenter(this);
+        mSerialPresenter.start();
+
         timeLayout.setVisibility(View.VISIBLE);
     }
 
@@ -94,7 +123,16 @@ public class InstagramPhotoActivity extends BarBaseActivity implements SurfaceHo
     @Override
     protected void onStart() {
         super.onStart();
+        EventBus.getDefault().register(this);
+        mSoundPresenter.startRecognizerListener();
         mTakePresenter.start();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSoundPresenter.buildTts();
+        mSoundPresenter.buildIat();
     }
 
     @Override
@@ -106,13 +144,18 @@ public class InstagramPhotoActivity extends BarBaseActivity implements SurfaceHo
     @Override
     protected void onStop() {
         super.onStop();
+        EventBus.getDefault().unregister(this);
         mTakePresenter.finish();
+        mSoundPresenter.stopTts();
+        mSoundPresenter.stopRecognizerListener();
+        mSoundPresenter.stopHandler();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mTakePresenter.stopCountDownTimer();
+        mSoundPresenter.finish();
     }
 
     @Override
@@ -154,6 +197,40 @@ public class InstagramPhotoActivity extends BarBaseActivity implements SurfaceHo
                 mCameraPresenter.cameraTakePicture();
                 break;
         }
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(ServiceToActivityEvent event) {
+        if (event.isOk()) {
+            SerialBean serialBean = event.getBean();
+            mSerialPresenter.onDataReceiverd(serialBean);
+        } else {
+            Print.e("ReceiveEvent error");
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onResultEvent(ReceiveEvent event) {
+        if (event.isOk()) {
+            DatagramPacket packet = event.getBean();
+            if (!SocketManager.getInstance().isGetTcpIp) {
+                SocketManager.getInstance().setUdpIp(packet.getAddress().getHostAddress(), packet.getPort());
+            }
+            String recvStr = new String(packet.getData(), 0, packet.getLength());
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, recvStr);
+            Print.e(recvStr);
+        } else {
+            Print.e("ReceiveEvent error");
+        }
+    }
+
+    private void addSpeakAnswer(String messageContent) {
+        mSoundPresenter.doAnswer(messageContent);
+    }
+
+    private void addSpeakAnswer(int res) {
+        mSoundPresenter.doAnswer(getResources().getString(res));
     }
 
     @Override
@@ -253,6 +330,77 @@ public class InstagramPhotoActivity extends BarBaseActivity implements SurfaceHo
         Bitmap codeBitmap = mTakePresenter.generatingCode(url, 480, 480,
                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_logo));
         ivOrCode.setImageBitmap(codeBitmap);
+    }
+
+    //**********************************************************************************************
+    @Override
+    public void spakeMove(SpecialType type, String result) {
+        mSoundPresenter.onCompleted();
+        switch (type) {
+            case Forward:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038002AA");
+                break;
+            case Backoff:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038008AA");
+                break;
+            case Turnleft:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038004AA");
+                break;
+            case Turnright:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038006AA");
+                break;
+        }
+    }
+
+    @Override
+    public void openMap() {
+        addSpeakAnswer(R.string.open_map);
+    }
+
+    @Override
+    public void stopListener() {
+        mSoundPresenter.stopTts();
+        mSoundPresenter.stopRecognizerListener();
+        mSoundPresenter.stopHandler();
+    }
+
+    @Override
+    public void back() {
+        finish();
+    }
+
+    @Override
+    public void artificial() {
+        addSpeakAnswer(R.string.open_artificial);
+    }
+
+    @Override
+    public void face(SpecialType type, String result) {
+        addSpeakAnswer(R.string.open_face);
+    }
+
+    @Override
+    public void control(SpecialType type, String result) {
+        addSpeakAnswer(R.string.open_control);
+    }
+
+    @Override
+    public void refLocalPage(String result) {
+        addSpeakAnswer(R.string.open_local);
+    }
+
+    @Override
+    public void stopAll() {
+        super.stopAll();
+        mSoundPresenter.stopTts();
+        mSoundPresenter.stopRecognizerListener();
+        mSoundPresenter.stopHandler();
+        mSoundPresenter.doAnswer(resFoFinal(R.array.wake_up));
+    }
+
+    @Override
+    public void onMoveStop() {
+
     }
 
 }

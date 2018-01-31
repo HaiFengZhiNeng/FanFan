@@ -104,6 +104,7 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
         mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+                stopListener();
                 getPlayService().play(position);
             }
         });
@@ -179,12 +180,17 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.fl_play_bar:
-                ((MultimediaActivity) getActivity()).showPlayingFragment();
                 break;
             case R.id.iv_play_bar_play:
+                if (getPlayService().isPlaying()) {
+                    startListener();
+                } else {
+                    stopListener();
+                }
                 play();
                 break;
             case R.id.iv_play_bar_next:
+                stopListener();
                 next();
                 break;
         }
@@ -247,4 +253,15 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
         getPlayService().stop();
     }
 
+    public void stopListener() {
+        Print.e("停止监听 ...... ");
+        assert ((MultimediaActivity) getActivity()) != null;
+        ((MultimediaActivity) getActivity()).stopListener();
+    }
+
+    public void startListener() {
+        Print.e("启动监听 ...... ");
+        assert ((MultimediaActivity) getActivity()) != null;
+        ((MultimediaActivity) getActivity()).startListener();
+    }
 }

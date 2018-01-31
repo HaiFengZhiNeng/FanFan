@@ -4,9 +4,24 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import com.fanfan.novel.common.enums.SpecialType;
+import com.fanfan.novel.model.SerialBean;
+import com.fanfan.novel.presenter.SerialPresenter;
+import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
+import com.fanfan.novel.service.SerialService;
+import com.fanfan.novel.service.event.ReceiveEvent;
+import com.fanfan.novel.service.event.ServiceToActivityEvent;
+import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.robot.R;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.jcvideoplayer.JCVideoPlayerStandard;
+import com.seabreeze.log.Print;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.net.DatagramPacket;
 
 import butterknife.BindView;
 
@@ -14,7 +29,7 @@ import butterknife.BindView;
  * Created by android on 2017/12/21.
  */
 
-public class VideoDetailActivity extends BarBaseActivity {
+public class VideoDetailActivity extends BarBaseActivity implements ISerialPresenter.ISerialView{
 
     public static final String VIDEO_URL = "VideoUrl";
 
@@ -28,6 +43,7 @@ public class VideoDetailActivity extends BarBaseActivity {
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
+    private SerialPresenter mSerialPresenter;
 
     private String upfile;
 
@@ -39,6 +55,8 @@ public class VideoDetailActivity extends BarBaseActivity {
     @Override
     protected void initView() {
         super.initView();
+        mSerialPresenter = new SerialPresenter(this);
+        mSerialPresenter.start();
     }
 
 
@@ -50,8 +68,83 @@ public class VideoDetailActivity extends BarBaseActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         mJcVideo.releaseAllVideos();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(ServiceToActivityEvent event) {
+        if (event.isOk()) {
+            SerialBean serialBean = event.getBean();
+            mSerialPresenter.onDataReceiverd(serialBean);
+        } else {
+            Print.e("ReceiveEvent error");
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onResultEvent(ReceiveEvent event) {
+        if (event.isOk()) {
+            DatagramPacket packet = event.getBean();
+            if (!SocketManager.getInstance().isGetTcpIp) {
+                SocketManager.getInstance().setUdpIp(packet.getAddress().getHostAddress(), packet.getPort());
+            }
+            String recvStr = new String(packet.getData(), 0, packet.getLength());
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, recvStr);
+            Print.e(recvStr);
+        } else {
+            Print.e("ReceiveEvent error");
+        }
+    }
+
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void dismissLoading() {
+
+    }
+
+    @Override
+    public void showMsg(String msg) {
+        showToast(msg);
+    }
+
+    @Override
+    public void showMsg(int msg) {
+        showToast(msg);
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    //**********************************************************************************************
+
+    @Override
+    public void stopAll() {
+        finish();
+    }
+
+    @Override
+    public void onMoveStop() {
+
     }
 }

@@ -72,6 +72,7 @@
     <string name="open_artificial">此页面暂不支持人工客服</string>
     <string name="open_face">此页面暂不支持人脸识别等功能</string>
     <string name="open_control">此页面暂不支持上下控制</string>
+    <string name="open_local">此页面暂不支持本地语音控制</string>
 
     <string name="speakText">找不到视频链接</string>
 

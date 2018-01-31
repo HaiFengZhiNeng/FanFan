@@ -86,8 +86,12 @@ import butterknife.OnClick;
  * Created by android on 2018/1/9.
  */
 
-public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolder.Callback,
-        ICameraPresenter.ICameraView, IFaceCheckinPresenter.ICheckinView, ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
+public class FaceCheckinActivity extends BarBaseActivity implements
+        SurfaceHolder.Callback,
+        ICameraPresenter.ICameraView,
+        IFaceCheckinPresenter.ICheckinView,
+        ILocalSoundPresenter.ILocalSoundView,
+        ISerialPresenter.ISerialView {
 
     @BindView(R.id.camera_surfaceview)
     SurfaceView cameraSurfaceView;
@@ -344,7 +348,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onResultEvent(ReceiveEvent event) {
         if (event.isOk()) {
             DatagramPacket packet = event.getBean();
@@ -656,6 +660,12 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
 
     @Override
     public void back() {
+        if (state != State.CAMERA) {
+            changeCamera();
+            mCheckinPresenter.setFaceIdentify();
+            mSoundPresenter.onCompleted();
+            return;
+        }
         finish();
     }
 
@@ -676,7 +686,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements SurfaceHolde
 
     @Override
     public void refLocalPage(String result) {
-
+        addSpeakAnswer(R.string.open_local);
     }
 
     @Override
