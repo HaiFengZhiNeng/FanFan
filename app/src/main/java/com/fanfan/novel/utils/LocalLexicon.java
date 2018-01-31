@@ -12,6 +12,7 @@ import com.fanfan.novel.model.NavigationBean;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.robot.R;
+import com.fanfan.robot.app.NovelApp;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.LexiconListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -47,20 +48,16 @@ public class LocalLexicon {
     }
 
     public LocalLexicon() {
+        mContext = NovelApp.getInstance().getApplicationContext();
     }
 
-    public LocalLexicon initDBManager(Context context) {
-        mContext = context;
+    public LocalLexicon initDBManager() {
         mVideoDBManager = new VideoDBManager();
         mVoiceDBManager = new VoiceDBManager();
         mNavigationDBManager = new NavigationDBManager();
         return this;
     }
 
-    public LocalLexicon initContext(Context context) {
-        mContext = context;
-        return this;
-    }
 
     public LocalLexicon setListener(RobotLexiconListener listener) {
         mListener = listener;
@@ -108,8 +105,8 @@ public class LocalLexicon {
     public List<String> getLocalStrings() {
 
         List<String> words = new ArrayList<>();
+        words.add(mContext.getResources().getString(R.string.FanFan));
         words.add(mContext.getResources().getString(R.string.Video));
-
         words.add(mContext.getResources().getString(R.string.Problem));
         words.add(mContext.getResources().getString(R.string.MultiMedia));
         words.add(mContext.getResources().getString(R.string.Seting_up));

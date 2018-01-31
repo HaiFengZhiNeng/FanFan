@@ -183,7 +183,7 @@ public class AddNavigationActivity extends BarBaseActivity implements LocalLexic
             navigationBean.setId(saveLocalId);
             mNavigationDBManager.update(navigationBean);
         }
-        LocalLexicon.getInstance().initDBManager(this).setListener(this).updateContents();
+        LocalLexicon.getInstance().initDBManager().setListener(this).updateContents();
     }
 
 

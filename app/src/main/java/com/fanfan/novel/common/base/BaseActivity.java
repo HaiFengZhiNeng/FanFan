@@ -47,9 +47,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActivityCollector.addActivity(this);
+        setRequestedOrientation(getOrientation());
         super.onCreate(savedInstanceState);
-        //方向
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setBeforeLayout();
         mContext = this;
         if (getLayoutId() != 0) {
@@ -60,6 +60,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         initDb();
         initData();
         setListener();
+    }
+
+
+    public int getOrientation() {
+        return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
     }
 
     protected void setBeforeLayout() {
@@ -205,4 +210,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void finish() {
+        super.finish();
+        ActivityCollector.finishActivity(this);
+    }
 }

@@ -33,7 +33,7 @@ public class Constants {
     public static final String PROJECT_PATH = M_SDROOT_FILE_PATH + "fHotel" + File.separator;
     public static final String PRINT_LOG_PATH = M_SDROOT_CACHE_PATH + "print";
     public static final String PRINT_TIMLOG_PATH = M_SDROOT_CACHE_PATH + "log" + File.separator;
-    public static final String CRASH_PATH = M_SDROOT_CACHE_PATH + "crash" + File.separator;
+    public static final String CRASH_PATH = M_SDROOT_CACHE_PATH + "crash";
 
     public static final String GRM_PATH = PROJECT_PATH + "msc";
 

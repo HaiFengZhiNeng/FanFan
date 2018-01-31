@@ -285,7 +285,8 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
             aiuiWriteText(result);
         } else if (specialType == SpecialType.StopListener) {
             setSpeech(false);
-        } else if (specialType == SpecialType.Video || specialType == SpecialType.Problem || specialType == SpecialType.Face
+        } else if (specialType == SpecialType.Fanfan || specialType == SpecialType.Video
+                || specialType == SpecialType.Problem || specialType == SpecialType.Face
                 || specialType == SpecialType.Seting_up || specialType == SpecialType.Public_num
                 || specialType == SpecialType.Navigation || specialType == SpecialType.MultiMedia) {
             mSoundView.startPage(specialType);
@@ -927,13 +928,13 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                         RobotInfo.getInstance().setLocalBuild();
                         structure();
                     } else {
-                        String lexiconContents = LocalLexicon.getInstance().initContext(mSoundView.getContext()).words2Contents();
+                        String lexiconContents = LocalLexicon.getInstance().words2Contents();
                         updateLocation("voice", lexiconContents);
                     }
                 } else if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_CLOUD)) {
 
                     if (!RobotInfo.getInstance().isCloudUpdatelexicon()) {
-                        List<String> words = LocalLexicon.getInstance().initContext(mSoundView.getContext()).getLocalStrings();
+                        List<String> words = LocalLexicon.getInstance().getLocalStrings();
 
                         Userword userword = new Userword();
                         userword.setName("userword");

@@ -279,7 +279,7 @@ public class AddVoiceActivity extends BarBaseActivity implements LocalLexicon.Ro
             voiceBean.setId(saveLocalId);
             mVoiceDBManager.update(voiceBean);
         }
-        LocalLexicon.getInstance().initDBManager(this).setListener(this).updateContents();
+        LocalLexicon.getInstance().initDBManager().setListener(this).updateContents();
     }
 
     private void setVoiceimg(VoiceBean bean) {

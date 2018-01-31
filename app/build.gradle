@@ -47,6 +47,10 @@ android {
         targetGenDir 'src/main/java' //设置DaoMaster、DaoSession、Dao目录
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     sourceSets {
         main {
             jni.srcDirs = []
@@ -104,4 +108,6 @@ dependencies {
     compile 'com.jpardogo.materialtabstrip:library:1.1.0'
     compile 'cn.bingoogolapple:bga-swipebacklayout:1.1.0@aar'
     compile 'com.github.florent37:viewanimator:1.0.5'
+    compile 'com.facebook.stetho:stetho:1.5.0'
+    compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
 }

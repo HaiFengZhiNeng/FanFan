@@ -11,6 +11,7 @@ public enum SpecialType {
     Story,
     Joke,
 
+    Fanfan,
     Video,
     Problem,
     MultiMedia,

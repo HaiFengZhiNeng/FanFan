@@ -216,7 +216,7 @@ public class AddVideoActivity extends BarBaseActivity implements LocalLexicon.Ro
             videoBean.setId(saveLocalId);
             mVideoDBManager.update(videoBean);
         }
-        LocalLexicon.getInstance().initDBManager(this).setListener(this).updateContents();
+        LocalLexicon.getInstance().initDBManager().setListener(this).updateContents();
     }
 
 

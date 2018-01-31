@@ -3,6 +3,7 @@ package com.fanfan.youtu.api.base.impl;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.youtu.api.base.Constant;
 import com.fanfan.youtu.token.YoutuSign;
@@ -52,13 +53,14 @@ public class BaseImpl<Service> {
         HttpLoggingInterceptor.Logger logger = new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
-                try {
-                    String text = URLDecoder.decode(message, "utf-8");
+                Print.e(message);
+//                try {
+//                    String text = URLDecoder.decode(message, "utf-8");
 //                    Print.e(text);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                    Print.e(message);
-                }
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                    Print.e(message);
+//                }
             }
         };
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(logger);
@@ -99,6 +101,7 @@ public class BaseImpl<Service> {
                 .connectTimeout(5, TimeUnit.SECONDS)        // 连接超时事件
                 .readTimeout(5, TimeUnit.SECONDS)           // 读取超时时间
                 .addNetworkInterceptor(mTokenInterceptor)   // 自动附加 token
+                .addNetworkInterceptor(new StethoInterceptor())
 //                .authenticator(mAuthenticator)              // 认证失败自动刷新token
                 .cache(cache)
                 .build();

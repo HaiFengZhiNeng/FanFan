@@ -196,7 +196,7 @@ public class ImportFragment extends BaseDialogFragment implements LocalLexicon.R
                 mVoiceDBManager.deleteAll();
                 mVoiceDBManager.insertList(voiceBeanList);
 
-                LocalLexicon.getInstance().initDBManager(getActivity()).setListener(this).updateContents();
+                LocalLexicon.getInstance().initDBManager().setListener(this).updateContents();
                 break;
         }
     }

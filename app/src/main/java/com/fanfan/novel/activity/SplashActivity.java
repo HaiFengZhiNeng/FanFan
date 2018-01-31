@@ -26,6 +26,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.service.mediascanner.SingleMediaScanner;
 import com.fanfan.robot.R;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseActivity;
@@ -53,6 +54,8 @@ import com.tencent.TIMCallBack;
 import com.tencent.ilivesdk.ILiveCallBack;
 import com.tencent.ilivesdk.ILiveSDK;
 import com.tencent.ilivesdk.core.ILiveLoginManager;
+
+import java.io.File;
 
 /**
  * http://m.blog.csdn.net/guolin_blog/article/details/78582548
@@ -127,19 +130,19 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
         Print.e("屏幕密度 density : " + density);
         Print.e("屏幕密度DPI densityDpi : " + densityDpi);
 
-        MediaScannerConnection.scanFile(this,
-                new String[]{Environment.getExternalStorageDirectory().getAbsolutePath()},
-                null, new MediaScannerConnection.MediaScannerConnectionClient() {
-                    @Override
-                    public void onMediaScannerConnected() {
-                        Print.e("onMediaScannerConnected");
-                    }
-
-                    @Override
-                    public void onScanCompleted(String s, Uri uri) {
-                        Print.e("onScanCompleted : " + s);
-                    }
-                });
+//        MediaScannerConnection.scanFile(this,
+//                new String[]{Environment.getExternalStorageDirectory().getAbsolutePath()},
+//                null, new MediaScannerConnection.MediaScannerConnectionClient() {
+//                    @Override
+//                    public void onMediaScannerConnected() {
+//                        Print.e("onMediaScannerConnected");
+//                    }
+//
+//                    @Override
+//                    public void onScanCompleted(String s, Uri uri) {
+//                        Print.e("onScanCompleted : " + s);
+//                    }
+//                });
     }
 
 

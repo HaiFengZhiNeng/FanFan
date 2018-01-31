@@ -145,6 +145,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         mSoundPresenter = new LineSoundPresenter(this);
         mSoundPresenter.start();
+
     }
 
     @Override
@@ -634,6 +635,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     @Override
     public void startPage(SpecialType specialType) {
         switch (specialType) {
+            case Fanfan:
+                animateSequentially(ivFanfan);
+                break;
             case Video:
                 VideoIntroductionActivity.newInstance(this);
                 break;

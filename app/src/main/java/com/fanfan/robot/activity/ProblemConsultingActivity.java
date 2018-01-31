@@ -214,6 +214,8 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     private void refVoice(VoiceBean itemData, int position) {
         voiceAdapter.notifyClick(position);
         speakText = itemData.getVoiceAnswer();
+        Print.e("本地语音 说话 .......");
+        addSpeakAnswer(speakText);
         if (itemData.getActionData() != null) {
             mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getActionData());
         }
@@ -223,7 +225,6 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         Glide.with(mContext).load(itemData.getImgUrl())
                 .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.video_image))
                 .into(ivVoiceImage);
-        addSpeakAnswer(speakText);
     }
 
     @Override

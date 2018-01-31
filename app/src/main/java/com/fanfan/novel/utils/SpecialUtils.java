@@ -39,6 +39,8 @@ public class SpecialUtils {
             return SpecialType.Map;
         } else if (txtInTxt(resources, speakTxt, R.string.StopListener)) {
             return SpecialType.StopListener;
+        } else if(txtInTxt(resources, speakTxt, R.string.FanFan)) {
+            return SpecialType.Fanfan;
         } else if (txtInTxt(resources, speakTxt, R.string.Video)) {
             return SpecialType.Video;
         } else if (txtInTxt(resources, speakTxt, R.string.Problem)) {
