@@ -44,8 +44,8 @@ public class NovelApp extends MultiDexApplication {
         instance = this;
 
 //        if (initLeak()) return;
-//        RCrashHandler.getInstance(Constants.CRASH_PATH).init(this, null);
-//        Stetho.initializeWithDefaults(this);
+        RCrashHandler.getInstance(Constants.CRASH_PATH).init(this, null);
+        Stetho.initializeWithDefaults(this);
         initLogger(this);
         Foreground.init(this);
         //初始化数据库

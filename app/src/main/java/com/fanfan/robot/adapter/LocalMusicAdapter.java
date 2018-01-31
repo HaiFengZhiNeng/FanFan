@@ -72,12 +72,16 @@ public class LocalMusicAdapter extends SimpleAdapter<Music> {
     }
 
     public void updatePlayingPosition(PlayService playService) {
+        int forPos = mPlayingPosition;
         if (playService.getPlayingMusic() != null) {
             mPlayingPosition = playService.getPlayingPosition();
         } else {
             mPlayingPosition = -1;
         }
-        notifyDataSetChanged();
+        if(mPlayingPosition != -1) {
+            notifyItemChanged(forPos);
+            notifyItemChanged(mPlayingPosition);
+        }
     }
 
     public int getPlayingPosition() {
