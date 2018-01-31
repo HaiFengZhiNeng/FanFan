@@ -25,7 +25,7 @@ public abstract class ISynthesizerPresenter implements BasePresenter {
 
     public abstract void stopHandler();
 
-    public abstract void stopAll();
+    public abstract void stopAll(String wakeUp);
 
     public interface ITtsView extends BaseView {
 

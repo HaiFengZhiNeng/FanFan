@@ -35,9 +35,10 @@ import com.fanfan.novel.model.NavigationBean;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.ui.RangeClickImageView;
+import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.DialogUtils;
-import com.fanfan.novel.utils.LocalLexicon;
 import com.fanfan.robot.R;
+import com.fanfan.robot.app.NovelApp;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.LexiconListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -57,7 +58,7 @@ import butterknife.OnClick;
  * Created by android on 2018/1/8.
  */
 
-public class AddNavigationActivity extends BarBaseActivity implements LocalLexicon.RobotLexiconListener {
+public class AddNavigationActivity extends BarBaseActivity {
 
     @BindView(R.id.tv_title)
     TextView tvTitle;
@@ -97,6 +98,10 @@ public class AddNavigationActivity extends BarBaseActivity implements LocalLexic
 
     private boolean isClick;
 
+    private SpeechRecognizer mIat;
+    private VideoDBManager mVideoDBManager;
+    private VoiceDBManager mVoiceDBManager;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_add_navigation;
@@ -119,6 +124,13 @@ public class AddNavigationActivity extends BarBaseActivity implements LocalLexic
 
         tvTitle.setText(title == null ? navigationBean.getTitle() : title);
         tvNavigation.setText(resArray(R.array.navigation)[curNavigation]);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mIat.destroy();
+        listener = null;
+        super.onDestroy();
     }
 
     @OnClick({R.id.tv_navigation})
@@ -183,7 +195,11 @@ public class AddNavigationActivity extends BarBaseActivity implements LocalLexic
             navigationBean.setId(saveLocalId);
             mNavigationDBManager.update(navigationBean);
         }
-        LocalLexicon.getInstance().initDBManager().setListener(this).updateContents();
+
+        mVideoDBManager = new VideoDBManager();
+        mVoiceDBManager = new VoiceDBManager();
+
+        updateContents();
     }
 
 
@@ -205,7 +221,70 @@ public class AddNavigationActivity extends BarBaseActivity implements LocalLexic
     }
 
 
-    @Override
+    /**
+     * 更新所有
+     */
+    public void updateContents() {
+        if (mVideoDBManager == null || mVoiceDBManager == null || mNavigationDBManager == null) {
+            throw new NullPointerException("local loxicon unll");
+        }
+        StringBuilder lexiconContents = new StringBuilder();
+        //本地语音
+        List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
+        for (VoiceBean voiceBean : voiceBeanList) {
+            lexiconContents.append(voiceBean.getShowTitle()).append("\n");
+        }
+        //本地视频
+        List<VideoBean> videoBeanList = mVideoDBManager.loadAll();
+        for (VideoBean videoBean : videoBeanList) {
+            lexiconContents.append(videoBean.getShowTitle()).append("\n");
+        }
+        //本地导航
+        List<NavigationBean> navigationBeanList = mNavigationDBManager.loadAll();
+        for (NavigationBean navigationBean : navigationBeanList) {
+            lexiconContents.append(navigationBean.getTitle()).append("\n");
+        }
+
+        lexiconContents.append(AppUtil.words2Contents());
+        updateLocation(lexiconContents.toString());
+    }
+
+    public void updateLocation(String lexiconContents) {
+        mIat = SpeakIat.getInstance().mIat();
+        mIat.setParameter(SpeechConstant.PARAMS, null);
+        // 设置引擎类型
+        mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
+        // 指定资源路径
+        mIat.setParameter(ResourceUtil.ASR_RES_PATH,
+                ResourceUtil.generateResourcePath(NovelApp.getInstance().getApplicationContext(),
+                        ResourceUtil.RESOURCE_TYPE.assets, "asr/common.jet"));
+        // 指定语法路径
+        mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
+        // 指定语法名字
+        mIat.setParameter(SpeechConstant.GRAMMAR_LIST, "local");
+        // 设置文本编码格式
+        mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8");
+        // lexiconName 为词典名字，lexiconContents 为词典内容，lexiconListener 为回调监听器
+        int ret = mIat.updateLexicon("voice", lexiconContents, listener);
+        if (ret != ErrorCode.SUCCESS) {
+            Print.e("更新词典失败,错误码：" + ret);
+        }
+    }
+
+    private LexiconListener listener = new LexiconListener() {
+        @Override
+        public void onLexiconUpdated(String lexiconId, SpeechError error) {
+            if (error == null) {
+                Print.e("词典更新成功");
+                onLexiconSuccess();
+            } else {
+                Print.e("词典更新失败,错误码：" + error.getErrorCode());
+                onLexiconError(error.getErrorDescription());
+            }
+        }
+    };
+
+
     public void onLexiconSuccess() {
         Intent intent = new Intent();
         intent.putExtra(RESULT_CODE, getText(tvTitle));
@@ -213,7 +292,6 @@ public class AddNavigationActivity extends BarBaseActivity implements LocalLexic
         finish();
     }
 
-    @Override
     public void onLexiconError(String error) {
         showToast(error);
     }

@@ -22,7 +22,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/y130"
-        android:text="点我或者喊我都能叫醒小咸哦！"
+        android:text="点击页面或者我都能叫醒我哦！"
         android:textColor="@color/white"
         android:textSize="@dimen/x12" />
 </RelativeLayout>

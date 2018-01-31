@@ -105,9 +105,9 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
     }
 
     @Override
-    public void stopAll() {
+    public void stopAll(String wakeUp) {
         stopTts();
-        doAnswer(resFoFinal(R.array.wake_up));
+        doAnswer(wakeUp);
     }
 
     private String resFoFinal(int id) {

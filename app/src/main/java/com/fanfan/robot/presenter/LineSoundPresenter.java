@@ -29,10 +29,10 @@ import com.fanfan.novel.model.xf.service.train.Train;
 import com.fanfan.novel.model.xf.service.wordFinding.WordFinding;
 import com.fanfan.novel.service.listener.AiuiListener;
 import com.fanfan.novel.service.listener.IatListener;
+import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.AudioUtil;
 import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.FucUtil;
-import com.fanfan.novel.utils.LocalLexicon;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.novel.utils.SpecialUtils;
 import com.fanfan.novel.utils.music.MediaPlayerUtil;
@@ -928,13 +928,13 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                         RobotInfo.getInstance().setLocalBuild();
                         structure();
                     } else {
-                        String lexiconContents = LocalLexicon.getInstance().words2Contents();
+                        String lexiconContents = AppUtil.words2Contents();
                         updateLocation("voice", lexiconContents);
                     }
                 } else if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_CLOUD)) {
 
                     if (!RobotInfo.getInstance().isCloudUpdatelexicon()) {
-                        List<String> words = LocalLexicon.getInstance().getLocalStrings();
+                        List<String> words = AppUtil.getLocalStrings();
 
                         Userword userword = new Userword();
                         userword.setName("userword");

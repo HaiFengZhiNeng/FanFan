@@ -138,7 +138,6 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
 
     @Override
     public void onDestroy() {
-        stopMusic();
         PlayService service = MusicCache.get().getPlayService();
         if (service != null) {
             service.setOnPlayEventListener(null);
@@ -263,5 +262,13 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
         Print.e("启动监听 ...... ");
         assert ((MultimediaActivity) getActivity()) != null;
         ((MultimediaActivity) getActivity()).startListener();
+    }
+
+    public void back() {
+        if (getPlayService().isPlaying()) {
+            stopMusic();
+        } else {
+            ((MultimediaActivity) getActivity()).onPlayerPause();
+        }
     }
 }

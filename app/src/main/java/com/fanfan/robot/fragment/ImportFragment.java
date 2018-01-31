@@ -27,15 +27,22 @@ import com.fanfan.novel.common.instance.SpeakIat;
 import com.fanfan.novel.db.manager.NavigationDBManager;
 import com.fanfan.novel.db.manager.VideoDBManager;
 import com.fanfan.novel.db.manager.VoiceDBManager;
+import com.fanfan.novel.model.NavigationBean;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
+import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.BitmapUtils;
 import com.fanfan.novel.utils.FileUtil;
-import com.fanfan.novel.utils.LocalLexicon;
 import com.fanfan.novel.utils.MediaFile;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
+import com.fanfan.robot.app.NovelApp;
+import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.LexiconListener;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechRecognizer;
+import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 
 import java.io.File;
@@ -53,7 +60,7 @@ import butterknife.Unbinder;
  * Created by android on 2018/1/19.
  */
 
-public class ImportFragment extends BaseDialogFragment implements LocalLexicon.RobotLexiconListener {
+public class ImportFragment extends BaseDialogFragment {
 
     @BindView(R.id.voice_view)
     RecyclerView voiceView;
@@ -89,6 +96,8 @@ public class ImportFragment extends BaseDialogFragment implements LocalLexicon.R
 
     private VideoDBManager mVideoDBManager;
     private VoiceDBManager mVoiceDBManager;
+
+    private NavigationDBManager mNavigationDBManager;
 
     @Override
     protected int getLayoutId() {
@@ -196,7 +205,8 @@ public class ImportFragment extends BaseDialogFragment implements LocalLexicon.R
                 mVoiceDBManager.deleteAll();
                 mVoiceDBManager.insertList(voiceBeanList);
 
-                LocalLexicon.getInstance().initDBManager().setListener(this).updateContents();
+                mNavigationDBManager = new NavigationDBManager();
+                updateContents();
                 break;
         }
     }
@@ -223,12 +233,71 @@ public class ImportFragment extends BaseDialogFragment implements LocalLexicon.R
         }
     }
 
-    @Override
+    /**
+     * 更新所有
+     */
+    public void updateContents() {
+        if (mVideoDBManager == null || mVoiceDBManager == null || mNavigationDBManager == null) {
+            throw new NullPointerException("local loxicon unll");
+        }
+        StringBuilder lexiconContents = new StringBuilder();
+        //本地语音
+        List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
+        for (VoiceBean voiceBean : voiceBeanList) {
+            lexiconContents.append(voiceBean.getShowTitle()).append("\n");
+        }
+        //本地视频
+        List<VideoBean> videoBeanList = mVideoDBManager.loadAll();
+        for (VideoBean videoBean : videoBeanList) {
+            lexiconContents.append(videoBean.getShowTitle()).append("\n");
+        }
+        //本地导航
+        List<NavigationBean> navigationBeanList = mNavigationDBManager.loadAll();
+        for (NavigationBean navigationBean : navigationBeanList) {
+            lexiconContents.append(navigationBean.getTitle()).append("\n");
+        }
+
+        lexiconContents.append(AppUtil.words2Contents());
+        updateLocation(lexiconContents.toString());
+    }
+
+    public void updateLocation(String lexiconContents) {
+        SpeechRecognizer mIat = SpeakIat.getInstance().mIat();
+        mIat.setParameter(SpeechConstant.PARAMS, null);
+        // 设置引擎类型
+        mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
+        // 指定资源路径
+        mIat.setParameter(ResourceUtil.ASR_RES_PATH,
+                ResourceUtil.generateResourcePath(NovelApp.getInstance().getApplicationContext(),
+                        ResourceUtil.RESOURCE_TYPE.assets, "asr/common.jet"));
+        // 指定语法路径
+        mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
+        // 指定语法名字
+        mIat.setParameter(SpeechConstant.GRAMMAR_LIST, "local");
+        // 设置文本编码格式
+        mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8");
+        // lexiconName 为词典名字，lexiconContents 为词典内容，lexiconListener 为回调监听器
+        int ret = mIat.updateLexicon("voice", lexiconContents, new LexiconListener() {
+            @Override
+            public void onLexiconUpdated(String lexiconId, SpeechError error) {
+                if (error == null) {
+                    Print.e("词典更新成功");
+                        onLexiconSuccess();
+                } else {
+                    Print.e("词典更新失败,错误码：" + error.getErrorCode());
+                        onLexiconError(error.getErrorDescription());
+                }
+            }
+        });
+        if (ret != ErrorCode.SUCCESS) {
+            Print.e("更新词典失败,错误码：" + ret);
+        }
+    }
+
     public void onLexiconSuccess() {
         dismiss();
     }
 
-    @Override
     public void onLexiconError(String error) {
 
     }

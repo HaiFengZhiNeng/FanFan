@@ -272,6 +272,13 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             if (resultCode == SettingActivity.LOGOUT_TO_MAIN_RESULTCODE) {
                 spakeLogout();
             }
+        } else if (requestCode == MultimediaActivity.MULTIMEDIA_REQUESTCODE) {
+            if (resultCode == MultimediaActivity.MULTIMEDIA_RESULTCODE) {
+                Print.e("断开与音乐服务的连接");
+                unbindService(mPlayServiceConnection);
+                mTtsPresenter.buildTts();
+                mSoundPresenter.buildIat();
+            }
         }
     }
 
@@ -432,7 +439,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                         chatContent.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    setChatContent("");
+                    chatContent.setText("");
                     chatContent.setVisibility(View.GONE);
                 }
             }
@@ -538,7 +545,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     @Override
     public void stopAll() {
         mSoundPresenter.stopVoice();
-        mTtsPresenter.stopAll();
+        String wakeUp = resFoFinal(R.array.wake_up);
+        setChatContent(wakeUp);
+        mTtsPresenter.stopAll(wakeUp);
     }
 
     @Override
@@ -711,7 +720,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 @Override
                 public void onEvent(Void aVoid) {
                     dismissLoading();
-                    MultimediaActivity.newInstance(MainActivity.this);
+                    MultimediaActivity.newInstance(MainActivity.this, MultimediaActivity.MULTIMEDIA_REQUESTCODE);
                 }
             });
         }

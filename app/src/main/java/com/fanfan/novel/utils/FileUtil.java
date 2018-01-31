@@ -77,6 +77,7 @@ public class FileUtil {
                 FileInputStream inputStream = new FileInputStream(file);
 
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "utf-8");
+//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "GBK");
 
                 BufferedReader reader = new BufferedReader(inputStreamReader);
 

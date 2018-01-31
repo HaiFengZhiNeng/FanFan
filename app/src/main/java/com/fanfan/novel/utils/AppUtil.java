@@ -29,11 +29,16 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import com.fanfan.robot.R;
+import com.fanfan.robot.app.NovelApp;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class AppUtil {
@@ -129,5 +134,44 @@ public class AppUtil {
         green = (int) (green * a + 0.5);
         blue = (int) (blue * a + 0.5);
         return 0xff << 24 | red << 16 | green << 8 | blue;
+    }
+
+    public static String words2Contents() {
+        StringBuilder sb = new StringBuilder();
+        List<String> words = getLocalStrings();
+        for (String anArrStandard : words) {
+            sb.append(anArrStandard).append("\n");
+        }
+        return sb.toString();
+    }
+
+    @NonNull
+    public static List<String> getLocalStrings() {
+
+        List<String> words = new ArrayList<>();
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.FanFan));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Video));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Problem));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.MultiMedia));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Seting_up));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Public_num));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Navigation));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Face));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Map));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Logout));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.StopListener));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Back));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Forward));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Backoff));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Turnleft));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Turnright));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Artificial));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Face_check_in));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Instagram));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Witness_contrast));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Face_lifting_area));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Next));
+        words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Lase));
+        return words;
     }
 }

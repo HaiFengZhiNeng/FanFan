@@ -58,7 +58,7 @@ import butterknife.OnClick;
 public class MultimediaActivity extends BarBaseActivity implements
         OnPlayerEventListener, ViewPager.OnPageChangeListener,
         ILocalSoundPresenter.ILocalSoundView,
-        ISerialPresenter.ISerialView{
+        ISerialPresenter.ISerialView {
 
     @BindView(R.id.tv_local_music)
     TextView tvLocalMusic;
@@ -73,9 +73,12 @@ public class MultimediaActivity extends BarBaseActivity implements
 
     private boolean isPlayFragmentShow = false;
 
-    public static void newInstance(Activity context) {
+    public static final int MULTIMEDIA_REQUESTCODE = 0xff - 3;
+    public static final int MULTIMEDIA_RESULTCODE = 0xff - 2;
+
+    public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, MultimediaActivity.class);
-        context.startActivity(intent);
+        context.startActivityForResult(intent, requestCode);
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
@@ -88,6 +91,8 @@ public class MultimediaActivity extends BarBaseActivity implements
 
     private LocalSoundPresenter mSoundPresenter;
     private SerialPresenter mSerialPresenter;
+
+    private boolean isFinish;
 
     @Override
     protected int getLayoutId() {
@@ -181,9 +186,13 @@ public class MultimediaActivity extends BarBaseActivity implements
                     danceFragment.add();
                 }
                 break;
+            case android.R.id.home:
+                back();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     protected void onRestoreInstanceState(final Bundle savedInstanceState) {
@@ -302,9 +311,7 @@ public class MultimediaActivity extends BarBaseActivity implements
             hidePlayingFragment();
             return;
         }
-        if (songFragment != null && songFragment.isAdded()) {
-            songFragment.stopMusic();
-        }
+        back();
         super.onBackPressed();
     }
 
@@ -337,6 +344,10 @@ public class MultimediaActivity extends BarBaseActivity implements
         }
         if (mPlayFragment != null && mPlayFragment.isAdded()) {
             mPlayFragment.onPlayerPause();
+        }
+        if (isFinish) {
+            setResult(MULTIMEDIA_RESULTCODE);
+            finish();
         }
     }
 
@@ -443,7 +454,11 @@ public class MultimediaActivity extends BarBaseActivity implements
 
     @Override
     public void back() {
-        finish();
+        isFinish = true;
+        if (songFragment != null && songFragment.isAdded()) {
+            songFragment.back();
+        }
+//        finish();
     }
 
     @Override
@@ -468,7 +483,7 @@ public class MultimediaActivity extends BarBaseActivity implements
 
     @Override
     public void stopAll() {
-        finish();
+        back();
     }
 
     @Override
