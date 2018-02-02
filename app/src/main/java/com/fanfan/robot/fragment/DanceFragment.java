@@ -1,8 +1,10 @@
 package com.fanfan.robot.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +47,7 @@ public class DanceFragment extends BaseFragment {
     RecyclerView recyclerView;
     @BindView(R.id.tv_empty)
     TextView tvEmpty;
+
 
     public static DanceFragment newInstance() {
         return new DanceFragment();

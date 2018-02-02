@@ -1,5 +1,6 @@
 package com.fanfan.robot.app;
 
+import android.app.IntentService;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
@@ -85,12 +86,12 @@ public class NovelApp extends MultiDexApplication {
     }
 
     private void initXf() {
-        StringBuffer param = new StringBuffer();
-        param.append("appid=" + getString(R.string.app_id));
-        param.append(",");
-        // 设置使用v5+
-        param.append(SpeechConstant.ENGINE_MODE + "=" + SpeechConstant.MODE_MSC);
-        SpeechUtility.createUtility(this, param.toString());
+        String param = "appid=" +
+                getString(R.string.app_id) +
+                "," +
+                // 设置使用v5+
+                SpeechConstant.ENGINE_MODE + "=" + SpeechConstant.MODE_MSC;
+        SpeechUtility.createUtility(this, param);
     }
 
 }
