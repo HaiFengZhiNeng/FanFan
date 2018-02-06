@@ -93,8 +93,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="80dp"
-        android:text="暂无本地视频，请到设置中添加"
-        android:textColor="@color/grey"
+        android:text="暂无本地语音，请到设置中添加"
+        android:textColor="@color/white"
         android:textSize="14sp"
         android:visibility="gone" />
 

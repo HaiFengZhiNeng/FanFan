@@ -92,10 +92,7 @@ public class DataNavigationActivity extends BarBaseActivity {
         super.onResume();
         navigationBeanList = mNavigationDBManager.loadAll();
         if (navigationBeanList != null && navigationBeanList.size() > 0) {
-            isNuEmpty();
             navigationAdapter.refreshData(navigationBeanList);
-        } else {
-            isEmpty();
         }
     }
 
