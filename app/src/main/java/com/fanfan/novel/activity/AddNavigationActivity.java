@@ -1,11 +1,17 @@
 package com.fanfan.novel.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +42,7 @@ import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.ui.RangeClickImageView;
 import com.fanfan.novel.utils.AppUtil;
+import com.fanfan.novel.utils.BitmapUtils;
 import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
@@ -47,6 +54,7 @@ import com.iflytek.cloud.SpeechRecognizer;
 import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -60,14 +68,27 @@ import butterknife.OnClick;
 
 public class AddNavigationActivity extends BarBaseActivity {
 
-    @BindView(R.id.tv_title)
-    TextView tvTitle;
+    @BindView(R.id.et_title)
+    EditText etTitle;
     @BindView(R.id.et_guide)
     EditText etGuide;
     @BindView(R.id.et_datail)
     EditText etDatail;
     @BindView(R.id.tv_navigation)
     TextView tvNavigation;
+    @BindView(R.id.tv_img)
+    TextView tvImg;
+    @BindView(R.id.img_navigation)
+    ImageView imgNavigation;
+
+    private String imagePath;//打开相册选择照片的路径
+    private Uri outputUri;//裁剪万照片保存地址
+    private boolean isClickCamera;//是否是拍照裁剪
+
+    public static final int CHOOSE_PHOTO = 2;//选择相册
+    public static final int PICTURE_CUT = 3;//剪切图片
+
+    private static final int REQCODE_SELALBUM = 102;
 
     public static final String NAVIGATION_TITLE = "navigation_title";
     public static final String NAVIGATION_ID = "navigation_id";
@@ -77,6 +98,12 @@ public class AddNavigationActivity extends BarBaseActivity {
     public static void newInstance(Activity context, String title, int requestCode) {
         Intent intent = new Intent(context, AddNavigationActivity.class);
         intent.putExtra(NAVIGATION_TITLE, title);
+        context.startActivityForResult(intent, requestCode);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
+    public static void newInstance(Activity context, int requestCode) {
+        Intent intent = new Intent(context, AddNavigationActivity.class);
         context.startActivityForResult(intent, requestCode);
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
@@ -117,25 +144,43 @@ public class AddNavigationActivity extends BarBaseActivity {
         if (saveLocalId != -1) {
 
             navigationBean = mNavigationDBManager.selectByPrimaryKey(saveLocalId);
+            etTitle.setText(navigationBean.getTitle());
             etGuide.setText(navigationBean.getGuide());
             etDatail.setText(navigationBean.getDatail());
             curNavigation = valueForArray(R.array.navigation, navigationBean.getNavigation());
+            String savePath = navigationBean.getImgUrl();
+            if (savePath != null) {
+                if (new File(savePath).exists()) {
+                    imgNavigation.setVisibility(View.VISIBLE);
+                    Glide.with(AddNavigationActivity.this).load(savePath)
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .into(imgNavigation);
+                }
+            }
         }
 
-        tvTitle.setText(title == null ? navigationBean.getTitle() : title);
         tvNavigation.setText(resArray(R.array.navigation)[curNavigation]);
     }
 
     @Override
     protected void onDestroy() {
-        mIat.destroy();
+        if (mIat != null) {
+            mIat.destroy();
+        }
         listener = null;
         super.onDestroy();
     }
 
-    @OnClick({R.id.tv_navigation})
+    @OnClick({R.id.tv_img, R.id.tv_navigation})
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.tv_img:
+                if (isEmpty(etTitle)) {
+                    showToast("地点不能为空!");
+                } else {
+                    selectFromAlbum();//打开相册
+                }
+                break;
             case R.id.tv_navigation:
                 DialogUtils.showLongListDialog(AddNavigationActivity.this, "目的地", R.array.navigation, new MaterialDialog.ListCallback() {
                     @Override
@@ -164,6 +209,10 @@ public class AddNavigationActivity extends BarBaseActivity {
                     break;
                 }
                 isClick = true;
+                if (isEmpty(etTitle)) {
+                    showToast("地点不能为空!");
+                    break;
+                }
                 if (isEmpty(etDatail)) {
                     showToast("地点详情不能为空!");
                     break;
@@ -178,16 +227,67 @@ public class AddNavigationActivity extends BarBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case CHOOSE_PHOTO://打开相册
+                // 判断手机系统版本号
+                if (data != null) {
+                    Uri uri = data.getData();
+                    if (Build.VERSION.SDK_INT >= 19) {
+                        // 4.4及以上系统使用这个方法处理图片
+                        imagePath = BitmapUtils.handleImageOnKitKat(this, uri);
+                        outputUri = BitmapUtils.cropPhoto(this, uri, etTitle.getText().toString() + ".jpg", PICTURE_CUT);
+                    } else {
+                        // 4.4以下系统使用这个方法处理图片
+                        imagePath = BitmapUtils.getImagePath(this, uri, null);
+                        outputUri = BitmapUtils.cropPhoto(AddNavigationActivity.this, uri, etTitle.getText().toString() + ".jpg", PICTURE_CUT);
+                    }
+                }
+                break;
+            case PICTURE_CUT://裁剪完成
+                isClickCamera = true;
+                if (isClickCamera) {
+                    imgNavigation.setVisibility(View.VISIBLE);
+                    Glide.with(AddNavigationActivity.this).load(outputUri)
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .into(imgNavigation);
+                } else {
+                    Glide.with(AddNavigationActivity.this).load(outputUri)
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .into(imgNavigation);
+                }
+                break;
+        }
+    }
+
+    private void selectFromAlbum() {
+        if (ContextCompat.checkSelfPermission(AddNavigationActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(AddNavigationActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQCODE_SELALBUM);
+        } else {
+            openAlbum();
+        }
+    }
+
+    private void openAlbum() {
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.setType("image/*");
+        startActivityForResult(intent, CHOOSE_PHOTO); // 打开相册
+    }
+
     private void navigationIsexit() {
         if (navigationBean == null) {
             navigationBean = new NavigationBean();
         }
         navigationBean.setSaveTime(System.currentTimeMillis());
-        navigationBean.setTitle(getText(tvTitle));
+        navigationBean.setTitle(getText(etTitle));
         navigationBean.setGuide(getText(etGuide));
         navigationBean.setDatail(getText(etDatail));
         navigationBean.setNavigation(resArray(R.array.navigation)[curNavigation]);
         navigationBean.setNavigationData(resArray(R.array.navigation_data)[curNavigation]);
+        setNavigationimg(navigationBean);
 
         if (saveLocalId == -1) {//直接添加
             mNavigationDBManager.insert(navigationBean);
@@ -202,6 +302,13 @@ public class AddNavigationActivity extends BarBaseActivity {
         updateContents();
     }
 
+    private void setNavigationimg(NavigationBean bean) {
+        if (outputUri != null) {
+            String imagePath = BitmapUtils.getPathByUri4kitkat(AddNavigationActivity.this, outputUri);
+            Print.e(imagePath);
+            bean.setImgUrl(imagePath);
+        }
+    }
 
     private int valueForArray(int resId, String compare) {
         String[] arrays = resArray(resId);
@@ -287,7 +394,7 @@ public class AddNavigationActivity extends BarBaseActivity {
 
     public void onLexiconSuccess() {
         Intent intent = new Intent();
-        intent.putExtra(RESULT_CODE, getText(tvTitle));
+        intent.putExtra(RESULT_CODE, getText(etTitle));
         setResult(RESULT_OK, intent);
         finish();
     }

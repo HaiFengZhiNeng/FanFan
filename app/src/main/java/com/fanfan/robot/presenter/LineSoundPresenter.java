@@ -274,6 +274,10 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void onlineResult(String result) {
+        if(result.length() == 1){
+            mSoundView.onCompleted();
+            return;
+        }
         SpecialType specialType = SpecialUtils.doesExist(mSoundView.getContext().getResources(), result);
         if (specialType == SpecialType.NoSpecial) {
             aiuiWriteText(result);

@@ -11,6 +11,15 @@ import com.fanfan.novel.common.instance.SpeakTts;
 import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
 import com.fanfan.novel.service.listener.IatListener;
 import com.fanfan.novel.service.listener.TtsListener;
+import com.fanfan.novel.service.stragry.local.ArtificialStrategy;
+import com.fanfan.novel.service.stragry.local.BackStrategy;
+import com.fanfan.novel.service.stragry.local.ControlStrategy;
+import com.fanfan.novel.service.stragry.local.FaceStrategy;
+import com.fanfan.novel.service.stragry.local.LogoutStrategy;
+import com.fanfan.novel.service.stragry.local.MapStrategy;
+import com.fanfan.novel.service.stragry.local.MoveStrategy;
+import com.fanfan.novel.service.stragry.TranficCalculator;
+import com.fanfan.novel.service.stragry.local.StopStrategy;
 import com.fanfan.novel.utils.FucUtil;
 import com.fanfan.novel.utils.SpecialUtils;
 import com.fanfan.robot.R;
@@ -205,29 +214,50 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
     @Override
     public void onRecognResult(String result) {
         Print.e(result);
-        SpecialType type = SpecialUtils.doesExistLocal(mSoundView.getContext().getResources(), result);
 
-        if (type == SpecialType.Forward || type == SpecialType.Backoff ||
-                type == SpecialType.Turnleft || type == SpecialType.Turnright) {
-            mSoundView.spakeMove(type, result);
-        } else if (type == SpecialType.Logout) {
-            mSoundView.logout();
-        } else if (type == SpecialType.Map) {
-            mSoundView.openMap();
-        } else if (type == SpecialType.StopListener) {
-            mSoundView.stopListener();
-        } else if (type == SpecialType.Back) {
-            mSoundView.back();
-        } else if (type == SpecialType.Artificial) {
-            mSoundView.artificial();
-        } else if (type == SpecialType.Face_lifting_area || type == SpecialType.Face_check_in
-                || type == SpecialType.Instagram || type == SpecialType.Witness_contrast) {
-            mSoundView.face(type, result);
-        } else if (type == SpecialType.Next || type == SpecialType.Lase) {
-            mSoundView.control(type, result);
-        } else {
-            mSoundView.refLocalPage(result);
+        TranficCalculator calculator = new TranficCalculator();
+
+        SpecialType myType = calculator.specialLocal(result, new MoveStrategy());
+        if (SpecialType.NoSpecial != myType) {
+            mSoundView.spakeMove(myType, result);
+            return;
         }
+        myType = calculator.specialLocal(result, new LogoutStrategy());
+        if (SpecialType.NoSpecial != myType) {
+            mSoundView.logout();
+            return;
+        }
+        myType = calculator.specialLocal(result, new MapStrategy());
+        if (SpecialType.NoSpecial != myType) {
+            mSoundView.openMap();
+            return;
+        }
+        myType = calculator.specialLocal(result, new StopStrategy());
+        if (SpecialType.NoSpecial != myType) {
+            mSoundView.stopListener();
+            return;
+        }
+        myType = calculator.specialLocal(result, new BackStrategy());
+        if (SpecialType.NoSpecial != myType) {
+            mSoundView.back();
+            return;
+        }
+        myType = calculator.specialLocal(result, new ArtificialStrategy());
+        if (SpecialType.NoSpecial != myType) {
+            mSoundView.artificial();
+            return;
+        }
+        myType = calculator.specialLocal(result, new FaceStrategy());
+        if (SpecialType.NoSpecial != myType) {
+            mSoundView.face(myType, result);
+            return;
+        }
+        myType = calculator.specialLocal(result, new ControlStrategy());
+        if (SpecialType.NoSpecial != myType) {
+            mSoundView.control(myType, result);
+            return;
+        }
+        mSoundView.refLocalPage(result);
 
     }
 

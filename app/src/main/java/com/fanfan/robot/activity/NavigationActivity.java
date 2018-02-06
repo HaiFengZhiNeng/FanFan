@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,8 +19,10 @@ import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.activity.DataNavigationActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.NavigationDBManager;
+import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.NavigationBean;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.model.VoiceBean;
@@ -31,6 +36,8 @@ import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.RangeClickImageView;
 import com.fanfan.robot.R;
+import com.fanfan.robot.adapter.NavigationAdapter;
+import com.fanfan.robot.adapter.VoiceAdapter;
 import com.fanfan.youtu.api.base.Constant;
 import com.seabreeze.log.Print;
 
@@ -39,6 +46,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.net.DatagramPacket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -55,8 +63,12 @@ import static com.fanfan.novel.ui.RangeClickImageView.getPointY;
 public class NavigationActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
         ISerialPresenter.ISerialView, RangeClickImageView.OnResourceReadyListener, RangeClickImageView.OnRangeClickListener {
 
-    @BindView(R.id.iv_navigation)
+//    @BindView(R.id.iv_navigation)
     RangeClickImageView ivNavigation;
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
+    @BindView(R.id.iv_navigation_image)
+    ImageView ivNavigationImage;
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, NavigationActivity.class);
@@ -73,22 +85,43 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
 
     private NavigationBean mNavigationBean;
 
+    private List<NavigationBean> navigationBeanList = new ArrayList<>();
+
+    private NavigationAdapter navigationAdapter;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_navigation;
     }
 
     @Override
-    protected void initData() {
+    protected void initView() {
+        super.initView();
 
         mSoundPresenter = new LocalSoundPresenter(this);
         mSoundPresenter.start();
         mSerialPresenter = new SerialPresenter(this);
         mSerialPresenter.start();
 
+
+//        initImage();
+        initSimpleAdapter();
+    }
+
+    @Override
+    protected void initData() {
         mNavigationDBManager = new NavigationDBManager();
 
-        initImage();
+        navigationBeanList = mNavigationDBManager.loadAll();
+        if (navigationBeanList != null && navigationBeanList.size() > 0) {
+            navigationAdapter.refreshData(navigationBeanList);
+            navigationAdapter.notifyClick(0);
+            Glide.with(mContext).load(navigationBeanList.get(0).getImgUrl())
+                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.video_image))
+                    .into(ivNavigationImage);
+        } else {
+            isEmpty();
+        }
     }
 
     private void initImage() {
@@ -96,6 +129,27 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         ivNavigation.setFileName(fileName, (int) (Constants.displayWidth), (int) (Constants.displayHeight * 0.7));
         ivNavigation.setOnResourceReadyListener(this);
         ivNavigation.setOnRangeClickListener(this);
+    }
+
+    private void initSimpleAdapter() {
+        navigationAdapter = new NavigationAdapter(mContext, navigationBeanList);
+        navigationAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                refVoice(navigationBeanList.get(position), position);
+            }
+        });
+        recyclerView.setAdapter(navigationAdapter);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+    }
+
+    private void refVoice(NavigationBean itemData, int position) {
+        navigationAdapter.notifyClick(position);
+        refLocalPage(itemData.getTitle());
+        Glide.with(mContext).load(itemData.getImgUrl())
+                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.video_image))
+                .into(ivNavigationImage);
     }
 
     @Override
@@ -158,33 +212,33 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.home_black, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.home:
-                new MaterialDialog.Builder(this)
-                        .title("选择导航图")
-                        .content("目前只支持此张地图")
-                        .items(Constants.NAVIGATIONS)
-                        .itemsCallback(new MaterialDialog.ListCallback() {
-                            @Override
-                            public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
-                                fileName = text + ".png";
-                                initImage();
-                            }
-                        })
-                        .show();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        super.onCreateOptionsMenu(menu);
+//        getMenuInflater().inflate(R.menu.home_black, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.home:
+//                new MaterialDialog.Builder(this)
+//                        .title("选择导航图")
+//                        .content("目前只支持此张地图")
+//                        .items(Constants.NAVIGATIONS)
+//                        .itemsCallback(new MaterialDialog.ListCallback() {
+//                            @Override
+//                            public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+//                                fileName = text + ".png";
+//                                initImage();
+//                            }
+//                        })
+//                        .show();
+//                break;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     private void addSpeakAnswer(String messageContent) {
         mSoundPresenter.doAnswer(messageContent);

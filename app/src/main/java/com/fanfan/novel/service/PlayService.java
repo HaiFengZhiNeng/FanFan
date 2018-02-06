@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.fanfan.novel.common.Constants;
+import com.fanfan.novel.presenter.CameraPresenter;
 import com.fanfan.novel.service.cache.MusicCache;
 import com.fanfan.novel.service.mediascanner.SingleMediaScanner;
 import com.fanfan.novel.service.music.Actions;
@@ -126,29 +127,39 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         if (PreferencesUtils.getBoolean(PlayService.this, Constants.MUSIC_UPDATE, false)) {
             scanMussicExecute(callback);
         } else {
+            if (CameraPresenter.unusual) {
+
             new SingleMediaScanner(this, Environment.getExternalStorageDirectory(),
                     new SingleMediaScanner.ScanListener() {
                         @Override
                         public void onScanFinish(String s, Uri uri) {
                             Print.e("onScanCompleted : " + s);
-                            new AsyncTask<Void, Void, List<Music>>() {
-                                @Override
-                                protected List<Music> doInBackground(Void... params) {
-                                    return MusicUtils.scanMusic(PlayService.this, true);
-                                }
-
-                                @Override
-                                protected void onPostExecute(List<Music> musicList) {
-                                    PreferencesUtils.putBoolean(PlayService.this, Constants.MUSIC_UPDATE, true);
-                                    MusicDBManager mMusicDBManager = new MusicDBManager();
-                                    mMusicDBManager.deleteAll();
-                                    mMusicDBManager.insertList(musicList);
-                                    scanMussicExecute(callback);
-                                }
-                            }.execute();
+                            loadMusic(callback);
                         }
                     });
+            } else {
+                loadMusic(callback);
+            }
         }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void loadMusic(final EventCallback<Void> callback) {
+        new AsyncTask<Void, Void, List<Music>>() {
+            @Override
+            protected List<Music> doInBackground(Void... params) {
+                return MusicUtils.scanMusic(PlayService.this, true);
+            }
+
+            @Override
+            protected void onPostExecute(List<Music> musicList) {
+                PreferencesUtils.putBoolean(PlayService.this, Constants.MUSIC_UPDATE, true);
+                MusicDBManager mMusicDBManager = new MusicDBManager();
+                mMusicDBManager.deleteAll();
+                mMusicDBManager.insertList(musicList);
+                scanMussicExecute(callback);
+            }
+        }.execute();
     }
 
     private void scanMussicExecute(EventCallback<Void> callback) {

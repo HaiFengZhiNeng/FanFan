@@ -78,38 +78,4 @@ public class SpecialUtils {
         return res;
     }
 
-    public static SpecialType doesExistLocal(Resources resources, String speakTxt) {
-        if (txtInTxt(resources, speakTxt, R.string.Forward)) {
-            return SpecialType.Forward;
-        } else if (txtInTxt(resources, speakTxt, R.string.Backoff)) {
-            return SpecialType.Backoff;
-        } else if (txtInTxt(resources, speakTxt, R.string.Turnleft)) {
-            return SpecialType.Turnleft;
-        } else if (txtInTxt(resources, speakTxt, R.string.Turnright)) {
-            return SpecialType.Turnright;
-        } else if (txtInTxt(resources, speakTxt, R.string.Logout)) {
-            return SpecialType.Logout;
-        } else if (txtInTxt(resources, speakTxt, R.string.Map)) {
-            return SpecialType.Map;
-        } else if (txtInTxt(resources, speakTxt, R.string.StopListener)) {
-            return SpecialType.StopListener;
-        } else if (txtInTxt(resources, speakTxt, R.string.Back)) {
-            return SpecialType.Back;
-        } else if (txtInTxt(resources, speakTxt, R.string.Artificial)) {
-            return SpecialType.Artificial;
-        } else if (txtInTxt(resources, speakTxt, R.string.Face_check_in)) {
-            return SpecialType.Face_check_in;
-        } else if (txtInTxt(resources, speakTxt, R.string.Instagram)) {
-            return SpecialType.Instagram;
-        } else if (txtInTxt(resources, speakTxt, R.string.Witness_contrast)) {
-            return SpecialType.Witness_contrast;
-        } else if (txtInTxt(resources, speakTxt, R.string.Face_lifting_area)) {
-            return SpecialType.Face_lifting_area;
-        } else if (txtInTxt(resources, speakTxt, R.string.Next)) {
-            return SpecialType.Next;
-        } else if (txtInTxt(resources, speakTxt, R.string.Lase)) {
-            return SpecialType.Lase;
-        }
-        return SpecialType.NoSpecial;
-    }
 }

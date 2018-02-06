@@ -114,7 +114,9 @@ public class AddVideoActivity extends BarBaseActivity {
 
     @Override
     protected void onDestroy() {
-        mIat.destroy();
+        if (mIat != null) {
+            mIat.destroy();
+        }
         listener = null;
         super.onDestroy();
     }

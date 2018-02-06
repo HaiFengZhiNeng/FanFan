@@ -44,8 +44,8 @@ public class NovelApp extends MultiDexApplication {
         super.onCreate();
         instance = this;
 
-//        if (initLeak()) return;
-        RCrashHandler.getInstance(Constants.CRASH_PATH).init(this, null);
+        if (initLeak()) return;
+//        RCrashHandler.getInstance(Constants.CRASH_PATH).init(this, null);
         Stetho.initializeWithDefaults(this);
         initLogger(this);
         Foreground.init(this);

@@ -13,12 +13,14 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.novel.adapter.NavigationAdapter;
 import com.fanfan.novel.adapter.NavigationDataAdapter;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.db.manager.NavigationDBManager;
 import com.fanfan.novel.model.NavigationBean;
+import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.ExhibitionActivity;
@@ -48,9 +50,9 @@ public class DataNavigationActivity extends BarBaseActivity {
 
     private NavigationDBManager mNavigationDBManager;
 
-    private List<String> images = new ArrayList<>();
+    private List<NavigationBean> navigationBeanList;
 
-    private NavigationDataAdapter navigationDataAdapter;
+    private NavigationAdapter navigationAdapter;
 
     @Override
     protected int getLayoutId() {
@@ -60,26 +62,22 @@ public class DataNavigationActivity extends BarBaseActivity {
     @Override
     protected void initView() {
         super.initView();
-        navigationDataAdapter = new NavigationDataAdapter(mContext, images);
-        navigationDataAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        navigationAdapter = new NavigationAdapter(mContext, navigationBeanList);
+        navigationAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                String name = images.get(position);
-                if (name.indexOf(".") > 0) {
-                    name = name.substring(0, name.indexOf("."));
-                }
-                ExhibitionActivity.newInstance(DataNavigationActivity.this, name);
+//                navigationBeanList.get(position);
             }
         });
-        navigationDataAdapter.setOnItemLongClickListener(new BaseRecyclerAdapter.OnItemLongClickListener() {
+        navigationAdapter.setOnItemLongClickListener(new BaseRecyclerAdapter.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(View view, int position) {
-                showDeleteDialog(position);
+                showNeutralNotitleDialog(position);
                 return false;
             }
         });
-        recyclerView.setAdapter(navigationDataAdapter);
-        recyclerView.setLayoutManager(new GridLayoutManager(mContext, 2));
+        recyclerView.setAdapter(navigationAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 
@@ -92,18 +90,10 @@ public class DataNavigationActivity extends BarBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        List<NavigationBean> navigationBeanList = mNavigationDBManager.loadAll();
+        navigationBeanList = mNavigationDBManager.loadAll();
         if (navigationBeanList != null && navigationBeanList.size() > 0) {
             isNuEmpty();
-
-            Set<String> sets = new HashSet<>();
-            for (NavigationBean bean : navigationBeanList) {
-
-                sets.add(bean.getImgUrl());
-            }
-            images.clear();
-            images.addAll(sets);
-            navigationDataAdapter.notifyDataSetChanged();
+            navigationAdapter.refreshData(navigationBeanList);
         } else {
             isEmpty();
         }
@@ -120,45 +110,59 @@ public class DataNavigationActivity extends BarBaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add:
-                new MaterialDialog.Builder(this)
-                        .title("选择导航图")
-                        .content("目前只支持此张地图")
-                        .items(Constants.NAVIGATIONS)
-                        .itemsCallback(new MaterialDialog.ListCallback() {
-                            @Override
-                            public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
-                                ExhibitionActivity.newInstance(DataNavigationActivity.this, (String) text);
-                            }
-                        })
-                        .show();
+//                new MaterialDialog.Builder(this)
+//                        .title("选择导航图")
+//                        .content("目前只支持此张地图")
+//                        .items(Constants.NAVIGATIONS)
+//                        .itemsCallback(new MaterialDialog.ListCallback() {
+//                            @Override
+//                            public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+//                                ExhibitionActivity.newInstance(DataNavigationActivity.this, (String) text);
+//                            }
+//                        })
+//                        .show();
+                AddNavigationActivity.newInstance(DataNavigationActivity.this, AddNavigationActivity.ADD_NAVIGATION_REQUESTCODE);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AddVoiceActivity.ADD_VOICE_REQUESTCODE) {
+            if (resultCode == RESULT_OK) {
+                navigationBeanList = mNavigationDBManager.loadAll();
+                if (navigationBeanList != null && navigationBeanList.size() > 0) {
+                    navigationAdapter.refreshData(navigationBeanList);
+                }
+            }
+        }
+    }
 
-    private void showDeleteDialog(final int position) {
-
-        DialogUtils.showBasicNoTitleDialog(this, "确定要删除此图下所有的数据吗", "删除",
-                "取消", new DialogUtils.OnNiftyDialogListener() {
+    private void showNeutralNotitleDialog(final int position) {
+        DialogUtils.showNeutralNotitleDialog(this, "选择您要执行的操作", "删除所有",
+                "删除此条", "修改此条", new DialogUtils.OnNeutralDialogListener() {
                     @Override
-                    public void onClickLeft() {
-                        List<NavigationBean> beans = new ArrayList<>();
-                        List<NavigationBean> navigationBeanList = mNavigationDBManager.loadAll();
-                        for (NavigationBean bean : navigationBeanList) {
-
-                            if (images.get(position).equals(bean.getImgUrl())) {
-                                beans.add(bean);
-                            }
+                    public void neutralText() {
+                        if (mNavigationDBManager.deleteAll()) {
+                            navigationAdapter.clear();
+                            navigationBeanList.clear();
                         }
-                        mNavigationDBManager.deleteList(beans);
-                        images.remove(position);
-                        navigationDataAdapter.notifyDataSetChanged();
-
                     }
 
                     @Override
-                    public void onClickRight() {
+                    public void negativeText() {
+                        if (mNavigationDBManager.delete(navigationBeanList.get(position))) {
+                            navigationAdapter.removeItem(navigationBeanList.get(position));
+                            navigationBeanList.remove(position);
+                        }
+                    }
+
+                    @Override
+                    public void positiveText() {
+                        NavigationBean navigationBean = navigationBeanList.get(position);
+                        AddNavigationActivity.newInstance(DataNavigationActivity.this, navigationBean.getId(), AddNavigationActivity.ADD_NAVIGATION_REQUESTCODE);
                     }
                 });
     }
