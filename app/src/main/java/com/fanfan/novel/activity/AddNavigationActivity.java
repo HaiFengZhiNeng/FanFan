@@ -221,6 +221,13 @@ public class AddNavigationActivity extends BarBaseActivity {
                     showToast("引导语不能为空!");
                     break;
                 }
+                if (saveLocalId == -1) {
+                    List<NavigationBean> been = mNavigationDBManager.queryNavigationByQuestion(etTitle.getText().toString().trim());
+                    if (!been.isEmpty()) {
+                        showToast("请不要添加相同的地点！");
+                        break;
+                    }
+                }
                 navigationIsexit();
                 break;
         }
