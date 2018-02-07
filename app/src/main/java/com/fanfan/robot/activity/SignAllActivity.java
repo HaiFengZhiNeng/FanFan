@@ -112,7 +112,7 @@ public class SignAllActivity extends BarBaseActivity {
                 } else if (itemData instanceof CheckIn) {
                     CheckIn in = (CheckIn) itemData;
 //                    if (in.getTime() > System.currentTimeMillis()) {
-                        showDialog(in, position);
+                    showDialog(in, position);
 //                    }
                 }
             }
@@ -147,6 +147,12 @@ public class SignAllActivity extends BarBaseActivity {
                     public void onClickRight() {
                         mCheckInDBManager.delete(itemData);
                         mTreeRecyclerAdapter.getItemManager().removeItem(position);
+                        //检查上一个
+                        BaseItemData itemData = (BaseItemData) mTreeRecyclerAdapter.getData(position - 1).getData();
+
+                        if (itemData instanceof Data) {
+                            mTreeRecyclerAdapter.getItemManager().removeItem(position - 1);
+                        }
                     }
                 });
 

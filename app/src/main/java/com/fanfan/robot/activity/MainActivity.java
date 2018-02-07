@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.constraint.Guideline;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
@@ -281,6 +282,119 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             }
         }
     }
+
+    //**********************************************************************************************
+
+    private boolean isSuspendAction;
+    private boolean isAutoAction;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_UP://19
+                if (!isSuspendAction) {
+                    sendMsg(keyCode);
+                }
+                break;
+            case KeyEvent.KEYCODE_DPAD_DOWN://20
+                if (!isSuspendAction) {
+                    sendMsg(keyCode);
+                }
+                break;
+            case KeyEvent.KEYCODE_DPAD_LEFT://21
+                if (!isSuspendAction) {
+                    sendMsg(keyCode);
+                }
+                break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT://20
+                if (!isSuspendAction) {
+                    sendMsg(keyCode);
+                }
+                break;
+            case KeyEvent.KEYCODE_BUTTON_L1:
+//                onEventLR();
+                break;
+            case KeyEvent.KEYCODE_BUTTON_R1:
+//                onEventLR();
+                break;
+            case KeyEvent.KEYCODE_BUTTON_B:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80F3AA");
+                break;
+            case KeyEvent.KEYCODE_BUTTON_X:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80F2AA");
+                break;
+            case KeyEvent.KEYCODE_BUTTON_Y:
+                sendAutoAction();
+                break;
+            case KeyEvent.KEYCODE_BUTTON_A:
+                stopAutoAction();
+                break;
+        }
+        return false;
+    }
+
+    private void sendMsg(final int keyCode) {
+        isSuspendAction = true;
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_DPAD_UP://19
+                        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038002AA");
+                        Print.e("up");
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_DOWN://20
+                        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038008AA");
+                        Print.e("down");
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_LEFT://21
+                        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038004AA");
+                        Print.e("left");
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_RIGHT://20
+                        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038006AA");
+                        Print.e("right");
+                        break;
+                    default:
+                        isSuspendAction = false;
+                }
+
+            }
+        }, 500);
+    }
+
+    public void sendAutoAction() {
+        if (isAutoAction) {
+            stopAutoAction();
+        } else {
+            isAutoAction = true;
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A503800AAA");
+            Print.e("自由运动(开)");
+            mHandler.postDelayed(runnable, 600);
+        }
+    }
+
+    public void stopAutoAction() {
+        if (isAutoAction) {
+            Print.e("自由运动(关)");
+            mHandler.removeCallbacks(runnable);
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038005AA");
+            isAutoAction = false;
+        }
+    }
+
+    public Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (isAutoAction) {
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A503800AAA");
+                mHandler.postDelayed(runnable, 600);
+                Print.e("自由运动(开)");
+            }
+        }
+    };
+
+    //**********************************************************************************************
 
     private void addSpeakAnswer(String messageContent) {
         mTtsPresenter.doAnswer(messageContent);
@@ -558,10 +672,13 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
     @Override
     public void aiuiForLocal(String result) {
+        Print.e("aiuiForLocal : " + result);
+        String unicode = result.replaceAll("\\p{P}", "");
+        Print.e("aiuiForLocal : " + unicode);
         List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
         if (voiceBeanList != null && voiceBeanList.size() > 0) {
             for (VoiceBean voiceBean : voiceBeanList) {
-                if (voiceBean.getShowTitle().equals(result)) {
+                if (voiceBean.getShowTitle().equals(unicode)) {
                     refHomePage(voiceBean);
                     return;
                 }

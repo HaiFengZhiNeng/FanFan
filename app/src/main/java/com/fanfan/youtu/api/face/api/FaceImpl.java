@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.ArrayMap;
 
+import com.fanfan.novel.model.UserInfo;
 import com.fanfan.youtu.api.base.callback.BaseCallback;
 import com.fanfan.youtu.api.base.impl.BaseImpl;
 import com.fanfan.youtu.api.face.event.AddPersonEvent;
@@ -26,6 +27,7 @@ import com.fanfan.youtu.token.YoutuSign;
 import com.fanfan.youtu.utils.BitmapUtils;
 import com.fanfan.youtu.utils.GsonUtil;
 import com.fanfan.youtu.utils.UUIDGenerator;
+import com.seabreeze.log.Print;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -305,13 +307,14 @@ public class FaceImpl extends BaseImpl<FaceService> implements FaceAPI {
     }
 
 
-    public String getGroupId() {
+    private String getGroupId() {
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR); // 获取当前年份
-        return "hotel" + year;
+        Print.e(UserInfo.getInstance().getIdentifier());
+        return UserInfo.getInstance().getIdentifier();
     }
 
-    public String[] getGroupIds() {
+    private String[] getGroupIds() {
         String[] group_ids = {getGroupId()};
         return group_ids;
     }
