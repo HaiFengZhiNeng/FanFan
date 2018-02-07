@@ -61,7 +61,7 @@ public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSo
 //                .override((int) (realWidth / inSampleSize), (int) (realHeight / inSampleSize))
                 .fitCenter()
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+                .diskCacheStrategy(DiskCacheStrategy.NONE);
         Glide.with(this)
                 .asBitmap()
                 .load(R.mipmap.fanfan_introduce)

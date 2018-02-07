@@ -73,7 +73,7 @@ public class VideoVerticalAdapter extends RecyclerView.Adapter<VideoVerticalAdap
             holder.ivVideoImage.setImageBitmap(bitmap);
         } else {
             Glide.with(mContext).load(bean.getVideoImage())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.video_image))
+                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
                     .into(holder.ivVideoImage);
         }
     }

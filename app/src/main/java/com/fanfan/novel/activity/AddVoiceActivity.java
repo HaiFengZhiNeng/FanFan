@@ -132,7 +132,7 @@ public class AddVoiceActivity extends BarBaseActivity {
                 if (new File(savePath).exists()) {
                     imgVoice.setVisibility(View.VISIBLE);
                     Glide.with(AddVoiceActivity.this).load(savePath)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
                             .into(imgVoice);
                 }
             }
@@ -236,11 +236,11 @@ public class AddVoiceActivity extends BarBaseActivity {
                     if (Build.VERSION.SDK_INT >= 19) {
                         // 4.4及以上系统使用这个方法处理图片
                         imagePath = BitmapUtils.handleImageOnKitKat(this, uri);
-                        outputUri = BitmapUtils.cropPhoto(this, uri, etQuestion.getText().toString() + ".jpg", PICTURE_CUT);
+                        outputUri = BitmapUtils.cropPhoto(this, uri, "imgvoice", etQuestion.getText().toString() + ".jpg", PICTURE_CUT);
                     } else {
                         // 4.4以下系统使用这个方法处理图片
                         imagePath = BitmapUtils.getImagePath(this, uri, null);
-                        outputUri = BitmapUtils.cropPhoto(AddVoiceActivity.this, uri, etQuestion.getText().toString() + ".jpg", PICTURE_CUT);
+                        outputUri = BitmapUtils.cropPhoto(AddVoiceActivity.this, uri, "imgvoice", etQuestion.getText().toString() + ".jpg", PICTURE_CUT);
                     }
                 }
                 break;
@@ -249,11 +249,11 @@ public class AddVoiceActivity extends BarBaseActivity {
                 if (isClickCamera) {
                     imgVoice.setVisibility(View.VISIBLE);
                     Glide.with(AddVoiceActivity.this).load(outputUri)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
                             .into(imgVoice);
                 } else {
                     Glide.with(AddVoiceActivity.this).load(outputUri)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
                             .into(imgVoice);
                 }
                 break;

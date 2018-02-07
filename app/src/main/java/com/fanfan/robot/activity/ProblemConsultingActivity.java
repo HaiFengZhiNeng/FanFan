@@ -111,7 +111,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
             voiceAdapter.refreshData(voiceBeanList);
             voiceAdapter.notifyClick(0);
             Glide.with(mContext).load(voiceBeanList.get(0).getImgUrl())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.video_image))
+                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
                     .into(ivVoiceImage);
         } else {
             isEmpty();
@@ -223,7 +223,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
             mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getExpressionData());
         }
         Glide.with(mContext).load(itemData.getImgUrl())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.video_image))
+                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
                 .into(ivVoiceImage);
     }
 

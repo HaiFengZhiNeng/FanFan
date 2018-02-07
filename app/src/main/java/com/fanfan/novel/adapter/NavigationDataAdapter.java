@@ -40,7 +40,7 @@ public class NavigationDataAdapter extends SimpleAdapter<String> {
         RequestOptions requestOptions = new RequestOptions()
                 .fitCenter()
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+                .diskCacheStrategy(DiskCacheStrategy.NONE);
         Glide.with(context)
                 .asBitmap()
                 .load(Constants.ASSEST_PATH + item)

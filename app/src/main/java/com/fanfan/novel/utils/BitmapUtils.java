@@ -176,9 +176,13 @@ public class BitmapUtils {
     /**
      * 裁剪图片
      */
-    public static Uri cropPhoto(Activity context, Uri imageUri, String saveName, int requestCode) {
+    public static Uri cropPhoto(Activity context, Uri imageUri, String dirName, String saveName, int requestCode) {
         // 创建File对象，用于存储裁剪后的图片，避免更改原图
-        File file = new File(context.getExternalCacheDir(), saveName);
+        File file = new File(context.getExternalCacheDir() + dirName + File.separator, saveName);
+        File dirFile = new File(context.getExternalCacheDir() + dirName);
+        if (!dirFile.exists()) {
+            dirFile.mkdirs();
+        }
         try {
             if (file.exists()) {
                 file.delete();

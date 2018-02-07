@@ -92,7 +92,7 @@ public abstract class BaseFragment extends Fragment {
                     .error(R.mipmap.fragment_bg)
                     .priority(Priority.HIGH)
                     .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .transform(new GlideRoundTransform());
             Glide.with(this)
                     .asBitmap()

@@ -30,7 +30,7 @@ public class VideoDataAdapter extends SimpleAdapter<VideoBean> {
         viewHolder.getTextView(R.id.save_time).setText(TimeUtils.getShortTime(item.getSaveTime()));
         viewHolder.getTextView(R.id.tv_video_url).setText(item.getVideoUrl());
         Glide.with(context).load(item.getVideoImage())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
                 .into(viewHolder.getImageView(R.id.iv_video_image));
     }
 

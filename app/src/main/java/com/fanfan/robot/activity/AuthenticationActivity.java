@@ -456,7 +456,7 @@ public class AuthenticationActivity extends BarBaseActivity implements
                 .error(R.mipmap.ic_head)
                 .priority(Priority.HIGH)
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .transform(new GlideRoundTransform());
 
         Glide.with(this).load(personInfo.getHeadUrl())
@@ -515,7 +515,7 @@ public class AuthenticationActivity extends BarBaseActivity implements
         infoLayout.setVisibility(View.VISIBLE);
         Glide.with(AuthenticationActivity.this)
                 .load(personInfo.getHeadUrl())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE))
+                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
                 .into(ivHead);
         tvName.setText(personInfo.getName());
         tvGender.setText(personInfo.getGender());

@@ -31,7 +31,7 @@ public class VoiceDataAdapter extends SimpleAdapter<VoiceBean> {
         viewHolder.getTextView(R.id.tv_expression).setText(item.getExpression());
         viewHolder.getTextView(R.id.tv_action).setText(item.getAction());
         Glide.with(context).load(item.getImgUrl())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
                 .into(viewHolder.getImageView(R.id.iv_voice_image));
     }
 

@@ -32,7 +32,7 @@ public class LocalDanceAdapter extends SimpleAdapter<Dance> {
         RequestOptions options = new RequestOptions()
                 .error(R.mipmap.default_cover_dance)
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .transform(new GlideRoundTransform());
         Glide.with(context)
                 .load(item.getCoverPath())

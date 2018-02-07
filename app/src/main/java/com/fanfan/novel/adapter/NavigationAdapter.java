@@ -31,7 +31,7 @@ public class NavigationAdapter extends SimpleAdapter<NavigationBean> {
         viewHolder.getTextView(R.id.tv_guide).setText(item.getGuide());
         viewHolder.getTextView(R.id.tv_datail).setText(item.getDatail());
         Glide.with(context).load(item.getImgUrl())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
                 .into(viewHolder.getImageView(R.id.iv_navigation_image));
     }
 }

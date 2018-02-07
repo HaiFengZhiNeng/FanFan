@@ -153,7 +153,7 @@ public class AddNavigationActivity extends BarBaseActivity {
                 if (new File(savePath).exists()) {
                     imgNavigation.setVisibility(View.VISIBLE);
                     Glide.with(AddNavigationActivity.this).load(savePath)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
                             .into(imgNavigation);
                 }
             }
@@ -244,11 +244,11 @@ public class AddNavigationActivity extends BarBaseActivity {
                     if (Build.VERSION.SDK_INT >= 19) {
                         // 4.4及以上系统使用这个方法处理图片
                         imagePath = BitmapUtils.handleImageOnKitKat(this, uri);
-                        outputUri = BitmapUtils.cropPhoto(this, uri, etTitle.getText().toString() + ".jpg", PICTURE_CUT);
+                        outputUri = BitmapUtils.cropPhoto(this, uri, "imgnav", etTitle.getText().toString() + ".jpg", PICTURE_CUT);
                     } else {
                         // 4.4以下系统使用这个方法处理图片
                         imagePath = BitmapUtils.getImagePath(this, uri, null);
-                        outputUri = BitmapUtils.cropPhoto(AddNavigationActivity.this, uri, etTitle.getText().toString() + ".jpg", PICTURE_CUT);
+                        outputUri = BitmapUtils.cropPhoto(AddNavigationActivity.this, uri, "imgnav", etTitle.getText().toString() + ".jpg", PICTURE_CUT);
                     }
                 }
                 break;
@@ -257,11 +257,11 @@ public class AddNavigationActivity extends BarBaseActivity {
                 if (isClickCamera) {
                     imgNavigation.setVisibility(View.VISIBLE);
                     Glide.with(AddNavigationActivity.this).load(outputUri)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
                             .into(imgNavigation);
                 } else {
                     Glide.with(AddNavigationActivity.this).load(outputUri)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
                             .into(imgNavigation);
                 }
                 break;

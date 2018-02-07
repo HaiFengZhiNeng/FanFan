@@ -103,7 +103,7 @@ public class AddVideoActivity extends BarBaseActivity {
                 if (new File(savePath).exists()) {
                     imgVideo.setVisibility(View.VISIBLE);
                     Glide.with(AddVideoActivity.this).load(savePath)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.ic_logo))
+                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
                             .into(imgVideo);
                 }
             }

@@ -69,7 +69,7 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
                 .placeholder(R.mipmap.splash_bg)
                 .error(R.mipmap.splash_bg)
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+                .diskCacheStrategy(DiskCacheStrategy.NONE);
         Glide.with(this)
                 .load(R.mipmap.splash_bg)
                 .apply(options)
@@ -78,7 +78,7 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
         Glide.with(this)
                 .load(R.mipmap.ic_code)
                 .apply(new RequestOptions().override(300, 300)
-                        .skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE))
+                        .skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
                 .into(ivCode);
 
         mSoundPresenter = new LocalSoundPresenter(this);

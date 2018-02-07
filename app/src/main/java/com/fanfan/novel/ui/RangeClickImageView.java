@@ -308,7 +308,7 @@ public class RangeClickImageView extends ImageView implements RequestListener<Bi
                 .override((int) (realWidth / inSampleSize), (int) (realHeight / inSampleSize))
                 .fitCenter()
                 .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+                .diskCacheStrategy(DiskCacheStrategy.NONE);
         Glide.with(this)
                 .asBitmap()
                 .load(Constants.ASSEST_PATH + fileName)

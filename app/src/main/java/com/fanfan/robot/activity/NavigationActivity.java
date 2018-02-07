@@ -117,7 +117,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
             navigationAdapter.refreshData(navigationBeanList);
             navigationAdapter.notifyClick(0);
             Glide.with(mContext).load(navigationBeanList.get(0).getImgUrl())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.video_image))
+                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
                     .into(ivNavigationImage);
         } else {
             isEmpty();
@@ -148,7 +148,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         navigationAdapter.notifyClick(position);
         refLocalPage(itemData.getTitle());
         Glide.with(mContext).load(itemData.getImgUrl())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESOURCE).error(R.mipmap.video_image))
+                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
                 .into(ivNavigationImage);
     }
 
