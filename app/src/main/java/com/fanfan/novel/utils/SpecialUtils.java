@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class SpecialUtils {
 
     private static String[] MusicArray = {"唱歌", "唱歌儿", "唱一首歌", "我想听音乐", "播放音乐", "来首歌曲", "播放歌曲", "唱首歌", "音乐", "音乐播放中..."};
-    //    private static String[] MusicArray = {""};
+    private static String[] HandArray = {"握手"};
     private static String[] DanceArray = {"跳舞"};
     private static String[] StoryArray = {"故事"};
     private static String[] JokeArray = {"笑话"};
@@ -25,6 +25,8 @@ public class SpecialUtils {
             return SpecialType.Music;
         } else if (txtInArray(speakTxt, DanceArray)) {
             return SpecialType.Dance;
+        }else if(txtInArray(speakTxt, HandArray)){
+            return SpecialType.Hand;
         } else if (txtInArray(speakTxt, StoryArray) || Arrays.asList(resFoFinal(resources, R.array.other_story)).contains(speakTxt)) {
             return SpecialType.Story;
         } else if (txtInArray(speakTxt, JokeArray) || Arrays.asList(resFoFinal(resources, R.array.other_joke)).contains(speakTxt)) {

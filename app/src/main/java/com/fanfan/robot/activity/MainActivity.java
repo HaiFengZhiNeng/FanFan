@@ -402,9 +402,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     //**********************************************************************************************
 
-    private void addSpeakAnswer(String messageContent) {
+    private void addSpeakAnswer(String messageContent, boolean isAction) {
         mTtsPresenter.doAnswer(messageContent);
-        speakingAddAction(messageContent.length());
+        if(isAction) {
+            speakingAddAction(messageContent.length());
+        }
     }
 
     private void setChatContent(String messageContent) {
@@ -584,7 +586,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void parseMsgcomplete(String str) {
-        addSpeakAnswer(str);
+        addSpeakAnswer(str, true);
     }
 
     @Override
@@ -695,7 +697,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void doAiuiAnwer(String anwer) {
-        addSpeakAnswer(anwer);
+        addSpeakAnswer(anwer, true);
     }
 
     @Override
@@ -706,7 +708,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, voiceBean.getExpressionData());
 
         setChatContent(voiceBean.getVoiceAnswer());
-        addSpeakAnswer(voiceBean.getVoiceAnswer());
+        addSpeakAnswer(voiceBean.getVoiceAnswer(), true);
     }
 
 
@@ -763,8 +765,12 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                     DanceActivity.newInstance(this, dance.getId());
                 } else {
                     setChatContent("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈");
-                    addSpeakAnswer("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈");
+                    addSpeakAnswer("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈", true);
                 }
+                break;
+            case Hand:
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C800CAA");
+                addSpeakAnswer("你好", false);
                 break;
         }
     }

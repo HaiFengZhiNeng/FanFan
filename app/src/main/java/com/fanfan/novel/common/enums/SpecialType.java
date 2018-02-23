@@ -9,6 +9,7 @@ public enum SpecialType {
     NoSpecial,
     Music,
     Dance,
+    Hand,
     Story,
     Joke,
 

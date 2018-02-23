@@ -274,7 +274,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void onlineResult(String result) {
-        if(result.length() == 1){
+        if (result.length() == 1) {
             mSoundView.onCompleted();
             return;
         }
@@ -285,6 +285,8 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
             mSoundView.special(result, SpecialType.Music);
         } else if (specialType == SpecialType.Dance) {
             mSoundView.special(result, SpecialType.Dance);
+        } else if (specialType == SpecialType.Hand) {
+            mSoundView.special(result, SpecialType.Hand);
         } else if (specialType == SpecialType.Story) {
             aiuiWriteText(result);
         } else if (specialType == SpecialType.Joke) {
