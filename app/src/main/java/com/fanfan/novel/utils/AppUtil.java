@@ -40,6 +40,7 @@ import com.fanfan.robot.app.NovelApp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class AppUtil {
 
@@ -173,5 +174,13 @@ public class AppUtil {
         words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Next));
         words.add(NovelApp.getInstance().getApplicationContext().getResources().getString(R.string.Lase));
         return words;
+    }
+
+
+    public static boolean matcherUrl(String url) {
+
+        Pattern pattern = Pattern
+                .compile("^([hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~\\/])+$");
+        return pattern.matcher(url).matches();
     }
 }

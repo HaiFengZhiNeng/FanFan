@@ -3,18 +3,23 @@ package com.fanfan.robot.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.fanfan.novel.common.Constants;
+import com.fanfan.novel.adapter.SiteDataAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.enums.SpecialType;
-import com.fanfan.novel.common.glide.GlideRoundTransform;
+import com.fanfan.novel.db.manager.SiteDBManager;
+import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.SerialBean;
+import com.fanfan.novel.model.SiteBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
 import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
@@ -23,7 +28,9 @@ import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
+import com.fanfan.novel.utils.customtabs.IntentUtil;
 import com.fanfan.robot.R;
+import com.fanfan.robot.adapter.SiteAdapter;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
@@ -31,6 +38,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.net.DatagramPacket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,6 +55,8 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     ImageView ivSplashBack;
     @BindView(R.id.iv_code)
     ImageView ivCode;
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerSite;
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, PublicNumberActivity.class);
@@ -55,14 +67,56 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     private LocalSoundPresenter mSoundPresenter;
     private SerialPresenter mSerialPresenter;
 
+    private SiteDBManager mSiteDBManager;
+
+    private List<SiteBean> siteBeanList = new ArrayList<>();
+
+    private SiteAdapter siteAdapter;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_public_number;
     }
 
     @Override
-    protected void initData() {
+    protected void initView() {
+        super.initView();
 
+//        loadImage();
+
+        mSoundPresenter = new LocalSoundPresenter(this);
+        mSoundPresenter.start();
+        mSerialPresenter = new SerialPresenter(this);
+        mSerialPresenter.start();
+
+
+        siteAdapter = new SiteAdapter(mContext, siteBeanList);
+        siteAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                refSite(siteBeanList.get(position), position);
+            }
+        });
+        recyclerSite.setAdapter(siteAdapter);
+        recyclerSite.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerSite.setItemAnimator(new DefaultItemAnimator());
+    }
+
+    @Override
+    protected void initData() {
+        mSiteDBManager = new SiteDBManager();
+
+        siteBeanList = mSiteDBManager.loadAll();
+        if (siteBeanList != null && siteBeanList.size() > 0) {
+            siteAdapter.refreshData(siteBeanList);
+            siteAdapter.notifyClick(0);
+        } else {
+            isEmpty();
+        }
+
+    }
+
+    private void loadImage() {
         RequestOptions options = new RequestOptions()
                 .centerCrop()
 //                .override(Constants.displayWidth, Constants.displayHeight - toolbar.getHeight())
@@ -80,12 +134,11 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
                 .apply(new RequestOptions().override(300, 300)
                         .skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
                 .into(ivCode);
+    }
 
-        mSoundPresenter = new LocalSoundPresenter(this);
-        mSoundPresenter.start();
-        mSerialPresenter = new SerialPresenter(this);
-        mSerialPresenter.start();
-
+    private void refSite(SiteBean itemData, int position) {
+        siteAdapter.notifyClick(position);
+        IntentUtil.openUrl(mContext, itemData.getUrl());
     }
 
     @Override
@@ -234,7 +287,19 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
 
     @Override
     public void refLocalPage(String result) {
-        addSpeakAnswer(R.string.open_local);
+        List<SiteBean> siteBeans = mSiteDBManager.queryLikeSiteByName(result);
+        if (siteBeans != null && siteBeans.size() > 0) {
+            SiteBean itemData = null;
+            if (siteBeans.size() == 1) {
+                itemData = siteBeans.get(siteBeans.size() - 1);
+            } else {
+                itemData = siteBeans.get(new Random().nextInt(siteBeans.size()));
+            }
+            int index = siteBeanList.indexOf(itemData);
+            refSite(itemData, index);
+        } else {
+            addSpeakAnswer(resFoFinal(R.array.no_result));
+        }
     }
 
     @Override

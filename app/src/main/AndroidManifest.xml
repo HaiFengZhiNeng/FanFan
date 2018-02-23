@@ -13,7 +13,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE"
+    <uses-permission
+        android:name="android.permission.MODIFY_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -73,8 +74,9 @@
             <!--</intent-filter>-->
         </activity>
 
-        <activity android:name="com.fanfan.novel.common.activity.CrashActivity"
-            android:theme="@style/AppTheme"/>
+        <activity
+            android:name="com.fanfan.novel.common.activity.CrashActivity"
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".activity.MainActivity"
@@ -135,6 +137,12 @@
             android:theme="@style/AppThemeAction" />
         <activity
             android:name="com.fanfan.novel.activity.AddNavigationActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name="com.fanfan.novel.activity.DataSiteActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name="com.fanfan.novel.activity.AddSiteActivity"
             android:theme="@style/AppThemeAction" />
         <activity
             android:name="com.fanfan.novel.activity.FaceDataActivity"

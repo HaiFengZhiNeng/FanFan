@@ -2,21 +2,12 @@ package com.fanfan.novel.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
-import android.net.Uri;
-import android.provider.MediaStore;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.instance.SpeakIat;
@@ -29,8 +20,6 @@ import com.fanfan.novel.model.SiteBean;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.utils.AppUtil;
-import com.fanfan.novel.utils.BitmapUtils;
-import com.fanfan.novel.utils.MediaFile;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.iflytek.cloud.ErrorCode;
@@ -41,77 +30,68 @@ import com.iflytek.cloud.SpeechRecognizer;
 import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 
-import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.OnClick;
+import butterknife.ButterKnife;
 
 /**
- * Created by android on 2018/1/6.
+ * Created by android on 2018/2/23.
  */
 
-public class AddVideoActivity extends BarBaseActivity {
+public class AddSiteActivity extends BarBaseActivity {
 
-    @BindView(R.id.img_video)
-    ImageView imgVideo;
-    @BindView(R.id.et_video_shart)
-    TextView etVideoShart;
+    public static final String SITE_ID = "siteId";
+    @BindView(R.id.et_site_name)
+    EditText etSiteName;
+    @BindView(R.id.et_site_url)
+    EditText etSiteUrl;
 
-    public static final String VIDEO_ID = "videoId";
-    public static final int ADD_VIDEO_REQUESTCODE = 223;
-
-    public static final int CHOOSE_VIDEO = 4;//选择视频
+    public static final int ADD_SITE_REQUESTCODE = 225;
 
     public static void newInstance(Activity context, int requestCode) {
-        Intent intent = new Intent(context, AddVideoActivity.class);
+        Intent intent = new Intent(context, AddSiteActivity.class);
         context.startActivityForResult(intent, requestCode);
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     public static void newInstance(Activity context, long id, int requestCode) {
-        Intent intent = new Intent(context, AddVideoActivity.class);
-        intent.putExtra(VIDEO_ID, id);
+        Intent intent = new Intent(context, AddSiteActivity.class);
+        intent.putExtra(SITE_ID, id);
         context.startActivityForResult(intent, requestCode);
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private long saveLocalId;
 
-    private VideoDBManager mVideoDBManager;
+    private SiteDBManager mSiteDBManager;
 
-    private VideoBean videoBean;
+    private SiteBean siteBean;
 
     private SpeechRecognizer mIat;
+
+    private VideoDBManager mVideoDBManager;
     private VoiceDBManager mVoiceDBManager;
     private NavigationDBManager mNavigationDBManager;
-    private SiteDBManager mSiteDBManager;
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_add_video;
+        return R.layout.activity_add_site;
     }
 
     @Override
     protected void initData() {
-        saveLocalId = getIntent().getLongExtra(VIDEO_ID, -1);
+        saveLocalId = getIntent().getLongExtra(SITE_ID, -1);
 
-        mVideoDBManager = new VideoDBManager();
+        mSiteDBManager = new SiteDBManager();
 
         if (saveLocalId != -1) {
-            videoBean = mVideoDBManager.selectByPrimaryKey(saveLocalId);
+            siteBean = mSiteDBManager.selectByPrimaryKey(saveLocalId);
 
-            String savePath = videoBean.getVideoImage();
-            if (savePath != null) {
-                if (new File(savePath).exists()) {
-                    imgVideo.setVisibility(View.VISIBLE);
-                    Glide.with(AddVideoActivity.this).load(savePath)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
-                            .into(imgVideo);
-                }
-            }
-            etVideoShart.setText(videoBean.getShowTitle());
-
+            etSiteName.setText(siteBean.getName());
+            etSiteUrl.setText(siteBean.getUrl());
+        } else {
+            siteBean = new SiteBean();
         }
     }
 
@@ -136,22 +116,30 @@ public class AddVideoActivity extends BarBaseActivity {
         switch (item.getItemId()) {
             case R.id.finish:
 
-                if (videoBean == null) {
-                    showToast("请选择视频！");
+                if (siteBean == null) {
+                    showToast("error！");
                     break;
                 }
-                if (isEmpty(etVideoShart)) {
-                    showToast("视频名称不能为空！");
+                if (isEmpty(etSiteName)) {
+                    showToast("名称不能为空！");
                     break;
                 }
-                if (etVideoShart.getText().toString().trim().length() > 20) {
+                if (isEmpty(etSiteUrl)) {
+                    showToast("链接不能为空！");
+                    break;
+                }
+                if (etSiteName.getText().toString().trim().length() > 20) {
                     showToast("输入 20 字以内");
                     break;
                 }
+                if(!AppUtil.matcherUrl(getText(etSiteUrl))){
+                    showToast("输入的网址不合法，请以 http：// 开始");
+                    break;
+                }
                 if (saveLocalId == -1) {
-                    List<VideoBean> been = mVideoDBManager.queryVideoByQuestion(etVideoShart.getText().toString().trim());
+                    List<SiteBean> been = mSiteDBManager.querySiteByName(etSiteName.getText().toString().trim());
                     if (!been.isEmpty()) {
-                        showToast("请不要添加相同的视频！");
+                        showToast("请不要添加相同的链接！");
                         break;
                     }
                 }
@@ -162,85 +150,23 @@ public class AddVideoActivity extends BarBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick({R.id.tv_video})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.tv_video:
-                if (etVideoShart.getText().toString().trim().equals("")) {
-                    showToast("输入不能为空！");
-                } else {
-                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(intent, CHOOSE_VIDEO);
-                }
-                break;
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CHOOSE_VIDEO) {
-            if (resultCode == RESULT_OK) {
-                if (null != data) {
-                    Uri uri = data.getData();
-                    if (uri == null) {
-                        return;
-                    }
-                    Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-                    if (cursor != null) {
-                        if (cursor.moveToFirst()) {
-                            String videoPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));//// 视频路径
-                            Print.e("视频路径 ： " + videoPath);
-
-                            if (MediaFile.isVideoFileType(videoPath)) {
-                                int videoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
-                                String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE));//// 视频名称
-                                long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));//// 视频大小
-
-                                String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));//// 视频缩略图路径
-                                // 方法二 ThumbnailUtils 利用createVideoThumbnail 通过路径得到缩略图，保持为视频的默认比例
-                                // 第一个参数为 视频/缩略图的位置，第二个依旧是分辨率相关的kind
-                                Bitmap bitmap2 = ThumbnailUtils.createVideoThumbnail(imagePath, MediaStore.Video.Thumbnails.MINI_KIND);
-                                String savePath = Constants.PROJECT_PATH + "video" + File.separator + title + ".jpg";
-                                BitmapUtils.saveBitmapToFile(bitmap2, "video", title + ".jpg");
-
-                                imgVideo.setVisibility(View.VISIBLE);
-                                imgVideo.setImageBitmap(bitmap2);
-
-                                videoBean = new VideoBean();
-                                videoBean.setSize(size);
-                                videoBean.setVideoName(title);
-                                videoBean.setVideoUrl(videoPath);
-                                videoBean.setVideoImage(savePath);
-                            } else {
-                                showToast("请选择视频文件");
-                            }
-                        }
-                    }
-                } else {
-                    videoBean = null;
-                }
-            }
-
-        }
-    }
-
     private void videoIsexit() {
-        videoBean.setShowTitle(getText(etVideoShart));
-        videoBean.setSaveTime(System.currentTimeMillis());
+        siteBean.setName(getText(etSiteName));
+        siteBean.setUrl(getText(etSiteUrl));
+        siteBean.setSaveTime(System.currentTimeMillis());
         if (saveLocalId == -1) {
-            mVideoDBManager.insert(videoBean);
+            mSiteDBManager.insert(siteBean);
         } else {
-            videoBean.setId(saveLocalId);
-            mVideoDBManager.update(videoBean);
+            siteBean.setId(saveLocalId);
+            mSiteDBManager.update(siteBean);
         }
 
-        mVoiceDBManager = new VoiceDBManager();
         mNavigationDBManager = new NavigationDBManager();
-        mSiteDBManager = new SiteDBManager();
+        mVideoDBManager = new VideoDBManager();
+        mVoiceDBManager = new VoiceDBManager();
 
         updateContents();
     }
-
 
     private boolean isEmpty(TextView textView) {
         return textView.getText().toString().trim().equals("") || textView.getText().toString().trim().equals("");
@@ -249,7 +175,6 @@ public class AddVideoActivity extends BarBaseActivity {
     private String getText(TextView textView) {
         return textView.getText().toString().trim();
     }
-
 
     /**
      * 更新所有

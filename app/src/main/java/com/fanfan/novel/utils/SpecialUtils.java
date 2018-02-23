@@ -15,12 +15,16 @@ import java.util.Arrays;
 public class SpecialUtils {
 
     private static String[] MusicArray = {"唱歌", "唱歌儿", "唱一首歌", "我想听音乐", "播放音乐", "来首歌曲", "播放歌曲", "唱首歌", "音乐", "音乐播放中..."};
+    //    private static String[] MusicArray = {""};
+    private static String[] DanceArray = {"跳舞"};
     private static String[] StoryArray = {"故事"};
     private static String[] JokeArray = {"笑话"};
 
     public static SpecialType doesExist(Resources resources, String speakTxt) {
         if (txtInArray(speakTxt, MusicArray) || Arrays.asList(resFoFinal(resources, R.array.other_misic)).contains(speakTxt)) {
             return SpecialType.Music;
+        } else if (txtInArray(speakTxt, DanceArray)) {
+            return SpecialType.Dance;
         } else if (txtInArray(speakTxt, StoryArray) || Arrays.asList(resFoFinal(resources, R.array.other_story)).contains(speakTxt)) {
             return SpecialType.Story;
         } else if (txtInArray(speakTxt, JokeArray) || Arrays.asList(resFoFinal(resources, R.array.other_joke)).contains(speakTxt)) {
@@ -39,7 +43,7 @@ public class SpecialUtils {
             return SpecialType.Map;
         } else if (txtInTxt(resources, speakTxt, R.string.StopListener)) {
             return SpecialType.StopListener;
-        } else if(txtInTxt(resources, speakTxt, R.string.FanFan)) {
+        } else if (txtInTxt(resources, speakTxt, R.string.FanFan)) {
             return SpecialType.Fanfan;
         } else if (txtInTxt(resources, speakTxt, R.string.Video)) {
             return SpecialType.Video;

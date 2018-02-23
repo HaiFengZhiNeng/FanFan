@@ -34,7 +34,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar">
+        android:layout_below="@+id/toolbar"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_splash_back"
@@ -52,4 +53,31 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/y60" />
     </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"
+        android:text="暂无网址，请到设置中添加"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
 </RelativeLayout>

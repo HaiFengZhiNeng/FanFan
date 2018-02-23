@@ -19,18 +19,6 @@ public class VideoDBManager extends BaseManager<VideoBean, Long> {
         return daoSession.getVideoBeanDao();
     }
 
-    public List<VideoBean> queryVideoByQuestion(String question) {
-        Query<VideoBean> build = null;
-        try {
-            build = getAbstractDao().queryBuilder()
-                    .where(VideoBeanDao.Properties.ShowTitle.eq(question))
-                    .build();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return build.list();
-    }
 
     public List<VideoBean> queryLikeVideoByQuestion(String question) {
         Query<VideoBean> build = null;
@@ -45,7 +33,7 @@ public class VideoDBManager extends BaseManager<VideoBean, Long> {
         return build.list();
     }
 
-    public List<VideoBean> queryVoiceByQuestion(String showTitle) {
+    public List<VideoBean> queryVideoByQuestion(String showTitle) {
         Query<VideoBean> build = null;
         try {
             build = getAbstractDao().queryBuilder()

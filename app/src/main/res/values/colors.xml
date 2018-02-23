@@ -22,6 +22,8 @@
     <color name="video_introduction_bar">#D9E7EF</color>
     <color name="video_introduction">#D9EAF4</color>
     <color name="public_number_bar">#2B2B2B</color>
+    <color name="site_introduction_bar">#FFFFFF</color>
+    <color name="site_introduction">#fffaf0</color>
 
     <color name="face_recognition_bar1">#5C5553</color>
     <color name="face_recognition_bar2">#BEBCBB</color>

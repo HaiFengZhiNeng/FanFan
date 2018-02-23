@@ -47,15 +47,22 @@
                     android:textSize="@dimen/x8" />
 
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/voice_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <!--<android.support.v7.widget.RecyclerView-->
+                <!--android:id="@+id/voice_view"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
 
-                </android.support.v7.widget.RecyclerView>
+                <!--</android.support.v7.widget.RecyclerView>-->
+
+                <!--<android.support.v7.widget.RecyclerView-->
+                <!--android:id="@+id/video_view"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
+
+                <!--</android.support.v7.widget.RecyclerView>-->
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/video_view"
+                    android:id="@+id/recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 

@@ -76,8 +76,11 @@ public class MultimediaActivity extends BarBaseActivity implements
     public static final int MULTIMEDIA_REQUESTCODE = 0xff - 3;
     public static final int MULTIMEDIA_RESULTCODE = 0xff - 2;
 
-    public static void newInstance(Activity context, int requestCode) {
+    public static final String IS_PLAY = "is_play";
+
+    public static void newInstance(Activity context, boolean isPlay, int requestCode) {
         Intent intent = new Intent(context, MultimediaActivity.class);
+        intent.putExtra(IS_PLAY, isPlay);
         context.startActivityForResult(intent, requestCode);
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
@@ -93,6 +96,7 @@ public class MultimediaActivity extends BarBaseActivity implements
     private SerialPresenter mSerialPresenter;
 
     private boolean isFinish;
+    private boolean isPlay;
 
     @Override
     protected int getLayoutId() {
@@ -103,7 +107,12 @@ public class MultimediaActivity extends BarBaseActivity implements
     protected void initView() {
         super.initView();
 
+        isPlay = getIntent().getBooleanExtra(IS_PLAY, false);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(SongFragment.FRAG_IS_PLAY, isPlay);
+
         songFragment = SongFragment.newInstance();
+        songFragment.setArguments(bundle);
         danceFragment = DanceFragment.newInstance();
 
         FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager());

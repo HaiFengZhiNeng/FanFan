@@ -29,6 +29,7 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.fanfan.novel.activity.DanceActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.RobotType;
@@ -64,6 +65,8 @@ import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.RobotInfo;
+import com.fanfan.robot.db.DanceDBManager;
+import com.fanfan.robot.model.Dance;
 import com.fanfan.robot.presenter.LineSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 import com.fanfan.youtu.utils.GsonUtil;
@@ -125,6 +128,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     private ServiceConnection mPlayServiceConnection;
 
     private MaterialDialog materialDialog;
+
+    private boolean isPlay;
 
     @Override
     protected int getLayoutId() {
@@ -240,7 +245,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 ProblemConsultingActivity.newInstance(this);
                 break;
             case R.id.iv_multi_media:
-                bindService();
+                bindService(false);
                 break;
             case R.id.iv_face:
                 FaceRecognitionActivity.newInstance(this);
@@ -257,7 +262,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         }
     }
 
-    private void bindService() {
+    private void bindService(boolean isPlay) {
+        this.isPlay = isPlay;
         if (!PreferencesUtils.getBoolean(MainActivity.this, Constants.MUSIC_UPDATE, false))
             showLoading();
         Intent intent = new Intent();
@@ -745,8 +751,20 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             case Story:
                 break;
             case Music:
+                bindService(true);
                 break;
             case Joke:
+                break;
+            case Dance:
+                DanceDBManager danceDBManager = new DanceDBManager();
+                List<Dance> dances = danceDBManager.loadAll();
+                if (dances != null && dances.size() > 0) {
+                    Dance dance = dances.get(new Random().nextInt(dances.size()));
+                    DanceActivity.newInstance(this, dance.getId());
+                } else {
+                    setChatContent("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈");
+                    addSpeakAnswer("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈");
+                }
                 break;
         }
     }
@@ -771,7 +789,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 ProblemConsultingActivity.newInstance(this);
                 break;
             case MultiMedia:
-                bindService();
+                bindService(false);
                 break;
             case Face:
                 FaceRecognitionActivity.newInstance(this);
@@ -837,13 +855,14 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 @Override
                 public void onEvent(Void aVoid) {
                     dismissLoading();
-                    MultimediaActivity.newInstance(MainActivity.this, MultimediaActivity.MULTIMEDIA_REQUESTCODE);
+                    MultimediaActivity.newInstance(MainActivity.this, isPlay, MultimediaActivity.MULTIMEDIA_REQUESTCODE);
                 }
             });
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+
         }
     }
 

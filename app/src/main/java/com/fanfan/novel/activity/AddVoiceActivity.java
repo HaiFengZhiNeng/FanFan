@@ -25,9 +25,11 @@ import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.instance.SpeakIat;
 import com.fanfan.novel.db.manager.NavigationDBManager;
+import com.fanfan.novel.db.manager.SiteDBManager;
 import com.fanfan.novel.db.manager.VideoDBManager;
 import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.NavigationBean;
+import com.fanfan.novel.model.SiteBean;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.utils.AppUtil;
@@ -108,6 +110,7 @@ public class AddVoiceActivity extends BarBaseActivity {
     private SpeechRecognizer mIat;
     private VideoDBManager mVideoDBManager;
     private NavigationDBManager mNavigationDBManager;
+    private SiteDBManager mSiteDBManager;
 
     @Override
     protected int getLayoutId() {
@@ -295,6 +298,7 @@ public class AddVoiceActivity extends BarBaseActivity {
 
         mVideoDBManager = new VideoDBManager();
         mNavigationDBManager = new NavigationDBManager();
+        mSiteDBManager = new SiteDBManager();
 
         updateContents();
     }
@@ -348,6 +352,11 @@ public class AddVoiceActivity extends BarBaseActivity {
         List<NavigationBean> navigationBeanList = mNavigationDBManager.loadAll();
         for (NavigationBean navigationBean : navigationBeanList) {
             lexiconContents.append(navigationBean.getTitle()).append("\n");
+        }
+        //本地网址
+        List<SiteBean> siteBeanList = mSiteDBManager.loadAll();
+        for (SiteBean siteBean : siteBeanList) {
+            lexiconContents.append(siteBean.getName()).append("\n");
         }
 
         lexiconContents.append(AppUtil.words2Contents());

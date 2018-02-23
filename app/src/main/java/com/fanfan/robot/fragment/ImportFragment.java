@@ -10,33 +10,45 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fanfan.novel.adapter.TreeRecyclerAdapter;
 import com.fanfan.novel.adapter.VideoDataAdapter;
 import com.fanfan.novel.adapter.VoiceDataAdapter;
+import com.fanfan.novel.common.ChatConst;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseDialogFragment;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.instance.SpeakIat;
 import com.fanfan.novel.db.manager.NavigationDBManager;
+import com.fanfan.novel.db.manager.SiteDBManager;
 import com.fanfan.novel.db.manager.VideoDBManager;
 import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.NavigationBean;
+import com.fanfan.novel.model.SiteBean;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
+import com.fanfan.novel.service.animator.SlideInOutBottomItemAnimator;
+import com.fanfan.novel.ui.recyclerview.tree.factory.ItemConfig;
 import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.BitmapUtils;
 import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.MediaFile;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
+import com.fanfan.robot.adapter.ImportAdapter;
 import com.fanfan.robot.app.NovelApp;
+import com.fanfan.robot.model.Channel;
+import com.fanfan.robot.service.item.DataGroupItem;
+import com.fanfan.robot.service.item.SingItem;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.LexiconListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -62,10 +74,12 @@ import butterknife.Unbinder;
 
 public class ImportFragment extends BaseDialogFragment {
 
-    @BindView(R.id.voice_view)
-    RecyclerView voiceView;
-    @BindView(R.id.video_view)
-    RecyclerView videoView;
+    //    @BindView(R.id.voice_view)
+//    RecyclerView voiceView;
+//    @BindView(R.id.video_view)
+//    RecyclerView videoView;
+    @BindView(R.id.recycler_view)
+    RecyclerView mRecyclerView;
     @BindView(R.id.tv_import)
     TextView tvImport;
 
@@ -85,19 +99,32 @@ public class ImportFragment extends BaseDialogFragment {
     private String[] expression;
     private String[] expressionData;
 
+    private String[] navigation;
+    private String[] navigationData;
+
     private String[] localVoiceQuestion;
     private String[] localVoiceAnswer;
 
+    private String[] localSiteName;
+    private String[] localSiteUrl;
+
+    private String[] localNavigation;
+
     private List<VoiceBean> voiceBeanList = new ArrayList<>();
     private List<VideoBean> videoBeanList = new ArrayList<>();
+    private List<SiteBean> siteBeanList = new ArrayList<>();
+    private List<NavigationBean> navigationBeanList = new ArrayList<>();
 
-    private VideoDataAdapter videoDataAdapter;
-    private VoiceDataAdapter voiceDataAdapter;
+//    private VideoDataAdapter videoDataAdapter;
+//    private VoiceDataAdapter voiceDataAdapter;
 
     private VideoDBManager mVideoDBManager;
     private VoiceDBManager mVoiceDBManager;
-
     private NavigationDBManager mNavigationDBManager;
+    private SiteDBManager mSiteDBManager;
+
+    private ImportAdapter mAdapter;
+    private List<Channel> mDatas = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {
@@ -106,7 +133,7 @@ public class ImportFragment extends BaseDialogFragment {
 
     @Override
     protected void initData() {
-        loadFile("Music");
+        loadFile("robotResources");
 
         action = resArray(R.array.action);
         actionOrder = resArray(R.array.action_order);
@@ -114,15 +141,29 @@ public class ImportFragment extends BaseDialogFragment {
         expression = resArray(R.array.expression);
         expressionData = resArray(R.array.expression_data);
 
+        navigation = resArray(R.array.navigation);
+        navigationData = resArray(R.array.navigation_data);
+
         localVoiceQuestion = resArray(R.array.local_voice_question);
         localVoiceAnswer = resArray(R.array.local_voice_answer);
+
+        localSiteName = resArray(R.array.local_site);
+        localSiteUrl = resArray(R.array.local_site_url);
+
+        localNavigation = resArray(R.array.local_navigation);
 
         loadVoice();
 
         loadVideo();
 
+        loadSite();
+
+        loadNavigation();
+
         mVideoDBManager = new VideoDBManager();
         mVoiceDBManager = new VoiceDBManager();
+        mSiteDBManager = new SiteDBManager();
+        mNavigationDBManager = new NavigationDBManager();
 
         setAdapter();
     }
@@ -155,7 +196,6 @@ public class ImportFragment extends BaseDialogFragment {
         }
     }
 
-
     private void loadVideo() {
         if (videoFiles == null || videoFiles.size() == 0) {
             return;
@@ -178,21 +218,140 @@ public class ImportFragment extends BaseDialogFragment {
             videoBean.setSaveTime(System.currentTimeMillis());
             videoBeanList.add(videoBean);
         }
+    }
 
+    private void loadSite() {
+        for (int i = 0; i < localSiteName.length; i++) {
+            SiteBean siteBean = new SiteBean();
+            siteBean.setName(localSiteName[i]);
+            siteBean.setUrl(localSiteUrl[i]);
+            siteBean.setSaveTime(System.currentTimeMillis());
+            siteBeanList.add(siteBean);
+        }
+    }
+
+
+    private void loadNavigation() {
+        for (int i = 0; i < localNavigation.length; i++) {
+            NavigationBean navigationBean = new NavigationBean();
+
+            int navigationIndex = new Random().nextInt(navigation.length);
+
+            navigationBean.setSaveTime(System.currentTimeMillis());
+            navigationBean.setTitle(localNavigation[i]);
+            navigationBean.setGuide("已经到达" + localNavigation[i]);
+            navigationBean.setDatail("这里是" + localNavigation[i]);
+            navigationBean.setNavigation(navigation[navigationIndex]);
+            navigationBean.setNavigationData(navigationData[navigationIndex]);
+            if (imageFiles.size() > 0) {
+                int imageIndex = new Random().nextInt(imageFiles.size());
+                navigationBean.setImgUrl(imageFiles.get(imageIndex).getAbsolutePath());
+            }
+            navigationBeanList.add(navigationBean);
+        }
     }
 
     private void setAdapter() {
-        videoDataAdapter = new VideoDataAdapter(getActivity(), videoBeanList);
-        videoView.setAdapter(videoDataAdapter);
-        videoView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        videoView.setItemAnimator(new DefaultItemAnimator());
-        videoView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
 
-        voiceDataAdapter = new VoiceDataAdapter(getActivity(), voiceBeanList);
-        voiceView.setAdapter(voiceDataAdapter);
-        voiceView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        voiceView.setItemAnimator(new DefaultItemAnimator());
-        voiceView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+//        videoDataAdapter = new VideoDataAdapter(getActivity(), videoBeanList);
+//        videoView.setAdapter(videoDataAdapter);
+//        videoView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        videoView.setItemAnimator(new DefaultItemAnimator());
+//        videoView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+//
+//        voiceDataAdapter = new VoiceDataAdapter(getActivity(), voiceBeanList);
+//        voiceView.setAdapter(voiceDataAdapter);
+//        voiceView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        voiceView.setItemAnimator(new DefaultItemAnimator());
+//        voiceView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+
+        Channel voiceChannel = new Channel();
+        voiceChannel.setItemtype(Channel.TYPE_TITLE);
+        voiceChannel.setChannelName("本地语音");
+        mDatas.add(voiceChannel);
+
+        if (voiceBeanList.size() > 0) {
+            for (VoiceBean bean : voiceBeanList) {
+                Channel channelList = new Channel();
+                channelList.setItemtype(Channel.TYPE_CONTENT);
+                channelList.setChannelName(bean.getShowTitle());
+                mDatas.add(channelList);
+            }
+        } else {
+            Channel channelList = new Channel();
+            channelList.setItemtype(Channel.TYPE_CONTENT);
+            channelList.setChannelName("请手动添加");
+            mDatas.add(channelList);
+        }
+
+        Channel videoChannel = new Channel();
+        videoChannel.setItemtype(Channel.TYPE_TITLE);
+        videoChannel.setChannelName("本地视频");
+        mDatas.add(videoChannel);
+
+        if (videoBeanList.size() > 0) {
+            for (VideoBean bean : videoBeanList) {
+                Channel channelList = new Channel();
+                channelList.setItemtype(Channel.TYPE_CONTENT);
+                channelList.setChannelName(bean.getShowTitle());
+                mDatas.add(channelList);
+            }
+        } else {
+            Channel channelList = new Channel();
+            channelList.setItemtype(Channel.TYPE_CONTENT);
+            channelList.setChannelName("请手动添加");
+            mDatas.add(channelList);
+        }
+
+        Channel navigationChannel = new Channel();
+        navigationChannel.setItemtype(Channel.TYPE_TITLE);
+        navigationChannel.setChannelName("导航");
+        mDatas.add(navigationChannel);
+
+        if (navigationBeanList.size() > 0) {
+            for (NavigationBean bean : navigationBeanList) {
+                Channel channelList = new Channel();
+                channelList.setItemtype(Channel.TYPE_CONTENT);
+                channelList.setChannelName(bean.getTitle());
+                mDatas.add(channelList);
+            }
+        } else {
+            Channel channelList = new Channel();
+            channelList.setItemtype(Channel.TYPE_CONTENT);
+            channelList.setChannelName("请手动添加");
+            mDatas.add(channelList);
+        }
+
+        Channel siteChannel = new Channel();
+        siteChannel.setItemtype(Channel.TYPE_TITLE);
+        siteChannel.setChannelName("网址");
+        mDatas.add(siteChannel);
+
+        if (siteBeanList.size() > 0) {
+            for (SiteBean bean : siteBeanList) {
+                Channel channelList = new Channel();
+                channelList.setItemtype(Channel.TYPE_CONTENT);
+                channelList.setChannelName(bean.getName());
+                mDatas.add(channelList);
+            }
+        } else {
+            Channel channelList = new Channel();
+            channelList.setItemtype(Channel.TYPE_CONTENT);
+            channelList.setChannelName("请手动添加");
+            mDatas.add(channelList);
+        }
+
+        mAdapter = new ImportAdapter(mDatas);
+        GridLayoutManager manager = new GridLayoutManager(getActivity(), 3);
+        mRecyclerView.setLayoutManager(manager);
+        mRecyclerView.setAdapter(mAdapter);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                int itemViewType = mAdapter.getItemViewType(position);
+                return itemViewType == Channel.TYPE_CONTENT ? 1 : 3;
+            }
+        });
     }
 
 
@@ -204,8 +363,11 @@ public class ImportFragment extends BaseDialogFragment {
                 mVideoDBManager.insertList(videoBeanList);
                 mVoiceDBManager.deleteAll();
                 mVoiceDBManager.insertList(voiceBeanList);
+                mSiteDBManager.deleteAll();
+                mSiteDBManager.insertList(siteBeanList);
+                mNavigationDBManager.deleteAll();
+                mNavigationDBManager.insertList(navigationBeanList);
 
-                mNavigationDBManager = new NavigationDBManager();
                 updateContents();
                 break;
         }
@@ -217,6 +379,7 @@ public class ImportFragment extends BaseDialogFragment {
         String dirPath = Environment.getExternalStorageDirectory() + File.separator + dirName;
         File dirFile = new File(dirPath);
         if (!dirFile.exists() || dirFile.isFile()) {
+            dirFile.mkdirs();
             return;
         }
         File[] files = dirFile.listFiles();
@@ -256,6 +419,11 @@ public class ImportFragment extends BaseDialogFragment {
         for (NavigationBean navigationBean : navigationBeanList) {
             lexiconContents.append(navigationBean.getTitle()).append("\n");
         }
+        //本地网址
+        List<SiteBean> siteBeanList = mSiteDBManager.loadAll();
+        for (SiteBean siteBean : siteBeanList) {
+            lexiconContents.append(siteBean.getName()).append("\n");
+        }
 
         lexiconContents.append(AppUtil.words2Contents());
         updateLocation(lexiconContents.toString());
@@ -282,10 +450,10 @@ public class ImportFragment extends BaseDialogFragment {
             public void onLexiconUpdated(String lexiconId, SpeechError error) {
                 if (error == null) {
                     Print.e("词典更新成功");
-                        onLexiconSuccess();
+                    onLexiconSuccess();
                 } else {
                     Print.e("词典更新失败,错误码：" + error.getErrorCode());
-                        onLexiconError(error.getErrorDescription());
+                    onLexiconError(error.getErrorDescription());
                 }
             }
         });

@@ -114,6 +114,27 @@
                     android:src="@mipmap/icon_arrow" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/add_site"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/y5"
+                android:background="@color/white"
+                android:padding="@dimen/y8">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="网址"
+                    android:textSize="@dimen/x8" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:src="@mipmap/icon_arrow" />
+            </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/import_layout"

@@ -85,8 +85,6 @@
 
     <string-array name="local_voice_question">
         <item>你好</item>
-        <item>我是谁</item>
-        <item>今天天气怎么样？</item>
         <item>公司简介</item>
         <item>产品介绍</item>
         <item>服务机器人</item>
@@ -97,9 +95,7 @@
     </string-array>
 
     <string-array name="local_voice_answer">
-        <item>你好很高兴见到你</item>
-        <item>我怎么知道你是谁，我都不知道我是谁，你说我是谁，我说你是谁</item>
-        <item>这里很热，你们那呢？</item>
+        <item>你好, 很高兴见到你</item>
         <item>海风智能科技是一家集人工智能和机器人产品研发、设计、生产及销售为一体的创新型高新技术企业。作为中国智能机器人市场的先行者，海风智能科技秉承引领未来智能生活的理念，致力于打破传统模式与新兴技术间的壁垒，贴近现实场景，满足用户需求，拉近智能机器人与实际应用的距离，与大家一起分享智能科技服务生活的便利</item>
         <item>公司产品包括服务机器人FANFAN，特种机器人，Dor Je，教育机器人H•E•Robo以及创客实验室</item>
         <item>FANFAN是一款人形智能服务机器人， 1.65米机身设计，交互体验畅快轻松，精准人脸识别，实现主动问候；畅快语音交谈，轻松答你所问。更能动态感知环境，指路不如为你领路，多模式操控唤醒，随时为你服务。可为多行业、多场景提供人性化的智能服务，让生活简单便捷。</item>
@@ -124,6 +120,22 @@
         <item>去展示区</item>
         <item>回去吧</item>
         <item>无</item>
+    </string-array>
+
+    <string-array name="local_site">
+        <item>环卫科技网</item>
+        <item>中国循环经济</item>
+        <item>中国环联</item>
+        <item>E20水网固废网</item>
+        <item>重庆环保</item>
+    </string-array>
+
+    <string-array name="local_site_url">
+        <item>http://www.cn-hw.net/</item>
+        <item>http://www.chinacace.org/</item>
+        <item>http://www.envirunion.com/</item>
+        <item>http://wewen.io/analysis/chinawaternet</item>
+        <item>http://www.cepb.gov.cn/</item>
     </string-array>
 
 

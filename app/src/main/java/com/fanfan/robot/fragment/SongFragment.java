@@ -74,6 +74,10 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
     @BindView(R.id.tv_empty)
     TextView tvEmpty;
 
+    private boolean isPlay;
+
+    public static final String FRAG_IS_PLAY = "frag_is_play";
+
     public static SongFragment newInstance() {
         return new SongFragment();
     }
@@ -115,6 +119,17 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
     @Override
     protected void setListener(View view) {
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (isAdded()) {//判断Fragment已经依附Activity
+            isPlay = getArguments().getBoolean(FRAG_IS_PLAY);
+        }
+        if(isPlay){
+            onPlay();
+        }
     }
 
     @Override
@@ -181,12 +196,7 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
             case R.id.fl_play_bar:
                 break;
             case R.id.iv_play_bar_play:
-                if (getPlayService().isPlaying()) {
-                    startListener();
-                } else {
-                    stopListener();
-                }
-                play();
+                onPlay();
                 break;
             case R.id.iv_play_bar_next:
                 stopListener();
@@ -195,7 +205,7 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
         }
     }
 
-    private void play() {
+    public void play() {
         getPlayService().playPause();
     }
 
@@ -270,5 +280,14 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
         } else {
             ((MultimediaActivity) getActivity()).onPlayerPause();
         }
+    }
+
+    public void onPlay() {
+        if (getPlayService().isPlaying()) {
+            startListener();
+        } else {
+            stopListener();
+        }
+        play();
     }
 }

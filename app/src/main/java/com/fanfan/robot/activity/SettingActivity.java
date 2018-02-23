@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fanfan.novel.activity.DataNavigationActivity;
+import com.fanfan.novel.activity.DataSiteActivity;
 import com.fanfan.novel.activity.DataVideoActivity;
 import com.fanfan.novel.activity.DataVoiceActivity;
 import com.fanfan.novel.activity.FaceDataActivity;
@@ -38,6 +39,8 @@ public class SettingActivity extends BarBaseActivity {
     RelativeLayout addVoice;
     @BindView(R.id.add_navigation)
     RelativeLayout addNavigation;
+    @BindView(R.id.add_site)
+    RelativeLayout addSite;
     @BindView(R.id.import_layout)
     RelativeLayout importLayout;
     @BindView(R.id.rl_face)
@@ -67,7 +70,7 @@ public class SettingActivity extends BarBaseActivity {
     }
 
 
-    @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.import_layout,
+    @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.add_site, R.id.import_layout,
             R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -79,6 +82,9 @@ public class SettingActivity extends BarBaseActivity {
                 break;
             case R.id.add_navigation:
                 DataNavigationActivity.newInstance(this);
+                break;
+            case R.id.add_site:
+                DataSiteActivity.newInstance(this);
                 break;
             case R.id.import_layout:
                 ImportFragment importFragment = ImportFragment.newInstance();

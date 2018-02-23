@@ -283,6 +283,8 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
             aiuiWriteText(result);
         } else if (specialType == SpecialType.Music) {
             mSoundView.special(result, SpecialType.Music);
+        } else if (specialType == SpecialType.Dance) {
+            mSoundView.special(result, SpecialType.Dance);
         } else if (specialType == SpecialType.Story) {
             aiuiWriteText(result);
         } else if (specialType == SpecialType.Joke) {
