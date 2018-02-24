@@ -384,6 +384,11 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     }
 
     @Override
+    public void onCompleted() {
+
+    }
+
+    @Override
     public void stopAll() {
         super.stopAll();
         mSoundPresenter.stopTts();

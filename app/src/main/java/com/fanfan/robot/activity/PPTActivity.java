@@ -3,9 +3,8 @@ package com.fanfan.robot.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,78 +14,72 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.fanfan.novel.activity.SimpleCallActivity;
-import com.fanfan.novel.activity.VideoDetailActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.enums.SpecialType;
-import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.SerialBean;
-import com.fanfan.novel.model.VideoBean;
-import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
 import com.fanfan.novel.presenter.SerialPresenter;
+import com.fanfan.novel.presenter.SynthesizerPresenter;
 import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
 import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
-import com.fanfan.novel.ui.ChatTextView;
+import com.fanfan.novel.utils.MediaFile;
+import com.fanfan.novel.utils.PPTUtil;
 import com.fanfan.robot.R;
-import com.fanfan.robot.adapter.VoiceAdapter;
-import com.iflytek.cloud.SpeechConstant;
+import com.fanfan.robot.adapter.PPTAdapter;
+import com.fanfan.robot.adapter.PptTextAdapter;
+import com.fanfan.robot.adapter.SiteAdapter;
+import com.fanfan.youtu.api.face.bean.detectFace.Face;
 import com.seabreeze.log.Print;
-import com.tencent.callsdk.ILVCallConstants;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
- * Created by android on 2018/1/6.
+ * Created by android on 2018/1/16.
  */
 
-public class ProblemConsultingActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
+public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
+        ISerialPresenter.ISerialView {
 
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerVoice;
-    @BindView(R.id.iv_artificial)
-    ImageView ivArtificial;
-    @BindView(R.id.iv_voice_image)
-    ImageView ivVoiceImage;
+    @BindView(R.id.recycler_title)
+    RecyclerView recyclerTitle;
+    @BindView(R.id.recycler_content)
+    RecyclerView recyclerContent;
 
     public static void newInstance(Activity context) {
-        Intent intent = new Intent(context, ProblemConsultingActivity.class);
+        Intent intent = new Intent(context, PPTActivity.class);
         context.startActivity(intent);
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
-    private VoiceDBManager mVoiceDBManager;
-
-    private List<VoiceBean> voiceBeanList = new ArrayList<>();
-
-    private VoiceAdapter voiceAdapter;
-
     private LocalSoundPresenter mSoundPresenter;
     private SerialPresenter mSerialPresenter;
 
-    private String speakText;
+    private List<File> pptFiles = new ArrayList<>();
+    private List<String> contentArray;
+
+    private int curCount;
+
+    private PPTAdapter pptAdapter;
+    private PptTextAdapter pptTextAdapter;
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_problem_consulting;
+        return R.layout.activity_ppt;
     }
-
 
     @Override
     protected void initView() {
@@ -97,34 +90,64 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         mSerialPresenter = new SerialPresenter(this);
         mSerialPresenter.start();
 
+        pptAdapter = new PPTAdapter(mContext, pptFiles);
+        pptAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                refPPT(pptFiles.get(position), position);
+            }
+        });
+        recyclerTitle.setAdapter(pptAdapter);
+        recyclerTitle.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerTitle.setItemAnimator(new DefaultItemAnimator());
 
-        initSimpleAdapter();
-
+        pptTextAdapter = new PptTextAdapter(contentArray);
+        pptTextAdapter.openLoadAnimation();
+        recyclerContent.setAdapter(pptTextAdapter);
+        recyclerContent.setLayoutManager(new LinearLayoutManager(this));
+        recyclerContent.setItemAnimator(new DefaultItemAnimator());
     }
+
 
     @Override
     protected void initData() {
-        mVoiceDBManager = new VoiceDBManager();
 
-        voiceBeanList = mVoiceDBManager.loadAll();
-        if (voiceBeanList != null && voiceBeanList.size() > 0) {
-            voiceAdapter.refreshData(voiceBeanList);
-            voiceAdapter.notifyClick(0);
-            Glide.with(mContext).load(voiceBeanList.get(0).getImgUrl())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
-                    .into(ivVoiceImage);
+        List<File> files = loadFile("robotResources");
+        if (files != null && files.size() > 0) {
+            pptFiles = files;
+            pptAdapter.refreshData(pptFiles);
+            pptAdapter.notifyClick(0);
         } else {
             isEmpty();
         }
     }
 
+    private List<File> loadFile(String dirName) {//Music
+        List<File> pptFiles = new ArrayList<>();
+        String dirPath = Environment.getExternalStorageDirectory() + File.separator + dirName;
+        File dirFile = new File(dirPath);
+        if (!dirFile.exists() || dirFile.isFile()) {
+            dirFile.mkdirs();
+            return null;
+        }
+        File[] files = dirFile.listFiles();
+        if (files.length == 0) {
+            return null;
+        }
+        for (File file : files) {
+            if (MediaFile.isPPTFileType(file.getAbsolutePath())) {
+                pptFiles.add(file);
+            }
+        }
+        return pptFiles;
+    }
+
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
         mSoundPresenter.startRecognizerListener();
     }
-
 
     @Override
     protected void onResume() {
@@ -142,7 +165,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     }
 
     @Override
-    public void onStop() {
+    protected void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
     }
@@ -152,7 +175,6 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         super.onDestroy();
         mSoundPresenter.finish();
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onResultEvent(ServiceToActivityEvent event) {
@@ -179,52 +201,28 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         }
     }
 
-    @OnClick({R.id.iv_artificial, R.id.iv_voice_image})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.iv_artificial:
-                artificial();
-                break;
-            case R.id.iv_voice_image:
-                break;
+    private void refPPT(File itemData, int position) {
+        pptAdapter.notifyClick(position);
+
+        contentArray = PPTUtil.readPPT(itemData.getAbsolutePath());
+        if (contentArray != null && contentArray.size() > 0) {
+            pptTextAdapter.replaceData(contentArray);
+            curCount = 0;
+            recyclerContent.scrollToPosition(curCount);
+            addSpeakAnswer(contentArray.get(curCount));
         }
     }
 
     private void addSpeakAnswer(String messageContent) {
-        mSoundPresenter.doAnswer(messageContent);
+        if (messageContent.length() > 0) {
+            mSoundPresenter.doAnswer(messageContent);
+        } else {
+            onCompleted();
+        }
     }
 
     private void addSpeakAnswer(int res) {
         mSoundPresenter.doAnswer(getResources().getString(res));
-    }
-
-    private void initSimpleAdapter() {
-        voiceAdapter = new VoiceAdapter(mContext, voiceBeanList);
-        voiceAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                refVoice(voiceBeanList.get(position), position);
-            }
-        });
-        recyclerVoice.setAdapter(voiceAdapter);
-        recyclerVoice.setLayoutManager(new GridLayoutManager(this, 2));
-        recyclerVoice.setItemAnimator(new DefaultItemAnimator());
-    }
-
-    private void refVoice(VoiceBean itemData, int position) {
-        voiceAdapter.notifyClick(position);
-        speakText = itemData.getVoiceAnswer();
-        Print.e("本地语音 说话 .......");
-        addSpeakAnswer(speakText);
-        if (itemData.getActionData() != null) {
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getActionData());
-        }
-        if (itemData.getExpressionData() != null) {
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getExpressionData());
-        }
-        Glide.with(mContext).load(itemData.getImgUrl())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
-                .into(ivVoiceImage);
     }
 
     @Override
@@ -251,7 +249,6 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     public Context getContext() {
         return this;
     }
-
 
     @Override
     public void spakeMove(SpecialType type, String result) {
@@ -291,9 +288,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
 
     @Override
     public void artificial() {
-        ArrayList<String> nums = new ArrayList<>();
-        nums.add("hotel003");
-        SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
+        addSpeakAnswer(R.string.open_artificial);
     }
 
     @Override
@@ -308,28 +303,21 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
 
     @Override
     public void refLocalPage(String result) {
-        List<VoiceBean> voiceBeans = mVoiceDBManager.queryLikeVoiceByQuestion(result);
-        if (voiceBeans != null && voiceBeans.size() > 0) {
-            VoiceBean itemData = null;
-            if (voiceBeans.size() == 1) {
-                itemData = voiceBeans.get(voiceBeans.size() - 1);
-            } else {
-                itemData = voiceBeans.get(new Random().nextInt(voiceBeans.size()));
-            }
-            int index = voiceBeanList.indexOf(itemData);
-            refVoice(itemData, index);
-        } else {
-            if (new Random().nextBoolean()) {
-                addSpeakAnswer(resFoFinal(R.array.no_result));
-            } else {
-                addSpeakAnswer(resFoFinal(R.array.no_voice));
-            }
-        }
+        addSpeakAnswer(R.string.open_local);
     }
 
     @Override
     public void onCompleted() {
-
+        if (curCount < contentArray.size() - 1) {
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80E3AA");
+            curCount++;
+            Print.e("curCount : " + curCount);
+            recyclerContent.scrollToPosition(curCount);
+            addSpeakAnswer(contentArray.get(curCount));
+        } else if (curCount == contentArray.size() - 1) {
+            curCount++;
+            addSpeakAnswer("阅读完成");
+        }
     }
 
     @Override
@@ -338,12 +326,10 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
-        addSpeakAnswer("你好，这里是问题咨询页面，点击上方列表或说出列表中问题可得到答案");
     }
 
     @Override
     public void onMoveStop() {
 
     }
-
 }

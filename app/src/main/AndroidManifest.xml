@@ -180,6 +180,9 @@
         <activity
             android:name=".activity.FanFanIntroduceActivity"
             android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".activity.PPTActivity"
+            android:theme="@style/AppThemeAction" />
 
         <service android:name="com.fanfan.novel.service.UdpService" />
 

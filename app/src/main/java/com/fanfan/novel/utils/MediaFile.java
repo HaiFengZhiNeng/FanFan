@@ -55,6 +55,8 @@ public class MediaFile {
     private static final int FIRST_PLAYLIST_FILE_TYPE = FILE_TYPE_M3U;
     private static final int LAST_PLAYLIST_FILE_TYPE = FILE_TYPE_WPL;
 
+    public static final int FILE_TYPE_PPT = 44;
+
     //静态内部类
     static class MediaFileType {
 
@@ -112,6 +114,8 @@ public class MediaFile {
         addFileType("PLS", FILE_TYPE_PLS, "audio/x-scpls");
         addFileType("WPL", FILE_TYPE_WPL, "application/vnd.ms-wpl");
 
+        addFileType("PPT", FILE_TYPE_PPT,  "text/html");
+
         // compute file extensions list for native Media Scanner
         StringBuilder builder = new StringBuilder();
         Iterator<String> iterator = sFileTypeMap.keySet().iterator();
@@ -147,6 +151,10 @@ public class MediaFile {
     public static boolean isPlayListFileType(int fileType) {
         return (fileType >= FIRST_PLAYLIST_FILE_TYPE &&
                 fileType <= LAST_PLAYLIST_FILE_TYPE);
+    }
+
+    public static boolean isPPTFileType(int fileType) {
+        return fileType == FILE_TYPE_PPT;
     }
 
     public static MediaFileType getFileType(String path) {
@@ -189,4 +197,11 @@ public class MediaFile {
         return false;
     }
 
+    public static boolean isPPTFileType(String path) {  //自己增加
+        MediaFileType type = getFileType(path);
+        if (null != type) {
+            return isPPTFileType(type.fileType);
+        }
+        return false;
+    }
 }

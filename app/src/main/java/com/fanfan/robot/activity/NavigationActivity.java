@@ -350,6 +350,11 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     }
 
     @Override
+    public void onCompleted() {
+
+    }
+
+    @Override
     public void stopAll() {
         super.stopAll();
         mSoundPresenter.stopTts();

@@ -385,6 +385,11 @@ public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSo
     }
 
     @Override
+    public void onCompleted() {
+
+    }
+
+    @Override
     public void stopAll() {
         super.stopAll();
         mSoundPresenter.stopTts();

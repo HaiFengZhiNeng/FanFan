@@ -197,6 +197,7 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
         @Override
         public void run() {
             startRecognizerListener();
+            mSoundView.onCompleted();
         }
     };
 

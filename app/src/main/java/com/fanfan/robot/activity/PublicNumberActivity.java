@@ -303,6 +303,11 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     }
 
     @Override
+    public void onCompleted() {
+
+    }
+
+    @Override
     public void stopAll() {
         super.stopAll();
         mSoundPresenter.stopTts();

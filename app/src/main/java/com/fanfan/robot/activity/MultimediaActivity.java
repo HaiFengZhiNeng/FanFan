@@ -491,6 +491,11 @@ public class MultimediaActivity extends BarBaseActivity implements
     }
 
     @Override
+    public void onCompleted() {
+
+    }
+
+    @Override
     public void stopAll() {
         back();
     }

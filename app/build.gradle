@@ -69,7 +69,9 @@ repositories {
 dependencies {
     compile files('libs/Msc.jar')
     compile files('libs/HSOTG2.0.jar')
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation files('libs/poi-3.15.jar')
+    implementation files('libs/poi-scratchpad-3.15.jar')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:26.0.2'
     compile 'com.android.support:multidex:1.0.1'

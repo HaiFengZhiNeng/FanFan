@@ -428,7 +428,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                FanFanIntroduceActivity.newInstance(MainActivity.this);
+//                FanFanIntroduceActivity.newInstance(MainActivity.this);
+                PPTActivity.newInstance(MainActivity.this);
             }
         }, 400);
         ViewAnimator
@@ -692,7 +693,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 }
             }
         }
-        mSoundPresenter.onlineResult(result);
+        mSoundPresenter.onlineResult(unicode);
     }
 
     @Override

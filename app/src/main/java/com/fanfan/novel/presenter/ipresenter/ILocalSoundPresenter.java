@@ -93,5 +93,10 @@ public abstract class ILocalSoundPresenter implements BasePresenter {
          * @param result
          */
         void refLocalPage(String result);
+
+        /**
+         * 说话完成
+         */
+        void onCompleted();
     }
 }

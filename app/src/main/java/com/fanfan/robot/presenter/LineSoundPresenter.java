@@ -373,6 +373,9 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 Print.e("授权不足");
                 mSoundView.showMsg("授权不足");
                 break;
+            case 12404:
+                startRecognizerListener();
+                break;
         }
 
     }

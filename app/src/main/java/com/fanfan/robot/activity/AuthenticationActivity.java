@@ -588,6 +588,11 @@ public class AuthenticationActivity extends BarBaseActivity implements
     }
 
     @Override
+    public void onCompleted() {
+
+    }
+
+    @Override
     public void stopAll() {
         super.stopAll();
         mSoundPresenter.stopTts();
