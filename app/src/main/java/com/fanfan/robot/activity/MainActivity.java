@@ -63,6 +63,7 @@ import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.ChatTextView;
 import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.PreferencesUtils;
+import com.fanfan.novel.utils.customtabs.IntentUtil;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.db.DanceDBManager;
@@ -684,16 +685,22 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         Print.e("aiuiForLocal : " + result);
         String unicode = result.replaceAll("\\p{P}", "");
         Print.e("aiuiForLocal : " + unicode);
-        List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
-        if (voiceBeanList != null && voiceBeanList.size() > 0) {
-            for (VoiceBean voiceBean : voiceBeanList) {
-                if (voiceBean.getShowTitle().equals(unicode)) {
-                    refHomePage(voiceBean);
-                    return;
+        if(unicode.equals("百度")){
+            IntentUtil.openUrl(mContext, "http://www.baidu.com/");
+        }else if(unicode.equals("新闻")){
+            IntentUtil.openUrl(mContext, "http://www.cepb.gov.cn/");
+        }else {
+            List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
+            if (voiceBeanList != null && voiceBeanList.size() > 0) {
+                for (VoiceBean voiceBean : voiceBeanList) {
+                    if (voiceBean.getShowTitle().equals(unicode)) {
+                        refHomePage(voiceBean);
+                        return;
+                    }
                 }
             }
+            mSoundPresenter.onlineResult(unicode);
         }
-        mSoundPresenter.onlineResult(unicode);
     }
 
     @Override

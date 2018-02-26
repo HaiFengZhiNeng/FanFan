@@ -28,9 +28,9 @@ import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.utils.FucUtil;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.RobotInfo;
-import com.fanfan.robot.service.listener.OnFaceDetectorListener;
 import com.fanfan.robot.R;
 import com.fanfan.robot.service.CameraSerivice;
+import com.fanfan.robot.service.event.FaceEvent;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -38,6 +38,7 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -49,7 +50,7 @@ import butterknife.ButterKnife;
  * Created by android on 2018/2/26.
  */
 
-public class LockActivity extends Activity implements ISerialPresenter.ISerialView, OnFaceDetectorListener,
+public class LockActivity extends Activity implements ISerialPresenter.ISerialView,
         TtsListener.SynListener {
 
     public static boolean isShow = false;
@@ -70,12 +71,13 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
         }
     }
 
+    private CameraSerivice cameraSerivice;
+
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             CameraSerivice.CameraBinder cameraBinder = (CameraSerivice.CameraBinder) service;
-            CameraSerivice cameraSerivice = cameraBinder.getService();
-            cameraSerivice.setOnFaceDetectorListener(LockActivity.this);
+            cameraSerivice = cameraBinder.getService();
         }
 
         @Override
@@ -114,6 +116,17 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
 
     @Override
     protected void onDestroy() {
@@ -129,10 +142,8 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        isSpeak = true;
-        if (!isSpeak) {
-            doAnswer("你好，欢迎回来！");
-        }
+        cameraSerivice.closeCamera();
+        brief();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -157,6 +168,24 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
             Print.e(recvStr);
         } else {
             Print.e("ReceiveEvent error");
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(FaceEvent event) {
+        if (event.isOk()) {
+            Print.e(event.getBean());
+            brief();
+        } else {
+            Print.e("ReceiveEvent error");
+        }
+    }
+
+    private void brief() {
+        if (!isSpeak) {
+            isSpeak = true;
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80F3AA");
+            doAnswer("你好，欢迎回来！");
         }
     }
 
@@ -198,16 +227,6 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
     }
 
     @Override
-    public void onFaceDetector(int faceNumber) {
-        Print.e(faceNumber);
-        if (!isSpeak) {
-            isSpeak = true;
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80F3AA");
-            doAnswer("你好，欢迎回来！");
-        }
-    }
-
-    @Override
     public void onCompleted() {
         RobotInfo.getInstance().setEngineType(mEngineType);
         isSpeak = false;
@@ -246,7 +265,7 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
 
     @Override
     public void stopAll() {
-
+        brief();
     }
 
     @Override

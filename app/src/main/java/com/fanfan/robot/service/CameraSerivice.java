@@ -23,10 +23,14 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.fanfan.robot.service.listener.OnFaceDetectorListener;
 import com.fanfan.novel.presenter.CameraPresenter;
+import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.utils.CameraUtils;
+import com.fanfan.robot.service.event.FaceEvent;
+import com.fanfan.youtu.utils.UUIDGenerator;
 import com.seabreeze.log.Print;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -59,7 +63,7 @@ public class CameraSerivice extends Service implements SurfaceHolder.Callback, C
     private WindowManager.LayoutParams wmParams;
     private LinearLayout linearLayout;
 
-    private OnFaceDetectorListener onFaceDetectorListener;
+    private boolean isSending;
 
     @SuppressLint("WrongConstant")
     @Override
@@ -120,6 +124,7 @@ public class CameraSerivice extends Service implements SurfaceHolder.Callback, C
 
     @Override
     public void onDestroy() {
+        isSending = false;
         closeCamera();
         windowManager.removeView(linearLayout);
         super.onDestroy();
@@ -297,20 +302,19 @@ public class CameraSerivice extends Service implements SurfaceHolder.Callback, C
         FaceDetector.Face[] faces = new FaceDetector.Face[10];
         int faceNumber = detector.findFaces(copyBitmap, faces);
         if (faceNumber > 0) {
-            if (onFaceDetectorListener != null) {
-                onFaceDetectorListener.onFaceDetector(faceNumber);
+            if (!isSending) {
+                isSending = true;
+                String uuid = UUIDGenerator.getUUID();
+                FaceEvent event = new FaceEvent(uuid);
+                EventBus.getDefault().post(event.setEvent(200, faceNumber));
             }
         } else {
-            Print.e("没有人了");
+            Print.e("no face");
         }
 
         copyBitmap.recycle();
         faceBitmap.recycle();
         previewBitmap.recycle();
-    }
-
-    public void setOnFaceDetectorListener(OnFaceDetectorListener listener) {
-        this.onFaceDetectorListener = listener;
     }
 
     public class CameraBinder extends Binder {
