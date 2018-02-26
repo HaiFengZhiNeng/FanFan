@@ -216,6 +216,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
     private void addSpeakAnswer(String messageContent) {
         if (messageContent.length() > 0) {
             mSoundPresenter.doAnswer(messageContent);
+            speakingAddAction(messageContent.length());
         } else {
             onCompleted();
         }
@@ -223,6 +224,16 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
 
     private void addSpeakAnswer(int res) {
         mSoundPresenter.doAnswer(getResources().getString(res));
+    }
+
+    private void speakingAddAction(int length) {
+        if (length <= 13) {
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
+        } else if (length > 13 && length <= 40) {
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8003AA");
+        } else {
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8021AA");
+        }
     }
 
     @Override

@@ -72,6 +72,9 @@
         <item>太极+啊白云</item>
         <item>保证左+优雅打招呼右</item>
         <item>保证右+优雅打招呼左</item>
+        <item>再见</item>
+        <item>左转一圈</item>
+        <item>右转一圈</item>
     </string-array>
 
     <string-array name="action_order">
@@ -113,6 +116,9 @@
         <item>A50C802BAA</item>
         <item>A50C802CAA</item>
         <item>A50C802DAA</item>
+        <item>A50C800CAA</item>
+        <item>A5238001AA</item>
+        <item>A5238001AA</item>
     </string-array>
 
     <string-array name="expression">

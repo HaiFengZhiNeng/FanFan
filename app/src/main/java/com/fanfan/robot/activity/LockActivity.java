@@ -110,6 +110,7 @@ public class LockActivity extends Activity implements OnFaceDetectorListener, Tt
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        isSpeak = true;
         if (!isSpeak) {
             doAnswer("你好，欢迎回来！");
         }
@@ -157,6 +158,7 @@ public class LockActivity extends Activity implements OnFaceDetectorListener, Tt
     public void onFaceDetector(int faceNumber) {
         Print.e(faceNumber);
         if (!isSpeak) {
+            isSpeak = true;
             doAnswer("你好，欢迎回来！");
         }
     }
@@ -170,6 +172,6 @@ public class LockActivity extends Activity implements OnFaceDetectorListener, Tt
 
     @Override
     public void onSpeakBegin() {
-        isSpeak = true;
+
     }
 }

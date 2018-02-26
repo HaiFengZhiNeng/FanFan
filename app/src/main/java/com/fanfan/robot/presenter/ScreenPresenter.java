@@ -14,7 +14,7 @@ public class ScreenPresenter extends IScreenPresenter {
 
     public final static int MSG_SHOW_TIPS = 0x01;
 
-    private long lockingTime = 8000;
+    private long lockingTime = 60 * 1000 * 5;
 
     private ISreenView mSreenView;
 
