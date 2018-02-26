@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.adapter.UserInfoAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
@@ -67,7 +68,7 @@ public class FaceDataActivity extends BarBaseActivity {
 
     private MaterialDialog materialDialog;
 
-    private FaceAuth delFaceAuth;
+    private int delPos;
 
     @Override
     protected int getLayoutId() {
@@ -86,6 +87,7 @@ public class FaceDataActivity extends BarBaseActivity {
         youtucode.getPersonids();
 
         mFaceAuthDBManager = new FaceAuthDBManager();
+
     }
 
     @Override
@@ -101,16 +103,16 @@ public class FaceDataActivity extends BarBaseActivity {
     }
 
     private void setAdapter() {
-        userInfoAdapter = new UserInfoAdapter(this, faceAuths);
+        userInfoAdapter = new UserInfoAdapter(faceAuths);
         recyclerFace.setAdapter(userInfoAdapter);
 
         recyclerFace.setLayoutManager(new FullyLinearLayoutManager(this));
         recyclerFace.setLayoutManager(new LinearLayoutManager(this));
         recyclerFace.setItemAnimator(new DefaultItemAnimator());
         recyclerFace.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        userInfoAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        userInfoAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FaceAuth faceAuth = faceAuths.get(position);
                 if (faceAuth.getAuthId() != null) {
                     PersonInfoDetailActivity.navToPersonInfoDetail(FaceDataActivity.this, faceAuth.getPersonId(),
@@ -121,14 +123,16 @@ public class FaceDataActivity extends BarBaseActivity {
                 }
             }
         });
-        userInfoAdapter.setOnItemLongClickListener(new BaseRecyclerAdapter.OnItemLongClickListener() {
+        userInfoAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(View view, int position) {
-                delFaceAuth = faceAuths.get(position);
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                delPos = position;
                 showDialog();
-                return true;
+                return false;
             }
         });
+        userInfoAdapter.openLoadAnimation();
+        userInfoAdapter.openLoadAnimation(BaseQuickAdapter.SCALEIN);
     }
 
     @SuppressLint("NewApi")
@@ -139,8 +143,24 @@ public class FaceDataActivity extends BarBaseActivity {
             Print.e(facePersonid);
             if (facePersonid.getErrorcode() == 0) {
                 List<String> personIds = facePersonid.getPerson_ids();
-                if(personIds.size() > 0) {
+                if (personIds.size() > 0) {
                     tvEmpty.setVisibility(View.GONE);
+                    //检测数据库完整
+                    List<FaceAuth> faceAuths = mFaceAuthDBManager.loadAll();
+                    if (faceAuths != null && faceAuths.size() > 0) {
+                        for (int i = 0; i < faceAuths.size(); i++) {
+                            FaceAuth auth = faceAuths.get(i);
+                            for (String personId : personIds) {
+                                if(auth.getPersonId().equals(personId)){
+                                    faceAuths.remove(i);
+                                    i--;
+                                }
+                            }
+                        }
+                    }
+                    if (faceAuths != null && faceAuths.size() > 0) {
+                        mFaceAuthDBManager.deleteList(faceAuths);
+                    }
                     for (String personId : personIds) {
                         FaceAuth faceAuth = mFaceAuthDBManager.queryByPersonId(personId);
                         if (faceAuth == null) {
@@ -149,7 +169,7 @@ public class FaceDataActivity extends BarBaseActivity {
                         }
                         userInfoAdapter.addData(faceAuth);
                     }
-                }else{
+                } else {
                     tvEmpty.setVisibility(View.VISIBLE);
                 }
             } else {
@@ -169,7 +189,7 @@ public class FaceDataActivity extends BarBaseActivity {
 
                     @Override
                     public void onClickRight() {
-                        youtucode.delPerson(delFaceAuth.getPersonId());
+                        youtucode.delPerson(faceAuths.get(delPos).getPersonId());
                     }
                 });
     }
@@ -183,9 +203,16 @@ public class FaceDataActivity extends BarBaseActivity {
             if (delperson.getErrorcode() == 0) {
                 String personId = delperson.getPerson_id();
                 showToast("删除 ：" + delperson.getDeleted() + " 张人脸");
-                faceAuths.remove(delFaceAuth);
-//                userInfoAdapter.removeItem(delFaceAuth);
-                userInfoAdapter.notifyDataSetChanged();
+                FaceAuth auth = mFaceAuthDBManager.queryByPersonId(personId);
+                if(auth != null) {
+                    if (mFaceAuthDBManager.delete(auth)) {
+                        faceAuths.remove(delPos);
+                        userInfoAdapter.notifyDataSetChanged();
+                        Print.e(faceAuths);
+                    } else {
+                        Print.e("faceAuth error");
+                    }
+                }
             } else {
                 onError(delperson.getErrorcode(), delperson.getErrormsg());
             }

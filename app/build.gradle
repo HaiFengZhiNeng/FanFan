@@ -67,7 +67,7 @@ repositories {
 }
 
 dependencies {
-    compile files('libs/Msc.jar')
+    implementation files('libs/Msc.jar')
     compile files('libs/HSOTG2.0.jar')
     implementation files('libs/poi-3.15.jar')
     implementation files('libs/poi-scratchpad-3.15.jar')
@@ -114,4 +114,5 @@ dependencies {
     compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
     compile 'com.android.support:customtabs:26.0.2'
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.24'
+    compile 'in.srain.cube:ultra-ptr:1.0.11'
 }

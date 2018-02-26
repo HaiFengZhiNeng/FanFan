@@ -37,7 +37,7 @@ public abstract class BaseManager<M, K> implements IDatabase<M, K> {
      */
     public static void initOpenHelper(@NonNull Context context) {
         mHelper = getOpenHelper(context, DEFAULT_DATABASE_NAME);
-        MyOpenHelper helper = new MyOpenHelper(context, DEFAULT_DATABASE_NAME,null);
+        MyOpenHelper helper = new MyOpenHelper(context, DEFAULT_DATABASE_NAME, null);
 
 //        mDaoMaster = new DaoMaster(getReadableDatabase());
         mDaoMaster = new DaoMaster(helper.getWritableDatabase());
@@ -129,6 +129,18 @@ public abstract class BaseManager<M, K> implements IDatabase<M, K> {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public long insertForId(@NonNull M m) {
+        try {
+            if (m == null)
+                return -1;
+            openWritableDb();
+            return getAbstractDao().insert(m);
+        } catch (SQLiteException e) {
+            return -1;
+        }
     }
 
     @Override

@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import com.fanfan.novel.adapter.TreeRecyclerAdapter;
 import com.fanfan.novel.adapter.VideoDataAdapter;
-import com.fanfan.novel.adapter.VoiceDataAdapter;
 import com.fanfan.novel.common.ChatConst;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseDialogFragment;

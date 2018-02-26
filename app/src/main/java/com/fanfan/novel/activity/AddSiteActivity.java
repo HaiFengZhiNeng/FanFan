@@ -42,6 +42,8 @@ import butterknife.ButterKnife;
 public class AddSiteActivity extends BarBaseActivity {
 
     public static final String SITE_ID = "siteId";
+    public static final String RESULT_CODE = "site_title_result";
+
     @BindView(R.id.et_site_name)
     EditText etSiteName;
     @BindView(R.id.et_site_url)
@@ -132,8 +134,8 @@ public class AddSiteActivity extends BarBaseActivity {
                     showToast("输入 20 字以内");
                     break;
                 }
-                if(!AppUtil.matcherUrl(getText(etSiteUrl))){
-                    showToast("输入的网址不合法，请以 http：// 开始");
+                if (!AppUtil.matcherUrl(getText(etSiteUrl))) {
+                    showToast("输入的网址不合法");
                     break;
                 }
                 if (saveLocalId == -1) {
@@ -155,17 +157,21 @@ public class AddSiteActivity extends BarBaseActivity {
         siteBean.setUrl(getText(etSiteUrl));
         siteBean.setSaveTime(System.currentTimeMillis());
         if (saveLocalId == -1) {
-            mSiteDBManager.insert(siteBean);
+            saveLocalId = mSiteDBManager.insertForId(siteBean);
         } else {
             siteBean.setId(saveLocalId);
             mSiteDBManager.update(siteBean);
         }
 
-        mNavigationDBManager = new NavigationDBManager();
-        mVideoDBManager = new VideoDBManager();
-        mVoiceDBManager = new VoiceDBManager();
+        if (saveLocalId == -1) {
+            throw new IllegalArgumentException("DB error");
+        } else {
+            mNavigationDBManager = new NavigationDBManager();
+            mVideoDBManager = new VideoDBManager();
+            mVoiceDBManager = new VoiceDBManager();
 
-        updateContents();
+            updateContents();
+        }
     }
 
     private boolean isEmpty(TextView textView) {
@@ -245,7 +251,9 @@ public class AddSiteActivity extends BarBaseActivity {
     };
 
     public void onLexiconSuccess() {
-        setResult(RESULT_OK);
+        Intent intent = new Intent();
+        intent.putExtra(RESULT_CODE, saveLocalId);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

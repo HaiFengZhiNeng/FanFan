@@ -64,5 +64,19 @@ public class SiteBean {
         this.avatar_url = avatar_url;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        } else {
+            if (obj instanceof SiteBean) {
+                SiteBean siteBean = (SiteBean) obj;
+                if (siteBean.id == (this.id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 }

@@ -170,6 +170,9 @@ public class AddNavigationActivity extends BarBaseActivity {
         if (mIat != null) {
             mIat.destroy();
         }
+//        if(aw.g != null) {
+//            aw.g = null;
+//        }
         listener = null;
         super.onDestroy();
     }
@@ -300,17 +303,21 @@ public class AddNavigationActivity extends BarBaseActivity {
         setNavigationimg(navigationBean);
 
         if (saveLocalId == -1) {//直接添加
-            mNavigationDBManager.insert(navigationBean);
+            saveLocalId = mNavigationDBManager.insertForId(navigationBean);
         } else {//更新
             navigationBean.setId(saveLocalId);
             mNavigationDBManager.update(navigationBean);
         }
 
-        mVideoDBManager = new VideoDBManager();
-        mVoiceDBManager = new VoiceDBManager();
-        mSiteDBManager = new SiteDBManager();
+        if (saveLocalId == -1) {
+            throw new IllegalArgumentException("DB error");
+        } else {
+            mVideoDBManager = new VideoDBManager();
+            mVoiceDBManager = new VoiceDBManager();
+            mSiteDBManager = new SiteDBManager();
 
-        updateContents();
+            updateContents();
+        }
     }
 
     private void setNavigationimg(NavigationBean bean) {
@@ -410,7 +417,7 @@ public class AddNavigationActivity extends BarBaseActivity {
 
     public void onLexiconSuccess() {
         Intent intent = new Intent();
-        intent.putExtra(RESULT_CODE, getText(etTitle));
+        intent.putExtra(RESULT_CODE, saveLocalId);
         setResult(RESULT_OK, intent);
         finish();
     }

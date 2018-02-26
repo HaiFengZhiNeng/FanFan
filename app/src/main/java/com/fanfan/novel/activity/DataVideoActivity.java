@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.adapter.VideoDataAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
@@ -23,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
 
 /**
  * Created by android on 2018/1/6.
@@ -30,7 +34,8 @@ import butterknife.BindView;
 
 public class DataVideoActivity extends BarBaseActivity {
 
-
+    @BindView(R.id.ptr_framelayout)
+    PtrFrameLayout mPtrFrameLayout;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
@@ -54,35 +59,52 @@ public class DataVideoActivity extends BarBaseActivity {
     @Override
     protected void initView() {
         super.initView();
-        videoDataAdapter = new VideoDataAdapter(mContext, videoBeanList);
-        videoDataAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        mPtrFrameLayout.disableWhenHorizontalMove(true);
+        mPtrFrameLayout.setPtrHandler(new PtrHandler() {
             @Override
-            public void onItemClick(View view, int position) {
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, recyclerView, header);
+            }
 
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        initData();
+                    }
+                }, 200);
             }
         });
-        videoDataAdapter.setOnItemLongClickListener(new BaseRecyclerAdapter.OnItemLongClickListener() {
+
+        videoDataAdapter = new VideoDataAdapter(videoBeanList);
+        videoDataAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(View view, int position) {
-
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
                 showNeutralNotitleDialog(position);
-
                 return false;
             }
         });
+        videoDataAdapter.openLoadAnimation();
+
         recyclerView.setAdapter(videoDataAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
+
+        mVideoDBManager = new VideoDBManager();
     }
 
     @Override
     protected void initData() {
-        mVideoDBManager = new VideoDBManager();
 
         videoBeanList = mVideoDBManager.loadAll();
+        mPtrFrameLayout.refreshComplete();
         if (videoBeanList != null && videoBeanList.size() > 0) {
-            videoDataAdapter.refreshData(videoBeanList);
+            isNuEmpty();
+            videoDataAdapter.replaceData(videoBeanList);
+        }else{
+            isEmpty();
         }
     }
 
@@ -108,9 +130,23 @@ public class DataVideoActivity extends BarBaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AddVideoActivity.ADD_VIDEO_REQUESTCODE) {
             if (resultCode == RESULT_OK) {
-                videoBeanList = mVideoDBManager.loadAll();
-                if (videoBeanList != null && videoBeanList.size() > 0) {
-                    videoDataAdapter.refreshData(videoBeanList);
+                long id = data.getLongExtra(AddVideoActivity.RESULT_CODE, -1);
+                if (id != -1) {
+                    isNuEmpty();
+                    VideoBean bean = mVideoDBManager.selectByPrimaryKey(id);
+                    int pos = videoBeanList.indexOf(bean);
+                    if (pos >= 0) {
+                        videoBeanList.remove(pos);
+                        videoBeanList.add(pos, bean);
+                        videoDataAdapter.remove(pos);
+                        videoDataAdapter.addData(pos, bean);
+                    } else {
+                        if(videoBeanList.size() == 0){
+                            isNuEmpty();
+                        }
+                        videoBeanList.add(bean);
+                        videoDataAdapter.addData(bean);
+                    }
                 }
             }
         }
@@ -122,16 +158,16 @@ public class DataVideoActivity extends BarBaseActivity {
                     @Override
                     public void neutralText() {
                         if (mVideoDBManager.deleteAll()) {
-                            videoDataAdapter.clear();
                             videoBeanList.clear();
+                            videoDataAdapter.replaceData(videoBeanList);
                         }
                     }
 
                     @Override
                     public void negativeText() {
                         if (mVideoDBManager.delete(videoBeanList.get(position))) {
-                            videoDataAdapter.removeItem(videoBeanList.get(position));
                             videoBeanList.remove(position);
+                            videoDataAdapter.remove(position);
                         }
                     }
 

@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.adapter.SiteDataAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
@@ -23,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
 
 /**
  * Created by android on 2018/2/23.
@@ -30,6 +34,8 @@ import butterknife.BindView;
 
 public class DataSiteActivity extends BarBaseActivity {
 
+    @BindView(R.id.ptr_framelayout)
+    PtrFrameLayout mPtrFrameLayout;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
@@ -53,36 +59,51 @@ public class DataSiteActivity extends BarBaseActivity {
     @Override
     protected void initView() {
         super.initView();
-        siteDataAdapter = new SiteDataAdapter(mContext, siteBeanList);
-        siteDataAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        mPtrFrameLayout.disableWhenHorizontalMove(true);
+        mPtrFrameLayout.setPtrHandler(new PtrHandler() {
             @Override
-            public void onItemClick(View view, int position) {
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, recyclerView, header);
+            }
 
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        initData();
+                    }
+                }, 200);
             }
         });
-        siteDataAdapter.setOnItemLongClickListener(new BaseRecyclerAdapter.OnItemLongClickListener() {
+
+        siteDataAdapter = new SiteDataAdapter(siteBeanList);
+        siteDataAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(View view, int position) {
-
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
                 showNeutralNotitleDialog(position);
-
                 return false;
             }
         });
+        siteDataAdapter.openLoadAnimation();
+
         recyclerView.setAdapter(siteDataAdapter);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         recyclerView.setLayoutManager(new GridLayoutManager(mContext, 2));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-//        recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
+
+        mSiteDBManager = new SiteDBManager();
     }
 
     @Override
     protected void initData() {
-        mSiteDBManager = new SiteDBManager();
 
         siteBeanList = mSiteDBManager.loadAll();
+        mPtrFrameLayout.refreshComplete();
         if (siteBeanList != null && siteBeanList.size() > 0) {
-            siteDataAdapter.refreshData(siteBeanList);
+            isNuEmpty();
+            siteDataAdapter.replaceData(siteBeanList);
+        } else {
+            isEmpty();
         }
     }
 
@@ -108,9 +129,23 @@ public class DataSiteActivity extends BarBaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AddSiteActivity.ADD_SITE_REQUESTCODE) {
             if (resultCode == RESULT_OK) {
-                siteBeanList = mSiteDBManager.loadAll();
-                if (siteBeanList != null && siteBeanList.size() > 0) {
-                    siteDataAdapter.refreshData(siteBeanList);
+                long id = data.getLongExtra(AddSiteActivity.RESULT_CODE, -1);
+                if (id != -1) {
+                    isNuEmpty();
+                    SiteBean bean = mSiteDBManager.selectByPrimaryKey(id);
+                    int pos = siteBeanList.indexOf(bean);
+                    if (pos >= 0) {
+                        siteBeanList.remove(pos);
+                        siteBeanList.add(pos, bean);
+                        siteDataAdapter.remove(pos);
+                        siteDataAdapter.addData(pos, bean);
+                    } else {
+                        if(siteBeanList.size() == 0){
+                            isNuEmpty();
+                        }
+                        siteBeanList.add(bean);
+                        siteDataAdapter.addData(bean);
+                    }
                 }
             }
         }
@@ -122,16 +157,16 @@ public class DataSiteActivity extends BarBaseActivity {
                     @Override
                     public void neutralText() {
                         if (mSiteDBManager.deleteAll()) {
-                            siteDataAdapter.clear();
                             siteBeanList.clear();
+                            siteDataAdapter.replaceData(siteBeanList);
                         }
                     }
 
                     @Override
                     public void negativeText() {
                         if (mSiteDBManager.delete(siteBeanList.get(position))) {
-                            siteDataAdapter.removeItem(siteBeanList.get(position));
                             siteBeanList.remove(position);
+                            siteDataAdapter.remove(position);
                         }
                     }
 

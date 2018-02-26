@@ -59,6 +59,7 @@ public class AddVideoActivity extends BarBaseActivity {
     TextView etVideoShart;
 
     public static final String VIDEO_ID = "videoId";
+    public static final String RESULT_CODE = "video_title_result";
     public static final int ADD_VIDEO_REQUESTCODE = 223;
 
     public static final int CHOOSE_VIDEO = 4;//选择视频
@@ -228,17 +229,21 @@ public class AddVideoActivity extends BarBaseActivity {
         videoBean.setShowTitle(getText(etVideoShart));
         videoBean.setSaveTime(System.currentTimeMillis());
         if (saveLocalId == -1) {
-            mVideoDBManager.insert(videoBean);
+            saveLocalId = mVideoDBManager.insertForId(videoBean);
         } else {
             videoBean.setId(saveLocalId);
             mVideoDBManager.update(videoBean);
         }
 
-        mVoiceDBManager = new VoiceDBManager();
-        mNavigationDBManager = new NavigationDBManager();
-        mSiteDBManager = new SiteDBManager();
+        if (saveLocalId == -1) {
+            throw new IllegalArgumentException("DB error");
+        } else {
+            mVoiceDBManager = new VoiceDBManager();
+            mNavigationDBManager = new NavigationDBManager();
+            mSiteDBManager = new SiteDBManager();
 
-        updateContents();
+            updateContents();
+        }
     }
 
 
@@ -320,7 +325,9 @@ public class AddVideoActivity extends BarBaseActivity {
     };
 
     public void onLexiconSuccess() {
-        setResult(RESULT_OK);
+        Intent intent = new Intent();
+        intent.putExtra(RESULT_CODE, saveLocalId);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

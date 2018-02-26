@@ -24,12 +24,12 @@ public class DaoMaster extends AbstractDaoMaster {
         ChatMessageBeanDao.createTable(db, ifNotExists);
         FaceAuthDao.createTable(db, ifNotExists);
         NavigationBeanDao.createTable(db, ifNotExists);
+        SiteBeanDao.createTable(db, ifNotExists);
         VideoBeanDao.createTable(db, ifNotExists);
         VoiceBeanDao.createTable(db, ifNotExists);
         CheckInDao.createTable(db, ifNotExists);
         DanceDao.createTable(db, ifNotExists);
         MusicDao.createTable(db, ifNotExists);
-        SiteBeanDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
@@ -37,12 +37,12 @@ public class DaoMaster extends AbstractDaoMaster {
         ChatMessageBeanDao.dropTable(db, ifExists);
         FaceAuthDao.dropTable(db, ifExists);
         NavigationBeanDao.dropTable(db, ifExists);
+        SiteBeanDao.dropTable(db, ifExists);
         VideoBeanDao.dropTable(db, ifExists);
         VoiceBeanDao.dropTable(db, ifExists);
         CheckInDao.dropTable(db, ifExists);
         DanceDao.dropTable(db, ifExists);
         MusicDao.dropTable(db, ifExists);
-        SiteBeanDao.dropTable(db, ifExists);
     }
 
     /**
@@ -64,12 +64,12 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(ChatMessageBeanDao.class);
         registerDaoClass(FaceAuthDao.class);
         registerDaoClass(NavigationBeanDao.class);
+        registerDaoClass(SiteBeanDao.class);
         registerDaoClass(VideoBeanDao.class);
         registerDaoClass(VoiceBeanDao.class);
         registerDaoClass(CheckInDao.class);
         registerDaoClass(DanceDao.class);
         registerDaoClass(MusicDao.class);
-        registerDaoClass(SiteBeanDao.class);
     }
 
     public DaoSession newSession() {

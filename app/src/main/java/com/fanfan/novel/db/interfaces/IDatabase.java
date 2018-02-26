@@ -14,6 +14,8 @@ public interface IDatabase<M, K> {
 
     boolean insert(M m);
 
+    long insertForId(M m);
+
     boolean delete(M m);
 
     boolean deleteByKey(K key);

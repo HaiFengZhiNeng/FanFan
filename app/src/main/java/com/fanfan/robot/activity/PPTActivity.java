@@ -316,7 +316,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
             addSpeakAnswer(contentArray.get(curCount));
         } else if (curCount == contentArray.size() - 1) {
             curCount++;
-            addSpeakAnswer("阅读完成");
+            addSpeakAnswer("本次阅读完成");
         }
     }
 

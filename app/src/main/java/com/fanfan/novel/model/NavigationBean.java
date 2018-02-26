@@ -122,7 +122,7 @@ public class NavigationBean extends BaseItemData {
         } else {
             if (obj instanceof NavigationBean) {
                 NavigationBean navigationBean = (NavigationBean) obj;
-                if (navigationBean.title.equals(this.title)) {
+                if (navigationBean.id == (this.id)) {
                     return true;
                 }
             }

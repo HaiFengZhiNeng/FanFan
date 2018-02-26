@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.adapter.FaceListAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
@@ -150,16 +151,16 @@ public class PersonInfoDetailActivity extends BarBaseActivity {
 
     private void setAdapter(final List<String> face_ids) {
 
-        faceListAdapter = new FaceListAdapter(this, face_ids);
-        faceListAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        faceListAdapter = new FaceListAdapter(face_ids);
+        faceListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
 //                FaceInfoDetailActivity.navToFaceInfoDetail(PersonInfoDetailActivity.this, face_ids.get(position));
             }
         });
-        faceListAdapter.setOnItemLongClickListener(new BaseRecyclerAdapter.OnItemLongClickListener() {
+        faceListAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(View view, int position) {
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
                 final String face_id = face_ids.get(position);
                 DialogUtils.showBasicNoTitleDialog(PersonInfoDetailActivity.this, "您确定要删除此人脸信息吗", "取消", "确定",
                         new DialogUtils.OnNiftyDialogListener() {
@@ -176,6 +177,8 @@ public class PersonInfoDetailActivity extends BarBaseActivity {
                 return false;
             }
         });
+        faceListAdapter.openLoadAnimation();
+        faceListAdapter.openLoadAnimation(BaseQuickAdapter.SCALEIN);
         faceRecycler.setAdapter(faceListAdapter);
 
         faceRecycler.setLayoutManager(new FullyLinearLayoutManager(this));
@@ -195,7 +198,12 @@ public class PersonInfoDetailActivity extends BarBaseActivity {
                 List<String> faceIds = faceIdentify.getFace_ids();
                 if (faceIds.size() > 0) {
                     String faceId = faceIds.get(0);
-                    faceListAdapter.removeItem(faceId);
+//                    faceListAdapter.removeItem(faceId);
+                    FaceAuth faceAuth = mFaceAuthDBManager.queryByPersonId(userInfoId);
+                    faceAuth.setFaceCount(faceAuth.getFaceCount() - 1);
+                    mFaceAuthDBManager.update(faceAuth);
+                    faceListAdapter.remove(faceIds.indexOf(faceId));
+                    Print.e(faceIds);
                     showToast("删除成功");
                 }
             } else {

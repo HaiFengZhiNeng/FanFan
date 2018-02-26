@@ -59,7 +59,6 @@ import butterknife.OnClick;
 
 public class AddVoiceActivity extends BarBaseActivity {
 
-
     @BindView(R.id.et_question)
     EditText etQuestion;
     @BindView(R.id.et_content)
@@ -74,6 +73,7 @@ public class AddVoiceActivity extends BarBaseActivity {
     ImageView imgVoice;
 
     public static final String VOICE_ID = "voiceId";
+    public static final String RESULT_CODE = "voice_title_result";
     public static final int ADD_VOICE_REQUESTCODE = 224;
 
     private static final int REQCODE_SELALBUM = 101;
@@ -290,17 +290,21 @@ public class AddVoiceActivity extends BarBaseActivity {
         voiceBean.setActionData(resArray(R.array.action_order)[curAction]);
         setVoiceimg(voiceBean);
         if (saveLocalId == -1) {//直接添加
-            mVoiceDBManager.insert(voiceBean);
+            saveLocalId = mVoiceDBManager.insertForId(voiceBean);
         } else {//更新
             voiceBean.setId(saveLocalId);
             mVoiceDBManager.update(voiceBean);
         }
 
-        mVideoDBManager = new VideoDBManager();
-        mNavigationDBManager = new NavigationDBManager();
-        mSiteDBManager = new SiteDBManager();
+        if (saveLocalId == -1) {
+            throw new IllegalArgumentException("DB error");
+        } else {
+            mVideoDBManager = new VideoDBManager();
+            mNavigationDBManager = new NavigationDBManager();
+            mSiteDBManager = new SiteDBManager();
 
-        updateContents();
+            updateContents();
+        }
     }
 
     private void setVoiceimg(VoiceBean bean) {
@@ -399,7 +403,9 @@ public class AddVoiceActivity extends BarBaseActivity {
     };
 
     public void onLexiconSuccess() {
-        setResult(RESULT_OK);
+        Intent intent = new Intent();
+        intent.putExtra(RESULT_CODE, saveLocalId);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.adapter.VoiceDataAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
@@ -23,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
 
 /**
  * Created by android on 2018/1/8.
@@ -30,6 +34,8 @@ import butterknife.BindView;
 
 public class DataVoiceActivity extends BarBaseActivity {
 
+    @BindView(R.id.ptr_framelayout)
+    PtrFrameLayout mPtrFrameLayout;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
@@ -53,35 +59,52 @@ public class DataVoiceActivity extends BarBaseActivity {
     @Override
     protected void initView() {
         super.initView();
-        voiceDataAdapter = new VoiceDataAdapter(mContext, voiceBeanList);
-        voiceDataAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        mPtrFrameLayout.disableWhenHorizontalMove(true);
+        mPtrFrameLayout.setPtrHandler(new PtrHandler() {
             @Override
-            public void onItemClick(View view, int position) {
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, recyclerView, header);
+            }
 
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        initData();
+                    }
+                }, 200);
             }
         });
-        voiceDataAdapter.setOnItemLongClickListener(new BaseRecyclerAdapter.OnItemLongClickListener() {
+
+        voiceDataAdapter = new VoiceDataAdapter(voiceBeanList);
+        voiceDataAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(View view, int position) {
-
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
                 showNeutralNotitleDialog(position);
-
                 return false;
             }
         });
+        voiceDataAdapter.openLoadAnimation();
+
         recyclerView.setAdapter(voiceDataAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
+
+        mVoiceDBManager = new VoiceDBManager();
     }
 
     @Override
     protected void initData() {
-        mVoiceDBManager = new VoiceDBManager();
 
         voiceBeanList = mVoiceDBManager.loadAll();
+        mPtrFrameLayout.refreshComplete();
         if (voiceBeanList != null && voiceBeanList.size() > 0) {
-            voiceDataAdapter.refreshData(voiceBeanList);
+            isNuEmpty();
+            voiceDataAdapter.replaceData(voiceBeanList);
+        } else {
+            isEmpty();
         }
     }
 
@@ -107,9 +130,23 @@ public class DataVoiceActivity extends BarBaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AddVoiceActivity.ADD_VOICE_REQUESTCODE) {
             if (resultCode == RESULT_OK) {
-                voiceBeanList = mVoiceDBManager.loadAll();
-                if (voiceBeanList != null && voiceBeanList.size() > 0) {
-                    voiceDataAdapter.refreshData(voiceBeanList);
+                long id = data.getLongExtra(AddVoiceActivity.RESULT_CODE, -1);
+                if (id != -1) {
+                    isNuEmpty();
+                    VoiceBean bean = mVoiceDBManager.selectByPrimaryKey(id);
+                    int pos = voiceBeanList.indexOf(bean);
+                    if (pos >= 0) {
+                        voiceBeanList.remove(pos);
+                        voiceBeanList.add(pos, bean);
+                        voiceDataAdapter.remove(pos);
+                        voiceDataAdapter.addData(pos, bean);
+                    } else {
+                        if (voiceBeanList.size() == 0) {
+                            isNuEmpty();
+                        }
+                        voiceBeanList.add(bean);
+                        voiceDataAdapter.addData(bean);
+                    }
                 }
             }
         }
@@ -121,16 +158,16 @@ public class DataVoiceActivity extends BarBaseActivity {
                     @Override
                     public void neutralText() {
                         if (mVoiceDBManager.deleteAll()) {
-                            voiceDataAdapter.clear();
                             voiceBeanList.clear();
+                            voiceDataAdapter.replaceData(voiceBeanList);
                         }
                     }
 
                     @Override
                     public void negativeText() {
                         if (mVoiceDBManager.delete(voiceBeanList.get(position))) {
-                            voiceDataAdapter.removeItem(voiceBeanList.get(position));
                             voiceBeanList.remove(position);
+                            voiceDataAdapter.remove(position);
                         }
                     }
 
