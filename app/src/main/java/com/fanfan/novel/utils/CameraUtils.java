@@ -1,6 +1,7 @@
 package com.fanfan.novel.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.hardware.Camera;
 import android.view.Surface;
 import android.view.WindowManager;
@@ -8,7 +9,7 @@ import android.view.WindowManager;
 public class CameraUtils {
 
 
-    public static int setCameraDisplayOrientation(Activity activity, int paramInt) {
+    public static int setCameraDisplayOrientation(Context activity, int paramInt) {
         Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(paramInt, info);
         int rotation = ((WindowManager) activity.getSystemService("window")).getDefaultDisplay().getRotation(); // 获得显示器件角度

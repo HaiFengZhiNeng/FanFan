@@ -1,43 +1,48 @@
-package com.fanfan.novel.presenter;
+package com.fanfan.robot.service;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
+import android.app.Service;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.media.FaceDetector;
+import android.os.Binder;
 import android.os.Build;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 
-import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.presenter.ipresenter.ICameraPresenter;
-import com.fanfan.novel.utils.BitmapUtils;
+import com.fanfan.robot.service.listener.OnFaceDetectorListener;
+import com.fanfan.novel.presenter.CameraPresenter;
 import com.fanfan.novel.utils.CameraUtils;
+import com.seabreeze.log.Print;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by zhangyuanyuan on 2017/9/18.
+ * Created by android on 2018/2/26.
  */
 
-@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-public class CameraPresenter extends ICameraPresenter implements Camera.PreviewCallback, Camera.PictureCallback,
-        Camera.ShutterCallback, Camera.FaceDetectionListener {
+public class CameraSerivice extends Service implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
-    private ICameraView mCameraView;
+    //camera
+    private Camera mCamera;
 
     private SurfaceHolder mHolder;
-    private Camera mCamera;
 
     private int mCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
 
@@ -47,30 +52,95 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
     private int pictureHeight = 480;
 
     private boolean isPreviewing = false;
-    private Matrix mScaleMatrix = new Matrix();
 
     private int orientionOfCamera;
-    private int orientionOfPhoto;
-    private int orientionOfFace;
 
-    private boolean isFirst;
-    private boolean isFaceFirst;
+    private WindowManager windowManager;
+    private WindowManager.LayoutParams wmParams;
+    private LinearLayout linearLayout;
 
-    private boolean isCameraFaceDetection;
+    private OnFaceDetectorListener onFaceDetectorListener;
 
-    public static boolean unusual = true;
+    @SuppressLint("WrongConstant")
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-    public static final String PICTURETAKEN = "pictureTaken";
+        // 设置悬浮窗体属性
+        // 1.得到WindoeManager对象：
+        windowManager = (WindowManager) getApplicationContext().getSystemService("window");
+        // 2.得到WindowManager.LayoutParams对象，为后续设置相关参数做准备：
+        wmParams = new WindowManager.LayoutParams();
+        // 3.设置相关的窗口布局参数，要实现悬浮窗口效果，要需要设置的参数有
+        // 3.1设置window type
+        wmParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        // 3.2设置图片格式，效果为背景透明 //wmParams.format = PixelFormat.RGBA_8888;
+        wmParams.format = 1;
+        // 下面的flags属性的效果形同“锁定”。 悬浮窗不可触摸，不接受任何事件,同时不影响后面的事件响应。
+        wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        // 4.// 设置悬浮窗口长宽数据
+        wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        // 5. 调整悬浮窗口至中间
+        wmParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER;
+        // 6. 以屏幕左上角为原点，设置x、y初始值
+        wmParams.x = 0;
+        wmParams.y = 0;
+        // 7.将需要加到悬浮窗口中的View加入到窗口中了：
+        // 如果view没有被加入到某个父组件中，则加入WindowManager中
 
-    public CameraPresenter(ICameraView baseView, SurfaceHolder surfaceHolder) {
-        super(baseView);
-        mCameraView = baseView;
-        mHolder = surfaceHolder;
+        SurfaceView surfaceView = new SurfaceView(this);
+        mHolder = surfaceView.getHolder(); // 获得SurfaceHolder对象
+
+        WindowManager.LayoutParams params_sur = new WindowManager.LayoutParams();
+        params_sur.width = 1;
+        params_sur.height = 1;
+        params_sur.alpha = 255;
+        surfaceView.setLayoutParams(params_sur);
+
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        // surface.getHolder().setFixedSize(800, 1024);
+        mHolder.addCallback(this); // 为SurfaceView添加状态监听
+
+        linearLayout = new LinearLayout(this);
+        WindowManager.LayoutParams params_rel = new WindowManager.LayoutParams();
+        params_rel.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        params_rel.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        linearLayout.setLayoutParams(params_rel);
+        linearLayout.addView(surfaceView);
+        windowManager.addView(linearLayout, wmParams); // 创建View
     }
 
-
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    @Nullable
     @Override
+    public IBinder onBind(Intent intent) {
+        return new CameraBinder();
+    }
+
+    @Override
+    public void onDestroy() {
+        closeCamera();
+        windowManager.removeView(linearLayout);
+        super.onDestroy();
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        openCamera();
+        doStartPreview();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        closeCamera();
+    }
+
     public void closeCamera() {
         if (null != mCamera) {
             mCamera.stopFaceDetection();
@@ -84,7 +154,6 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    @Override
     public void openCamera() {
         if (null != mCamera) {
             return;
@@ -94,7 +163,6 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
         }
         try {
             mCamera = Camera.open(mCameraId);
-            mCamera.setFaceDetectionListener(this);
         } catch (Exception e) {
             e.printStackTrace();
             closeCamera();
@@ -102,7 +170,6 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
         }
     }
 
-    @Override
     public void doStartPreview() {
         if (isPreviewing) {
             mCamera.stopPreview();
@@ -148,9 +215,9 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
 
                 mCamera.setParameters(parameters);
 
-                if (unusual) {
+                if (CameraPresenter.unusual) {
                     // 设置显示的偏转角度，大部分机器是顺时针90度，某些机器需要按情况设置
-                    orientionOfCamera = CameraUtils.setCameraDisplayOrientation((Activity) mCameraView.getContext(), mCameraId);
+                    orientionOfCamera = CameraUtils.setCameraDisplayOrientation(this, mCameraId);
                 } else {
                     // TODO: 2017/12/21  robot
                     orientionOfCamera = 90;
@@ -161,19 +228,16 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
                 mCamera.setPreviewCallback(this);
 
                 try {
-                    if(mHolder != null) {
-                        mCamera.setPreviewDisplay(mHolder);
-                    }
+//                    mCamera.setPreviewTexture(new SurfaceTexture(0));
+                    mCamera.setPreviewDisplay(mHolder);
                     mCamera.startPreview();//开启预览
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 if (parameters.getMaxNumDetectedFaces() > 1) {
                     mCamera.startFaceDetection();
-                    isCameraFaceDetection = true;
                 }
                 isPreviewing = true;
-                mCameraView.previewFinish();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -181,82 +245,11 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
     }
 
     @Override
-    public void changeCamera() {
-        if (Camera.getNumberOfCameras() == 1) {
-            Log.e("", "只有后置摄像头，不能切换");
-            return;
-        }
-        closeCamera();
-        setCameraId();
-        openCamera();
-        doStartPreview();
-    }
-
-    @Override
-    public void setMatrix(int width, int height) {
-        mScaleMatrix.setScale(width / (float) previewHeight, height / (float) previewWidth);
-    }
-
-    @Override
-    public void cameraAutoFocus() {
-        mCamera.autoFocus(new Camera.AutoFocusCallback() {//自动对焦
-            @Override
-            public void onAutoFocus(boolean success, Camera camera) {
-                if (success) {
-                    mCameraView.autoFocusSuccess();
-                }
-            }
-        });
-    }
-
-    @Override
-    public void cameraTakePicture() {
-//        isPreviewing = false;
-        if (isPreviewing && (mCamera != null)) {
-            mCamera.takePicture(this, null, this);
-        }
-    }
-
-    @Override
-    public int getCameraId() {
-        return mCameraId;
-    }
-
-    @Override
-    public int getOrientionOfCamera() {
-        if (!isFaceFirst) {
-            orientionOfFace = orientionOfCamera;
-            isFaceFirst = true;
-        }
-        return orientionOfFace;
-    }
-
-    @Override
-    public void pictureTakenFinsih() {
-        mCamera.startPreview();
-        isPreviewing = true;
-    }
-
-    @Override
-    public boolean cameraFaceDetection() {
-        return isCameraFaceDetection;
-    }
-
-    private void setCameraId() {
-        if (Camera.CameraInfo.CAMERA_FACING_FRONT == mCameraId) {
-            mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
-        } else {
-            mCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
-        }
-    }
-
-
-    @Override
     public void onPreviewFrame(byte[] bytes, Camera camera) {
         Camera.Size size = camera.getParameters().getPreviewSize();
         YuvImage yuvImage = new YuvImage(bytes, ImageFormat.NV21, size.width, size.height, null);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, baos);
+        yuvImage.compressToJpeg(new android.graphics.Rect(0, 0, size.width, size.height), 80, baos);
         byte[] byteArray = baos.toByteArray();
 
         Bitmap previewBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -270,7 +263,7 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
 
         detector = new FaceDetector(previewBitmap.getWidth(), previewBitmap.getHeight(), 10);
         int oriention = orientionOfCamera;
-        if (unusual) {
+        if (CameraPresenter.unusual) {
             oriention = 360 - orientionOfCamera;
         }
         if (oriention == 360) {
@@ -303,16 +296,12 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
 
         FaceDetector.Face[] faces = new FaceDetector.Face[10];
         int faceNumber = detector.findFaces(copyBitmap, faces);
-        if (!isFirst) {
-            orientionOfPhoto = orientionOfCamera;
-            isFirst = true;
-        }
         if (faceNumber > 0) {
-            if (orientionOfPhoto == orientionOfCamera) {
-                mCameraView.tranBitmap(faceBitmap, faceNumber);
+            if (onFaceDetectorListener != null) {
+                onFaceDetectorListener.onFaceDetector(faceNumber);
             }
         } else {
-            mCameraView.noFace();
+            Print.e("没有人了");
         }
 
         copyBitmap.recycle();
@@ -320,57 +309,15 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
         previewBitmap.recycle();
     }
 
+    public void setOnFaceDetectorListener(OnFaceDetectorListener listener) {
+        this.onFaceDetectorListener = listener;
+    }
 
-    @Override
-    public void onPictureTaken(byte[] bytes, Camera camera) {
-        Bitmap saveBitmap = null;
-        if (null != bytes) {
-            mCamera.stopPreview();
-            isPreviewing = false;
+    public class CameraBinder extends Binder {
 
-            Bitmap previewBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            Matrix matrix = new Matrix();
-            matrix.postRotate(0.0f, previewBitmap.getWidth() / 2, previewBitmap.getHeight() / 2);
-            if (unusual) {
-                matrix.setRotate(-orientionOfCamera);
-            } else {
-                // TODO: 2017/12/21  robot
-                matrix.setRotate(orientionOfCamera);
-            }
-            saveBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, previewBitmap.getWidth(), previewBitmap.getHeight(), matrix, true);
-
-        }
-        if (null != saveBitmap) {
-            long saveTime = System.currentTimeMillis();
-            boolean save = BitmapUtils.saveBitmapToFile(saveBitmap, PICTURETAKEN, saveTime + ".jpg");
-            if (save) {
-                mCameraView.pictureTakenSuccess(Constants.PROJECT_PATH + PICTURETAKEN + File.separator + saveTime + ".jpg");
-            } else {
-                mCameraView.pictureTakenFail();
-            }
+        public CameraSerivice getService() {
+            return CameraSerivice.this;
         }
     }
 
-
-    @Override
-    public void onShutter() {
-
-    }
-
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void finish() {
-
-    }
-
-    @Override
-    public void onFaceDetection(Camera.Face[] faces, Camera camera) {
-        if (unusual) {
-            mCameraView.setCameraFaces(faces);
-        }
-    }
 }

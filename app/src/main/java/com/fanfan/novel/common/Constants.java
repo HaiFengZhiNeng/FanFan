@@ -70,4 +70,5 @@ public class Constants {
     public static final String[] NAVIGATIONS = {"image_navigation"};
 
     public static final String MUSIC_UPDATE = "music_update";
+
 }

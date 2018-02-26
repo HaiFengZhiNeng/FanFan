@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,24 +27,33 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.fanfan.novel.common.Constants;
+import com.fanfan.novel.presenter.CameraPresenter;
 import com.fanfan.novel.utils.PhoneUtil;
 import com.fanfan.robot.R;
+import com.fanfan.robot.activity.LockActivity;
+import com.fanfan.robot.presenter.ScreenPresenter;
+import com.fanfan.robot.presenter.ipersenter.IScreenPresenter;
+import com.fanfan.robot.service.ScreenService;
 import com.fanfan.youtu.api.base.event.BaseEvent;
 import com.fanfan.youtu.utils.ErrorMsg;
 import com.seabreeze.log.Print;
 
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.ButterKnife;
 
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements IScreenPresenter.ISreenView {
 
     protected Context mContext;
     protected Handler mHandler = new Handler();
 
     protected RelativeLayout backdrop;
     protected Toolbar toolbar;
+
+    private ScreenPresenter mScreenPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +70,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         initDb();
         initData();
         setListener();
+
+        if (CameraPresenter.unusual) {
+            Intent intent = new Intent(this, ScreenService.class);
+            startService(intent);
+        } else {
+            mScreenPresenter = new ScreenPresenter(this);
+        }
     }
 
 
@@ -112,6 +129,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.NET_LOONGGG_EXITAPP);
         this.registerReceiver(this.finishAppReceiver, filter);
+
+        if (mScreenPresenter != null) {
+            mScreenPresenter.startTipsTimer();
+        }
     }
 
     /**
@@ -146,6 +167,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        if (mScreenPresenter != null) {
+            mScreenPresenter.endTipsTimer();
+        }
     }
 
     @Override
@@ -214,5 +239,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void finish() {
         super.finish();
         ActivityCollector.finishActivity(this);
+    }
+
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+        if (mScreenPresenter != null) {
+            mScreenPresenter.resetTipsTimer();
+        }
+    }
+
+    @Override
+    public void showTipsView() {
+        LockActivity.newInstance(this);
     }
 }
