@@ -17,7 +17,14 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.fanfan.novel.common.instance.SpeakTts;
+import com.fanfan.novel.model.SerialBean;
+import com.fanfan.novel.presenter.SerialPresenter;
+import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
+import com.fanfan.novel.service.SerialService;
+import com.fanfan.novel.service.event.ReceiveEvent;
+import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.listener.TtsListener;
+import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.utils.FucUtil;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.RobotInfo;
@@ -31,13 +38,19 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.net.DatagramPacket;
+
 import butterknife.ButterKnife;
 
 /**
  * Created by android on 2018/2/26.
  */
 
-public class LockActivity extends Activity implements OnFaceDetectorListener, TtsListener.SynListener {
+public class LockActivity extends Activity implements ISerialPresenter.ISerialView, OnFaceDetectorListener,
+        TtsListener.SynListener {
 
     public static boolean isShow = false;
 
@@ -71,6 +84,8 @@ public class LockActivity extends Activity implements OnFaceDetectorListener, Tt
         }
     };
 
+    private SerialPresenter mSerialPresenter;
+
     private String mEngineType;
 
     private SpeechSynthesizer mTts;
@@ -86,6 +101,9 @@ public class LockActivity extends Activity implements OnFaceDetectorListener, Tt
 
         mEngineType = RobotInfo.getInstance().getEngineType();
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_LOCAL);
+
+        mSerialPresenter = new SerialPresenter(this);
+        mSerialPresenter.start();
 
         mTtsListener = new TtsListener(this);
         initTts();
@@ -109,12 +127,37 @@ public class LockActivity extends Activity implements OnFaceDetectorListener, Tt
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public void onUserInteraction() {
+        super.onUserInteraction();
         isSpeak = true;
         if (!isSpeak) {
             doAnswer("你好，欢迎回来！");
         }
-        return super.onKeyDown(keyCode, event);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(ServiceToActivityEvent event) {
+        if (event.isOk()) {
+            SerialBean serialBean = event.getBean();
+            mSerialPresenter.onDataReceiverd(serialBean);
+        } else {
+            Print.e("ReceiveEvent error");
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onResultEvent(ReceiveEvent event) {
+        if (event.isOk()) {
+            DatagramPacket packet = event.getBean();
+            if (!SocketManager.getInstance().isGetTcpIp) {
+                SocketManager.getInstance().setUdpIp(packet.getAddress().getHostAddress(), packet.getPort());
+            }
+            String recvStr = new String(packet.getData(), 0, packet.getLength());
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, recvStr);
+            Print.e(recvStr);
+        } else {
+            Print.e("ReceiveEvent error");
+        }
     }
 
     public void initTts() {
@@ -159,6 +202,7 @@ public class LockActivity extends Activity implements OnFaceDetectorListener, Tt
         Print.e(faceNumber);
         if (!isSpeak) {
             isSpeak = true;
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80F3AA");
             doAnswer("你好，欢迎回来！");
         }
     }
@@ -172,6 +216,41 @@ public class LockActivity extends Activity implements OnFaceDetectorListener, Tt
 
     @Override
     public void onSpeakBegin() {
+
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void dismissLoading() {
+
+    }
+
+    @Override
+    public void showMsg(String msg) {
+
+    }
+
+    @Override
+    public void showMsg(int msg) {
+
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    public void stopAll() {
+
+    }
+
+    @Override
+    public void onMoveStop() {
 
     }
 }
