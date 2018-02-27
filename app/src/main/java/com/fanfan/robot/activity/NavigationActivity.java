@@ -16,6 +16,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.activity.DataNavigationActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
@@ -114,7 +115,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
 
         navigationBeanList = mNavigationDBManager.loadAll();
         if (navigationBeanList != null && navigationBeanList.size() > 0) {
-            navigationAdapter.refreshData(navigationBeanList);
+            navigationAdapter.replaceData(navigationBeanList);
             navigationAdapter.notifyClick(0);
             Glide.with(mContext).load(navigationBeanList.get(0).getImgUrl())
                     .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
@@ -132,13 +133,15 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     }
 
     private void initSimpleAdapter() {
-        navigationAdapter = new NavigationAdapter(mContext, navigationBeanList);
-        navigationAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        navigationAdapter = new NavigationAdapter(navigationBeanList);
+        navigationAdapter.openLoadAnimation();
+        navigationAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 refVoice(navigationBeanList.get(position), position);
             }
         });
+
         recyclerView.setAdapter(navigationAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setItemAnimator(new DefaultItemAnimator());

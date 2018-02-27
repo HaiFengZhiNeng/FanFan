@@ -400,7 +400,7 @@ public class AiuiListener implements AIUIListener {
     }
 
     private void noResult(String question) {
-        getExecutorService().execute(new JsonThread(question));
+//        getExecutorService().execute(new JsonThread(question));
 //        specknoResult(question);
         aiListener.onNoAnswer(question);
     }

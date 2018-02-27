@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.enums.SpecialType;
@@ -89,13 +90,15 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
         mSerialPresenter.start();
 
 
-        siteAdapter = new SiteAdapter(mContext, siteBeanList);
-        siteAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        siteAdapter = new SiteAdapter(siteBeanList);
+        siteAdapter.openLoadAnimation();
+        siteAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 refSite(siteBeanList.get(position), position);
             }
         });
+
         recyclerSite.setAdapter(siteAdapter);
         recyclerSite.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerSite.setItemAnimator(new DefaultItemAnimator());
@@ -107,7 +110,8 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
 
         siteBeanList = mSiteDBManager.loadAll();
         if (siteBeanList != null && siteBeanList.size() > 0) {
-            siteAdapter.refreshData(siteBeanList);
+            isNuEmpty();
+            siteAdapter.replaceData(siteBeanList);
             siteAdapter.notifyClick(0);
         } else {
             isEmpty();

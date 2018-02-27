@@ -3,8 +3,14 @@ package com.fanfan.robot.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.fanfan.novel.common.base.simple.BaseRecyclerViewHolder;
 import com.fanfan.novel.common.base.simple.SimpleAdapter;
 import com.fanfan.novel.model.VoiceBean;
@@ -12,50 +18,48 @@ import com.fanfan.novel.ui.ChatTextView;
 import com.fanfan.robot.R;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Created by android on 2018/1/6.
  */
 
-public class VoiceAdapter extends SimpleAdapter<VoiceBean> {
-
-    private Handler mHandler;
+public class VoiceAdapter extends BaseQuickAdapter<VoiceBean, BaseViewHolder> {
 
     private List<Boolean> isClicks;
 
-    public VoiceAdapter(Context context, List<VoiceBean> datas) {
-        super(context, R.layout.item_voice_simple, datas);
-        mHandler = new Handler();
+    public VoiceAdapter(@Nullable List<VoiceBean> data) {
+        super(R.layout.item_voice_simple, data);
         isClicks = new ArrayList<>();
-        for (int i = 0; i < datas.size(); i++) {
+        for (int i = 0; i < data.size(); i++) {
             isClicks.add(false);
         }
     }
 
     @Override
-    protected void convert(BaseRecyclerViewHolder viewHolder, VoiceBean item, int pos) {
-        viewHolder.getTextView(R.id.tv_showtitle).setText(item.getShowTitle());
+    protected void convert(BaseViewHolder helper, VoiceBean item) {
+        helper.setText(R.id.tv_showtitle, item.getShowTitle());
     }
 
     @Override
-    public void onBindViewHolder(BaseRecyclerViewHolder viewHolder, int position) {
-        super.onBindViewHolder(viewHolder, position);
-        if (isClicks.get(position)) {
-            viewHolder.getTextView(R.id.tv_showtitle).setTextColor(Color.WHITE);
-            viewHolder.getCardView(R.id.card_voice).setCardBackgroundColor(context.getResources().getColor(R.color.voice_item_back));
+    public void onBindViewHolder(BaseViewHolder holder, int positions) {
+        super.onBindViewHolder(holder, positions);
+        if (isClicks.get(positions)) {
+            ((TextView) holder.getView(R.id.tv_showtitle)).setTextColor(Color.WHITE);
+            ((CardView) holder.getView(R.id.card_voice)).setCardBackgroundColor(mContext.getResources().getColor(R.color.voice_item_back));
         } else {
-            viewHolder.getTextView(R.id.tv_showtitle).setTextColor(Color.BLACK);
-            viewHolder.getCardView(R.id.card_voice).setCardBackgroundColor(context.getResources().getColor(R.color.white));
+            ((TextView) holder.getView(R.id.tv_showtitle)).setTextColor(Color.BLACK);
+            ((CardView) holder.getView(R.id.card_voice)).setCardBackgroundColor(mContext.getResources().getColor(R.color.white));
         }
     }
 
     @Override
-    public void refreshData(List<VoiceBean> list) {
-        for (int i = 0; i < list.size(); i++) {
+    public void replaceData(@NonNull Collection<? extends VoiceBean> data) {
+        for (int i = 0; i < data.size(); i++) {
             isClicks.add(false);
         }
-        super.refreshData(list);
+        super.replaceData(data);
     }
 
     public void notifyClick(int position) {

@@ -25,6 +25,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseFragment;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
@@ -97,7 +98,8 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
     @Override
     protected void initData() {
 
-        mAdapter = new LocalMusicAdapter(getActivity(), MusicCache.get().getMusicList());
+        mAdapter = new LocalMusicAdapter(MusicCache.get().getMusicList());
+        mAdapter.openLoadAnimation();
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -105,9 +107,9 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
 
-        mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        mAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 stopListener();
                 getPlayService().play(position);
             }
@@ -252,7 +254,7 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
         } else {
             tvEmpty.setVisibility(View.GONE);
         }
-        mAdapter.refreshData(MusicCache.get().getMusicList());
+        mAdapter.replaceData(MusicCache.get().getMusicList());
         mAdapter.updatePlayingPosition(getPlayService());
         mAdapter.notifyDataSetChanged();
     }

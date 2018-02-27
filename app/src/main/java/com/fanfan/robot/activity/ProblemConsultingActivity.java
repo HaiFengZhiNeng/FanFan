@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.activity.SimpleCallActivity;
 import com.fanfan.novel.activity.VideoDetailActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
@@ -108,7 +109,8 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
 
         voiceBeanList = mVoiceDBManager.loadAll();
         if (voiceBeanList != null && voiceBeanList.size() > 0) {
-            voiceAdapter.refreshData(voiceBeanList);
+            isNuEmpty();
+            voiceAdapter.replaceData(voiceBeanList);
             voiceAdapter.notifyClick(0);
             Glide.with(mContext).load(voiceBeanList.get(0).getImgUrl())
                     .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
@@ -199,13 +201,15 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     }
 
     private void initSimpleAdapter() {
-        voiceAdapter = new VoiceAdapter(mContext, voiceBeanList);
-        voiceAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        voiceAdapter = new VoiceAdapter(voiceBeanList);
+        voiceAdapter.openLoadAnimation();
+        voiceAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 refVoice(voiceBeanList.get(position), position);
             }
         });
+
         recyclerVoice.setAdapter(voiceAdapter);
         recyclerVoice.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerVoice.setItemAnimator(new DefaultItemAnimator());

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.activity.VideoDetailActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
@@ -114,7 +115,8 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
 
         videoBeanList = mVideoDBManager.loadAll();
         if (videoBeanList != null && videoBeanList.size() > 0) {
-            videoAdapter.refreshData(videoBeanList);
+            isNuEmpty();
+            videoAdapter.replaceData(videoBeanList);
         } else {
             isEmpty();
         }
@@ -228,10 +230,11 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     }
 
     private void initSimpleAdapter() {
-        videoAdapter = new VideoAdapter(mContext, videoBeanList);
-        videoAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        videoAdapter = new VideoAdapter(videoBeanList);
+        videoAdapter.openLoadAnimation();
+        videoAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 refVideo(videoBeanList.get(position));
             }
         });

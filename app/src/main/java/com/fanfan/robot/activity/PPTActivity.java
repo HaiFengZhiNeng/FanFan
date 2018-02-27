@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.enums.SpecialType;
@@ -90,13 +91,15 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
         mSerialPresenter = new SerialPresenter(this);
         mSerialPresenter.start();
 
-        pptAdapter = new PPTAdapter(mContext, pptFiles);
-        pptAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        pptAdapter = new PPTAdapter(pptFiles);
+        pptAdapter.openLoadAnimation();
+        pptAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 refPPT(pptFiles.get(position), position);
             }
         });
+
         recyclerTitle.setAdapter(pptAdapter);
         recyclerTitle.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerTitle.setItemAnimator(new DefaultItemAnimator());
@@ -114,8 +117,9 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
 
         List<File> files = loadFile("robotResources");
         if (files != null && files.size() > 0) {
+            isNuEmpty();
             pptFiles = files;
-            pptAdapter.refreshData(pptFiles);
+            pptAdapter.replaceData(pptFiles);
             pptAdapter.notifyClick(0);
         } else {
             isEmpty();
