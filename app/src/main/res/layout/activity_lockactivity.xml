@@ -6,13 +6,23 @@
     android:background="@color/black"
     tools:context=".activity.LockActivity">
 
-    <TextView
+    <ImageView
+        android:id="@+id/iv_splash_back"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="hello"
-        android:textColor="@color/white"
-        android:textSize="@dimen/x30" />
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/splash_bg" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/y130"
+        android:text="点击页面或者我都能叫醒我哦！"
+        android:textColor="@color/white"
+        android:textSize="@dimen/x12" />
 
 </RelativeLayout>

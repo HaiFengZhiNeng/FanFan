@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.fanfan.novel.common.instance.SpeakTts;
 import com.fanfan.novel.model.SerialBean;
@@ -44,6 +45,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.net.DatagramPacket;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -52,6 +54,9 @@ import butterknife.ButterKnife;
 
 public class LockActivity extends Activity implements ISerialPresenter.ISerialView,
         TtsListener.SynListener {
+
+    @BindView(R.id.iv_splash_back)
+    ImageView ivSplashBack;
 
     public static boolean isShow = false;
 
@@ -142,7 +147,6 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        cameraSerivice.closeCamera();
         brief();
     }
 
@@ -182,6 +186,7 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
     }
 
     private void brief() {
+        cameraSerivice.closeCamera();
         if (!isSpeak) {
             isSpeak = true;
             mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80F3AA");

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.activity.AddNavigationActivity;
 import com.fanfan.novel.activity.DanceActivity;
 import com.fanfan.novel.activity.DataNavigationActivity;
@@ -31,11 +32,15 @@ import com.fanfan.robot.adapter.LocalMusicAdapter;
 import com.fanfan.robot.db.DanceDBManager;
 import com.fanfan.robot.model.Dance;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
 
 /**
  * Created by android on 2018/1/10.
@@ -43,6 +48,8 @@ import butterknife.Unbinder;
 
 public class DanceFragment extends BaseFragment {
 
+    @BindView(R.id.ptr_framelayout)
+    PtrFrameLayout mPtrFrameLayout;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.tv_empty)
@@ -66,7 +73,27 @@ public class DanceFragment extends BaseFragment {
     @Override
     protected void initView(View view) {
         super.initView(view);
-        mAdapter = new LocalDanceAdapter(getActivity(), dances);
+
+        mPtrFrameLayout.disableWhenHorizontalMove(true);
+        mPtrFrameLayout.setPtrHandler(new PtrHandler() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, recyclerView, header);
+            }
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        initData();
+                    }
+                }, 200);
+            }
+        });
+
+        dances = new ArrayList<>();
+        mAdapter = new LocalDanceAdapter(dances);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -74,19 +101,24 @@ public class DanceFragment extends BaseFragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
 
-        mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        mAdapter.isFirstOnly(false); //设置不仅是首次填充数据时有动画,以后上下滑动也会有动画
+        mAdapter.openLoadAnimation();
+
+        mAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 playDance(dances.get(position));
             }
         });
-        mAdapter.setOnItemLongClickListener(new BaseRecyclerAdapter.OnItemLongClickListener() {
+        mAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(View view, int position) {
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
                 showNeutralNotitleDialog(position);
                 return false;
             }
         });
+
+        mDanceDBManager = new DanceDBManager();
     }
 
     private void playDance(Dance dance) {
@@ -95,11 +127,12 @@ public class DanceFragment extends BaseFragment {
 
     @Override
     protected void initData() {
-        mDanceDBManager = new DanceDBManager();
+
         dances = mDanceDBManager.loadAll();
+        mPtrFrameLayout.refreshComplete();
         if (dances != null && dances.size() > 0) {
             tvEmpty.setVisibility(View.GONE);
-            mAdapter.refreshData(dances);
+            mAdapter.replaceData(dances);
         } else {
             tvEmpty.setVisibility(View.VISIBLE);
         }
@@ -122,7 +155,8 @@ public class DanceFragment extends BaseFragment {
             if (resultCode == DanceAddActivity.ADD_DANCE_RESULTCODE) {
                 dances = mDanceDBManager.loadAll();
                 if (dances != null && dances.size() > 0) {
-                    mAdapter.refreshData(dances);
+                    tvEmpty.setVisibility(View.GONE);
+                    mAdapter.replaceData(dances);
                 } else {
                     tvEmpty.setVisibility(View.GONE);
                 }
@@ -136,8 +170,8 @@ public class DanceFragment extends BaseFragment {
                     @Override
                     public void neutralText() {
                         if (mDanceDBManager.delete(dances.get(position))) {
-                            mAdapter.removeItem(dances.get(position));
                             dances.remove(position);
+                            mAdapter.remove(position);
                         }
                     }
 
