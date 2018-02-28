@@ -58,6 +58,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         tools:replace="android:icon">
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="228d59a2838fda823ac92bc9e3d4a23c" />
+        
         <meta-data
             android:name="com.fanfan.novel.common.glide.BaseGlideModule"
             android:value="GlideModule" />
@@ -76,16 +81,16 @@
             android:name="com.fanfan.novel.activity.Main2Activity"
             android:theme="@style/AppTheme">
             <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
 
         <activity
             android:name=".activity.LockActivity"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
-        </activity>
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"></activity>
+
         <service android:name=".service.CameraSerivice" />
         <service android:name=".service.ScreenService" />
 
@@ -197,6 +202,9 @@
             android:theme="@style/AppThemeAction" />
         <activity
             android:name=".activity.PPTActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name="com.fanfan.novel.activity.AMapActivity"
             android:theme="@style/AppThemeAction" />
 
         <service android:name="com.fanfan.novel.service.UdpService" />

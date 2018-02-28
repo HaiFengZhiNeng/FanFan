@@ -71,6 +71,8 @@ public abstract class ILineSoundPresenter implements BasePresenter {
 
         void spakeMove(SpecialType specialType, String result);
 
+        void openMap();
+
         void spakeLogout();
 
         void onCompleted();

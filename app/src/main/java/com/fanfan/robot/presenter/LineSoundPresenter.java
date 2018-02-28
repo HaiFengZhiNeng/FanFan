@@ -302,7 +302,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 specialType == SpecialType.Turnleft || specialType == SpecialType.Turnright) {
             mSoundView.spakeMove(specialType, result);
         } else if (specialType == SpecialType.Map) {
-//            mSoundView.openMap();
+            mSoundView.openMap();
         } else if (specialType == SpecialType.Logout) {
             mSoundView.spakeLogout();
         }

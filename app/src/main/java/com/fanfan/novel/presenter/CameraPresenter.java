@@ -58,7 +58,7 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
 
     private boolean isCameraFaceDetection;
 
-    public static boolean unusual = false;
+    public static boolean unusual = true;
 
     public static final String PICTURETAKEN = "pictureTaken";
 

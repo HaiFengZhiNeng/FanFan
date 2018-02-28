@@ -29,6 +29,7 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.fanfan.novel.activity.AMapActivity;
 import com.fanfan.novel.activity.DanceActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
@@ -405,7 +406,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private void addSpeakAnswer(String messageContent, boolean isAction) {
         mTtsPresenter.doAnswer(messageContent);
-        if(isAction) {
+        if (isAction) {
             speakingAddAction(messageContent.length());
         }
     }
@@ -686,11 +687,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         Print.e("aiuiForLocal : " + result);
         String unicode = result.replaceAll("\\p{P}", "");
         Print.e("aiuiForLocal : " + unicode);
-        if(unicode.equals("百度")){
+        if (unicode.equals("百度")) {
             IntentUtil.openUrl(mContext, "http://www.baidu.com/");
-        }else if(unicode.equals("新闻")){
+        } else if (unicode.equals("新闻")) {
             IntentUtil.openUrl(mContext, "http://www.cepb.gov.cn/");
-        }else {
+        } else {
             List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
             if (voiceBeanList != null && voiceBeanList.size() > 0) {
                 for (VoiceBean voiceBean : voiceBeanList) {
@@ -838,6 +839,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038006AA");
                 break;
         }
+    }
+
+    @Override
+    public void openMap() {
+        AMapActivity.newInstance(this);
     }
 
     @Override
