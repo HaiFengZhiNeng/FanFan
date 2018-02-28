@@ -37,39 +37,43 @@ public class Constants {
 
     public static final String GRM_PATH = PROJECT_PATH + "msc";
 
+    public static String RES_DIR_NAME = "robotResources";
+
     public static final String IAT_CLOUD_BUILD = "iat_cloud_build";
     public static final String IAT_LOCAL_BUILD = "iat_local_build";
     public static final String IAT_CLOUD_UPDATELEXICON = "iat_cloud_updatelexicon";
+
     public static final String IAT_LOCAL_UPDATELEXICON = "iat_local_updatelexicon";
 
     public static final String QUERYLANAGE = "query_lanage";
-
     public static final String IAT_LINE_LANGUAGE = "iat_line_language";
-    public static final String IAT_LOCAL_LANGUAGE = "iat_local_language";
 
+    public static final String IAT_LOCAL_LANGUAGE = "iat_local_language";
     public static final String IAT_LINE_LANGUAGE_TALKER = "iat_line_language_talker";
     public static final String IAT_LOCAL_LANGUAGE_TALKER = "iat_local_language_talker";
     public static final String IAT_LINE_LANGUAGE_HEAR = "iat_line_language_hear";
+
     public static final String IAT_LOCAL_LANGUAGE_HEAR = "iat_local_language_hear";
 
     public static final String IS_INITIALIZATION = "is_initialization";
 
     public static final String LINE_SPEED = "line_speed";
-
     //udp
     public static String IP;
     public static int PORT = SocketManager.DEFAULT_UDPSERVER_PORT;
+
     public static String CONNECT_IP = null;
 
     public static int CONNECT_PORT = 0;
 
     //视频
     public static boolean isCalling;
-
     public static final String ASSEST_PATH = "file:///android_asset/";
+
     public static final String[] NAVIGATIONS = {"image_navigation"};
 
     public static final String MUSIC_UPDATE = "music_update";
-
     public static long lockingTime = 60 * 1000 * 5;
+    public static String SPEAK_ACTION = "A50C8020AA";
+    public static String STOP_DANCE = "A50C80E2AA";
 }

@@ -3,6 +3,7 @@ package com.fanfan.robot.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,8 +30,10 @@ import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.utils.customtabs.IntentUtil;
 import com.fanfan.robot.R;
-import com.fanfan.robot.adapter.SiteAdapter;
+import com.fanfan.robot.adapter.HotAdapter;
 import com.seabreeze.log.Print;
+import com.zhy.view.flowlayout.FlowLayout;
+import com.zhy.view.flowlayout.TagFlowLayout;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,14 +51,17 @@ import butterknife.ButterKnife;
  * Created by android on 2018/1/6.
  */
 
-public class PublicNumberActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
+public class PublicNumberActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
+        ISerialPresenter.ISerialView {
 
     @BindView(R.id.iv_splash_back)
     ImageView ivSplashBack;
     @BindView(R.id.iv_code)
     ImageView ivCode;
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerSite;
+    @BindView(R.id.tag_flow_layout)
+    TagFlowLayout mTagFlowLayout;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, PublicNumberActivity.class);
@@ -70,7 +76,7 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
 
     private List<SiteBean> siteBeanList = new ArrayList<>();
 
-    private SiteAdapter siteAdapter;
+    private HotAdapter mSiteAdapter;
 
     @Override
     protected int getLayoutId() {
@@ -82,6 +88,18 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
         super.initView();
 
 //        loadImage();
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        initData();
+                    }
+                }, 500);
+            }
+        });
 
         mSoundPresenter = new LocalSoundPresenter(this);
         mSoundPresenter.start();
@@ -89,29 +107,29 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
         mSerialPresenter.start();
 
 
-        siteAdapter = new SiteAdapter(siteBeanList);
-        siteAdapter.openLoadAnimation();
-        siteAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+        mSiteAdapter = new HotAdapter<>(this, siteBeanList);
+        mTagFlowLayout.setAdapter(mSiteAdapter);
+
+        mTagFlowLayout.setOnTagClickListener(new TagFlowLayout.OnTagClickListener() {
             @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+            public boolean onTagClick(View view, int position, FlowLayout parent) {
                 refSite(siteBeanList.get(position), position);
+                return false;
             }
         });
 
-        recyclerSite.setAdapter(siteAdapter);
-        recyclerSite.setLayoutManager(new GridLayoutManager(this, 2));
-        recyclerSite.setItemAnimator(new DefaultItemAnimator());
+        mSiteDBManager = new SiteDBManager();
     }
 
     @Override
     protected void initData() {
-        mSiteDBManager = new SiteDBManager();
 
+        mSwipeRefreshLayout.setRefreshing(false);
         siteBeanList = mSiteDBManager.loadAll();
         if (siteBeanList != null && siteBeanList.size() > 0) {
             isNuEmpty();
-            siteAdapter.replaceData(siteBeanList);
-            siteAdapter.notifyClick(0);
+            mSiteAdapter = new HotAdapter<>(this, siteBeanList);
+            mTagFlowLayout.setAdapter(mSiteAdapter);
         } else {
             isEmpty();
         }
@@ -139,7 +157,6 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     }
 
     private void refSite(SiteBean itemData, int position) {
-        siteAdapter.notifyClick(position);
         IntentUtil.openUrl(mContext, itemData.getUrl());
     }
 
@@ -323,4 +340,5 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     public void onMoveStop() {
 
     }
+
 }

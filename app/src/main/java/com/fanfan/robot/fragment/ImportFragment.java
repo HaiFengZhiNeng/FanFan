@@ -134,7 +134,7 @@ public class ImportFragment extends BaseDialogFragment {
 
     @Override
     protected void initData() {
-        loadFile("robotResources");
+        loadFile(Constants.RES_DIR_NAME);
 
         action = resArray(R.array.action);
         actionOrder = resArray(R.array.action_order);

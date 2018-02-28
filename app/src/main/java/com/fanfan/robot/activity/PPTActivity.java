@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.model.SerialBean;
@@ -32,8 +33,6 @@ import com.fanfan.novel.utils.PPTUtil;
 import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.PPTAdapter;
 import com.fanfan.robot.adapter.PptTextAdapter;
-import com.fanfan.robot.adapter.SiteAdapter;
-import com.fanfan.youtu.api.face.bean.detectFace.Face;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
@@ -114,7 +113,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
     @Override
     protected void initData() {
 
-        List<File> files = loadFile("robotResources");
+        List<File> files = loadFile(Constants.RES_DIR_NAME);
         if (files != null && files.size() > 0) {
             isNuEmpty();
             pptFiles = files;
@@ -162,6 +161,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
     @Override
     protected void onPause() {
         super.onPause();
+        stopAction();
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
@@ -206,7 +206,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
 
     private void refPPT(File itemData, int position) {
         pptAdapter.notifyClick(position);
-
+        stopAction();
         contentArray = PPTUtil.readPPT(itemData.getAbsolutePath());
         if (contentArray != null && contentArray.size() > 0) {
             pptTextAdapter.replaceData(contentArray);
@@ -216,10 +216,14 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
         }
     }
 
+    private void stopAction() {
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
+    }
+
     private void addSpeakAnswer(String messageContent) {
         if (messageContent.length() > 0) {
             mSoundPresenter.doAnswer(messageContent);
-            speakingAddAction(messageContent.length());
+            speakingAddAction();
         } else {
             onCompleted();
         }
@@ -229,14 +233,9 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
         mSoundPresenter.doAnswer(getResources().getString(res));
     }
 
-    private void speakingAddAction(int length) {
-        if (length <= 13) {
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
-        } else if (length > 13 && length <= 40) {
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8003AA");
-        } else {
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8021AA");
-        }
+    private void speakingAddAction() {
+        Print.e("STOP_DANCE");
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.SPEAK_ACTION);
     }
 
     @Override
@@ -323,20 +322,30 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
     @Override
     public void onCompleted() {
         if (curCount < contentArray.size() - 1) {
+            mHandler.postDelayed(runnable, 2000);
+        } else if (curCount == contentArray.size() - 1) {
+            curCount++;
+            addSpeakAnswer("本次阅读完成");
+        } else if (curCount == contentArray.size()) {
+            stopAction();
+        }
+    }
+
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
             mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80E3AA");
             curCount++;
             Print.e("curCount : " + curCount);
             recyclerContent.scrollToPosition(curCount);
             addSpeakAnswer(contentArray.get(curCount));
-        } else if (curCount == contentArray.size() - 1) {
-            curCount++;
-            addSpeakAnswer("本次阅读完成");
         }
-    }
+    };
 
     @Override
     public void stopAll() {
         super.stopAll();
+        stopAction();
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();

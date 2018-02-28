@@ -120,6 +120,7 @@ dependencies {
     compile rootProject.ext.dependencies["kenburnsview"]
     compile rootProject.ext.dependencies["materialtabstrip"]
     compile rootProject.ext.dependencies["swipebacklayout"]
+    compile rootProject.ext.dependencies["flowlayout"]
 
     compile rootProject.ext.dependencies["viewanimator"]
     compile rootProject.ext.dependencies["nineoldandroids"]

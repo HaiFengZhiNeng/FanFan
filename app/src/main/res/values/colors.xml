@@ -22,7 +22,7 @@
     <color name="video_introduction_bar">#D9E7EF</color>
     <color name="video_introduction">#D9EAF4</color>
     <color name="public_number_bar">#2B2B2B</color>
-    <color name="site_introduction_bar">#ffc0cb</color>
+    <color name="site_introduction_bar">#03A9F4</color>
     <color name="site_introduction">#fffaf0</color>
 
     <color name="face_recognition_bar1">#5C5553</color>
@@ -68,6 +68,8 @@
     <color name="white_24p">#3DFFFFFF</color>
     <color name="white_8p">#14FFFFFF</color>
     <color name="red_30p">#4CF44336</color>
+
+    <color name="while_most_color">#e4e4e4</color>
 
     //*************************************************************************//
     <color name="ivory">#fffff0</color>

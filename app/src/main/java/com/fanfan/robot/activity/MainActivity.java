@@ -190,6 +190,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     @Override
     protected void onPause() {
         super.onPause();
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
         mTtsPresenter.stopTts();
         mTtsPresenter.stopHandler();
         mSoundPresenter.stopRecognizerListener();
@@ -416,13 +417,14 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     private void speakingAddAction(int length) {
-        if (length <= 13) {
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
-        } else if (length > 13 && length <= 40) {
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8003AA");
-        } else {
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8021AA");
-        }
+//        if (length <= 13) {
+//            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
+//        } else if (length > 13 && length <= 40) {
+//            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8003AA");
+//        } else {
+//            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8021AA");
+//        }
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.SPEAK_ACTION);
     }
 
     //************************anim****************************
@@ -519,6 +521,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     public void onRunable() {
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
         mSoundPresenter.startRecognizerListener();
     }
 
@@ -669,6 +672,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
     @Override
     public void stopAll() {
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopVoice();
         String wakeUp = resFoFinal(R.array.wake_up);

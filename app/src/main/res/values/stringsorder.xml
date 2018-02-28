@@ -80,6 +80,7 @@
         <item>右手自我介绍</item>
         <item>向左看</item>
         <item>向右看</item>
+        <item>随机长动作</item>
     </string-array>
 
     <string-array name="action_order">
@@ -123,12 +124,13 @@
         <item>A50C802DAA</item>
         <item>A50C800CAA</item>
         <item>A5238001AA</item>
-        <item>A5238001AA</item>
+        <item>A5238002AA</item>
         <item>A50C801AAA</item>
         <item>A50C801BAA</item>
         <item>A50C801CAA</item>
         <item>A50C801DAA</item>
         <item>A50C801EAA</item>
+        <item>A50C8020AA</item>
     </string-array>
 
     <string-array name="expression">
