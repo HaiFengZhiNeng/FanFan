@@ -24,7 +24,7 @@
         android:layout_marginLeft="@dimen/y12"
         android:ellipsize="marquee"
         android:maxLines="1"
-        android:textSize="@dimen/x12"
+        android:textSize="@dimen/x10"
         tools:text="GcsSloop"
         tools:ignore="EllipsizeMaxLines" />
 </LinearLayout>

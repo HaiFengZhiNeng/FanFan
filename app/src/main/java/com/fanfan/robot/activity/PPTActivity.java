@@ -16,7 +16,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;

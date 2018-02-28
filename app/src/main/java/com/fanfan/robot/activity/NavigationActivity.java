@@ -20,7 +20,6 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.activity.DataNavigationActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.NavigationDBManager;
 import com.fanfan.novel.db.manager.VoiceDBManager;

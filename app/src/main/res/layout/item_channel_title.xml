@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="本地语音"
         android:textColor="@android:color/black"
-        android:textSize="@dimen/x12" />
+        android:textSize="@dimen/x10" />
 
     <View
         android:layout_width="0dp"

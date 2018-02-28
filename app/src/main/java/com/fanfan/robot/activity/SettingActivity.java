@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.fanfan.novel.activity.DataNavigationActivity;
 import com.fanfan.novel.activity.DataSiteActivity;
 import com.fanfan.novel.activity.DataVideoActivity;
@@ -52,6 +53,8 @@ public class SettingActivity extends BarBaseActivity {
     @BindView(R.id.logout)
     TextView logout;
 
+    private MaterialDialog materialDialog;
+
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, SettingActivity.class);
         context.startActivityForResult(intent, requestCode);
@@ -87,6 +90,7 @@ public class SettingActivity extends BarBaseActivity {
                 DataSiteActivity.newInstance(this);
                 break;
             case R.id.import_layout:
+                showLoading();
                 ImportFragment importFragment = ImportFragment.newInstance();
                 importFragment.show(getSupportFragmentManager(), "IMPORT");
                 break;
@@ -107,4 +111,22 @@ public class SettingActivity extends BarBaseActivity {
         }
     }
 
+    public void showLoading() {
+        if (materialDialog == null) {
+            materialDialog = new MaterialDialog.Builder(this)
+                    .title("请稍等...")
+                    .content("正在获取中...")
+                    .progress(true, 0)
+                    .progressIndeterminateStyle(false)
+                    .build();
+        }
+        materialDialog.show();
+    }
+
+    public void dismissLoading() {
+        if (materialDialog != null && materialDialog.isShowing()) {
+            materialDialog.dismiss();
+            materialDialog = null;
+        }
+    }
 }

@@ -10,13 +10,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.common.base.simple.BaseRecyclerViewHolder;
-import com.fanfan.novel.common.base.simple.SimpleAdapter;
-import com.fanfan.novel.common.presenter.BaseView;
-import com.fanfan.novel.model.NavigationBean;
-import com.fanfan.novel.utils.TimeUtils;
 import com.fanfan.robot.R;
-import com.fanfan.youtu.api.base.Constant;
 
 import java.io.File;
 import java.util.List;

@@ -48,6 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:text="姓名 : "
+                android:textSize="@dimen/x8"
                 android:textColor="@color/black" />
 
             <TextView
@@ -55,6 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
+                android:textSize="@dimen/x8"
                 android:textColor="@color/black" />
         </LinearLayout>
 
@@ -68,6 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:text="备注 : "
+                android:textSize="@dimen/x8"
                 android:textColor="@color/black" />
 
             <TextView
@@ -75,16 +78,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
+                android:textSize="@dimen/x8"
                 android:textColor="@color/black" />
         </LinearLayout>
 
         <TextView
+            android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="人脸列表："
             android:textColor="@color/black" />
 
         <android.support.v7.widget.RecyclerView
+            android:layout_marginTop="10dp"
             android:id="@+id/face_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

@@ -13,8 +13,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.fanfan.novel.common.base.simple.BaseRecyclerViewHolder;
-import com.fanfan.novel.common.base.simple.SimpleAdapter;
 import com.fanfan.novel.model.ChatMessageBean;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.utils.WatermarkUtils;

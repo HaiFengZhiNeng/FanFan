@@ -95,7 +95,7 @@ public class SimpleCallActivity extends BaseActivity implements
     private int mCallId;
     private int mCallType;
 
-    private int mCurCameraId = ILiveConstants.BACK_CAMERA;
+    private int mCurCameraId = ILiveConstants.FRONT_CAMERA;
 
     private ILVCallOption ilvCallOption;
 
@@ -138,6 +138,7 @@ public class SimpleCallActivity extends BaseActivity implements
         ILiveLoginManager.getInstance().setUserStatusListener(this);
 
         ILVCallManager.getInstance().initAvView(avRootView);
+        avRootView.setRemoteRotationFix(180);
     }
 
     private void playNewCall() {

@@ -17,15 +17,16 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.fanfan.novel.adapter.TreeRecyclerAdapter;
 import com.fanfan.novel.adapter.VideoDataAdapter;
 import com.fanfan.novel.common.ChatConst;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseDialogFragment;
-import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.instance.SpeakIat;
 import com.fanfan.novel.db.manager.NavigationDBManager;
 import com.fanfan.novel.db.manager.SiteDBManager;
@@ -43,6 +44,7 @@ import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.MediaFile;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
+import com.fanfan.robot.activity.SettingActivity;
 import com.fanfan.robot.adapter.ImportAdapter;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.model.Channel;
@@ -80,7 +82,7 @@ public class ImportFragment extends BaseDialogFragment {
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     @BindView(R.id.tv_import)
-    TextView tvImport;
+    Button btnImport;
 
     public static ImportFragment newInstance() {
         ImportFragment importFragment = new ImportFragment();
@@ -170,6 +172,20 @@ public class ImportFragment extends BaseDialogFragment {
     @Override
     protected void setListener(View rootView) {
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        assert ((SettingActivity) getActivity()) != null;
+        ((SettingActivity) getActivity()).dismissLoading();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        assert ((SettingActivity) getActivity()) != null;
+        ((SettingActivity) getActivity()).dismissLoading();
     }
 
     private void loadVoice() {
@@ -358,6 +374,8 @@ public class ImportFragment extends BaseDialogFragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_import:
+                assert ((SettingActivity) getActivity()) != null;
+                ((SettingActivity) getActivity()).showLoading();
                 mVideoDBManager.deleteAll();
                 mVideoDBManager.insertList(videoBeanList);
                 mVoiceDBManager.deleteAll();
@@ -462,10 +480,12 @@ public class ImportFragment extends BaseDialogFragment {
     }
 
     public void onLexiconSuccess() {
+        ((SettingActivity) getActivity()).showToast("一键导入完成");
         dismiss();
     }
 
     public void onLexiconError(String error) {
 
     }
+
 }

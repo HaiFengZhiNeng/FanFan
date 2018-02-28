@@ -72,7 +72,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TextView
+                    <Button
                         android:id="@+id/tv_import"
                         android:layout_width="@dimen/y75"
                         android:layout_height="@dimen/y45"

@@ -28,7 +28,6 @@ import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseFragment;
-import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.glide.GlideRoundTransform;
 import com.fanfan.novel.service.PlayService;
 import com.fanfan.novel.service.cache.MusicCache;

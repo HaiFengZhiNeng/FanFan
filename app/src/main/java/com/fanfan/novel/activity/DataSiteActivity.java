@@ -14,7 +14,6 @@ import android.view.View;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.adapter.SiteDataAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.db.manager.SiteDBManager;
 import com.fanfan.novel.model.SiteBean;
 import com.fanfan.novel.utils.DialogUtils;

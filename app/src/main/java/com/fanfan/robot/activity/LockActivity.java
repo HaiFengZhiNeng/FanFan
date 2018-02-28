@@ -189,8 +189,8 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
         cameraSerivice.closeCamera();
         if (!isSpeak) {
             isSpeak = true;
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80F3AA");
-            doAnswer("你好，欢迎回来！");
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8003AA");
+            doAnswer("你好，欢迎您！");
         }
     }
 

@@ -13,8 +13,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.fanfan.novel.common.base.simple.BaseRecyclerViewHolder;
-import com.fanfan.novel.common.base.simple.SimpleAdapter;
 import com.fanfan.novel.common.glide.GlideRoundTransform;
 import com.fanfan.novel.service.PlayService;
 import com.fanfan.novel.utils.FucUtil;
@@ -40,7 +38,7 @@ public class LocalMusicAdapter extends BaseQuickAdapter<Music, BaseViewHolder> {
     @Override
     protected void convert(BaseViewHolder helper, Music item) {
         View vPlaying = helper.getView(R.id.v_playing);
-        if (getParentPosition(item) == mPlayingPosition) {
+        if (helper.getLayoutPosition() == mPlayingPosition) {
             vPlaying.setVisibility(View.VISIBLE);
         } else {
             vPlaying.setVisibility(View.INVISIBLE);

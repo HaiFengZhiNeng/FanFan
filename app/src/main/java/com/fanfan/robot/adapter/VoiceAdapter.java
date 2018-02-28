@@ -11,8 +11,6 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.fanfan.novel.common.base.simple.BaseRecyclerViewHolder;
-import com.fanfan.novel.common.base.simple.SimpleAdapter;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.ui.ChatTextView;
 import com.fanfan.robot.R;

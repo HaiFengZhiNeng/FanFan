@@ -16,7 +16,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.adapter.UserInfoAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.db.manager.FaceAuthDBManager;
 import com.fanfan.novel.model.FaceAuth;
 import com.fanfan.novel.ui.manager.FullyLinearLayoutManager;

@@ -14,7 +14,6 @@ import android.view.View;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.adapter.VoiceDataAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.utils.DialogUtils;

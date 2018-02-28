@@ -5,8 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.fanfan.novel.common.base.simple.BaseRecyclerViewHolder;
-import com.fanfan.novel.common.base.simple.SimpleAdapter;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.robot.R;
 

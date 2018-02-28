@@ -668,6 +668,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
     @Override
     public void stopAll() {
+        mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopVoice();
         String wakeUp = resFoFinal(R.array.wake_up);
         setChatContent(wakeUp);

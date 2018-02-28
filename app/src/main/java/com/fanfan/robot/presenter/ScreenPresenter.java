@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 
+import com.fanfan.novel.common.Constants;
 import com.fanfan.robot.presenter.ipersenter.IScreenPresenter;
 
 /**
@@ -13,9 +14,6 @@ import com.fanfan.robot.presenter.ipersenter.IScreenPresenter;
 public class ScreenPresenter extends IScreenPresenter {
 
     public final static int MSG_SHOW_TIPS = 0x01;
-
-    private long lockingTime = 60 * 1000 * 5;
-//    private long lockingTime = 20000;
 
     private ISreenView mSreenView;
 
@@ -38,7 +36,7 @@ public class ScreenPresenter extends IScreenPresenter {
 
     @Override
     public void startTipsTimer() {
-        mSreenHandler.postDelayed(tipsShowRunable, lockingTime);
+        mSreenHandler.postDelayed(tipsShowRunable, Constants.lockingTime);
     }
 
     @Override
@@ -49,7 +47,7 @@ public class ScreenPresenter extends IScreenPresenter {
     @Override
     public void resetTipsTimer() {
         mSreenHandler.removeCallbacks(tipsShowRunable);
-        mSreenHandler.postDelayed(tipsShowRunable, lockingTime);
+        mSreenHandler.postDelayed(tipsShowRunable, Constants.lockingTime);
     }
 
     @SuppressLint("HandlerLeak")

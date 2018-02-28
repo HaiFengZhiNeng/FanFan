@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.activity.VideoDetailActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.common.base.simple.BaseRecyclerAdapter;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.VideoDBManager;
 import com.fanfan.novel.model.SerialBean;
