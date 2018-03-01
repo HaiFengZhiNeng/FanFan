@@ -95,9 +95,6 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-/**
- * MainActivity
- */
 public class MainActivity extends BarBaseActivity implements ISynthesizerPresenter.ITtsView, IChatPresenter.IChatView,
         ISerialPresenter.ISerialView, ILineSoundPresenter.ILineSoundView {
 
