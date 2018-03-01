@@ -136,5 +136,4 @@ public class VoiceBean extends BaseItemData {
         this.expressionData = expressionData;
     }
 
-
 }

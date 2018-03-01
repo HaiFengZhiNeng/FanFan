@@ -161,12 +161,10 @@ public class AddNavigationActivity extends BarBaseActivity {
                 }
             }
         }
-        if (curNavigation > 0 && curNavigation < resArray(R.array.navigation).length) {
-            tvNavigation.setText(resArray(R.array.navigation)[curNavigation]);
-        } else {
+        if (curNavigation < 0)
             curNavigation = 0;
-            tvNavigation.setText(resArray(R.array.navigation)[curNavigation]);
-        }
+
+        tvNavigation.setText(resArray(R.array.navigation)[curNavigation]);
     }
 
     @Override

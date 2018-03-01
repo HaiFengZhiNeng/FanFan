@@ -95,4 +95,19 @@ public class VideoBean extends BaseItemData {
         this.videoImage = videoImage;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        } else {
+            if (obj instanceof VideoBean) {
+                VideoBean videoBean = (VideoBean) obj;
+                if (videoBean.id == (this.id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }

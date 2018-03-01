@@ -240,7 +240,7 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
 
     private void down() {
         if (mCurPosition == videoBeanList.size() - 1) {
-            addSpeakAnswer("已是第最后一个");
+            addSpeakAnswer("已是最后一个");
         } else {
             mCurPosition++;
             layoutManager.scrollToPosition(mCurPosition);

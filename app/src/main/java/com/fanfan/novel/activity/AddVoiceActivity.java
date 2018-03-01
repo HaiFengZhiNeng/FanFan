@@ -145,6 +145,11 @@ public class AddVoiceActivity extends BarBaseActivity {
             curAction = 0;
         }
 
+        if (curExpression < 0)
+            curExpression = 0;
+        if (curAction < 0)
+            curAction = 0;
+
         tvExpression.setText(getResources().getStringArray(R.array.expression)[curExpression]);
         tvAction.setText(getResources().getStringArray(R.array.action)[curAction]);
 

@@ -115,18 +115,4 @@ public class NavigationBean extends BaseItemData {
         this.guide = guide;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else {
-            if (obj instanceof NavigationBean) {
-                NavigationBean navigationBean = (NavigationBean) obj;
-                if (navigationBean.id == (this.id)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

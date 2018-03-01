@@ -50,6 +50,8 @@ public class DataVideoActivity extends BarBaseActivity {
 
     private VideoDataAdapter videoDataAdapter;
 
+    private int updatePosition;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_data_video;
@@ -92,6 +94,7 @@ public class DataVideoActivity extends BarBaseActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
 
         mVideoDBManager = new VideoDBManager();
+        updatePosition = -1;
     }
 
     @Override
@@ -102,7 +105,7 @@ public class DataVideoActivity extends BarBaseActivity {
         if (videoBeanList != null && videoBeanList.size() > 0) {
             isNuEmpty();
             videoDataAdapter.replaceData(videoBeanList);
-        }else{
+        } else {
             isEmpty();
         }
     }
@@ -133,18 +136,18 @@ public class DataVideoActivity extends BarBaseActivity {
                 if (id != -1) {
                     isNuEmpty();
                     VideoBean bean = mVideoDBManager.selectByPrimaryKey(id);
-                    int pos = videoBeanList.indexOf(bean);
-                    if (pos >= 0) {
-                        videoBeanList.remove(pos);
-                        videoBeanList.add(pos, bean);
-                        videoDataAdapter.remove(pos);
-                        videoDataAdapter.addData(pos, bean);
-                    } else {
-                        if(videoBeanList.size() == 0){
+                    if (updatePosition == -1) {
+                        if (videoBeanList.size() == 0) {
                             isNuEmpty();
                         }
                         videoBeanList.add(bean);
                         videoDataAdapter.addData(bean);
+                    } else {
+                        videoBeanList.remove(updatePosition);
+                        videoBeanList.add(updatePosition, bean);
+                        videoDataAdapter.remove(updatePosition);
+                        videoDataAdapter.addData(updatePosition, bean);
+                        updatePosition = -1;
                     }
                 }
             }
@@ -172,7 +175,8 @@ public class DataVideoActivity extends BarBaseActivity {
 
                     @Override
                     public void positiveText() {
-                        VideoBean videoBean = videoBeanList.get(position);
+                        updatePosition = position;
+                        VideoBean videoBean = videoBeanList.get(updatePosition);
                         AddVideoActivity.newInstance(DataVideoActivity.this, videoBean.getId(), AddVideoActivity.ADD_VIDEO_REQUESTCODE);
                     }
                 });

@@ -50,6 +50,8 @@ public class DataSiteActivity extends BarBaseActivity {
 
     private SiteDataAdapter siteDataAdapter;
 
+    private int updatePosition;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_data_site;
@@ -91,6 +93,7 @@ public class DataSiteActivity extends BarBaseActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         mSiteDBManager = new SiteDBManager();
+        updatePosition = -1;
     }
 
     @Override
@@ -132,18 +135,18 @@ public class DataSiteActivity extends BarBaseActivity {
                 if (id != -1) {
                     isNuEmpty();
                     SiteBean bean = mSiteDBManager.selectByPrimaryKey(id);
-                    int pos = siteBeanList.indexOf(bean);
-                    if (pos >= 0) {
-                        siteBeanList.remove(pos);
-                        siteBeanList.add(pos, bean);
-                        siteDataAdapter.remove(pos);
-                        siteDataAdapter.addData(pos, bean);
-                    } else {
-                        if(siteBeanList.size() == 0){
+                    if (updatePosition == -1) {
+                        if (siteBeanList.size() == 0) {
                             isNuEmpty();
                         }
                         siteBeanList.add(bean);
                         siteDataAdapter.addData(bean);
+                    } else {
+                        siteBeanList.remove(updatePosition);
+                        siteBeanList.add(updatePosition, bean);
+                        siteDataAdapter.remove(updatePosition);
+                        siteDataAdapter.addData(updatePosition, bean);
+                        updatePosition = -1;
                     }
                 }
             }
@@ -171,7 +174,8 @@ public class DataSiteActivity extends BarBaseActivity {
 
                     @Override
                     public void positiveText() {
-                        SiteBean siteBean = siteBeanList.get(position);
+                        updatePosition = position;
+                        SiteBean siteBean = siteBeanList.get(updatePosition);
                         AddSiteActivity.newInstance(DataSiteActivity.this, siteBean.getId(), AddSiteActivity.ADD_SITE_REQUESTCODE);
                     }
                 });

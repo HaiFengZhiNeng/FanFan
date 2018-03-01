@@ -49,6 +49,8 @@ public class DataNavigationActivity extends BarBaseActivity {
 
     private NavigationAdapter navigationAdapter;
 
+    private int updatePosition;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_data_navigation;
@@ -90,6 +92,7 @@ public class DataNavigationActivity extends BarBaseActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         mNavigationDBManager = new NavigationDBManager();
+        updatePosition = -1;
     }
 
 
@@ -143,18 +146,18 @@ public class DataNavigationActivity extends BarBaseActivity {
                 if (id != -1) {
                     isNuEmpty();
                     NavigationBean bean = mNavigationDBManager.selectByPrimaryKey(id);
-                    int pos = navigationBeanList.indexOf(bean);
-                    if (pos >= 0) {
-                        navigationBeanList.remove(pos);
-                        navigationBeanList.add(pos, bean);
-                        navigationAdapter.remove(pos);
-                        navigationAdapter.addData(pos, bean);
-                    } else {
+                    if (updatePosition == -1) {
                         if(navigationBeanList.size() == 0){
                             isNuEmpty();
                         }
                         navigationBeanList.add(bean);
                         navigationAdapter.addData(bean);
+                    } else {
+                        navigationBeanList.remove(updatePosition);
+                        navigationBeanList.add(updatePosition, bean);
+                        navigationAdapter.remove(updatePosition);
+                        navigationAdapter.addData(updatePosition, bean);
+                        updatePosition = -1;
                     }
                 }
             }
@@ -182,7 +185,8 @@ public class DataNavigationActivity extends BarBaseActivity {
 
                     @Override
                     public void positiveText() {
-                        NavigationBean navigationBean = navigationAdapter.getData().get(position);
+                        updatePosition = position;
+                        NavigationBean navigationBean = navigationAdapter.getData().get(updatePosition);
                         AddNavigationActivity.newInstance(DataNavigationActivity.this, navigationBean.getId(), AddNavigationActivity.ADD_NAVIGATION_REQUESTCODE);
                     }
                 });

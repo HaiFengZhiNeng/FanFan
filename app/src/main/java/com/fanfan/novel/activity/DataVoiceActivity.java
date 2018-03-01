@@ -18,6 +18,7 @@ import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.R;
+import com.seabreeze.log.Print;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,8 @@ public class DataVoiceActivity extends BarBaseActivity {
     private List<VoiceBean> voiceBeanList = new ArrayList<>();
 
     private VoiceDataAdapter voiceDataAdapter;
+
+    private int updatePosition;
 
     @Override
     protected int getLayoutId() {
@@ -92,6 +95,7 @@ public class DataVoiceActivity extends BarBaseActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
 
         mVoiceDBManager = new VoiceDBManager();
+        updatePosition = -1;
     }
 
     @Override
@@ -133,18 +137,18 @@ public class DataVoiceActivity extends BarBaseActivity {
                 if (id != -1) {
                     isNuEmpty();
                     VoiceBean bean = mVoiceDBManager.selectByPrimaryKey(id);
-                    int pos = voiceBeanList.indexOf(bean);
-                    if (pos >= 0) {
-                        voiceBeanList.remove(pos);
-                        voiceBeanList.add(pos, bean);
-                        voiceDataAdapter.remove(pos);
-                        voiceDataAdapter.addData(pos, bean);
-                    } else {
+                    if (updatePosition == -1) {
                         if (voiceBeanList.size() == 0) {
                             isNuEmpty();
                         }
                         voiceBeanList.add(bean);
                         voiceDataAdapter.addData(bean);
+                    } else {
+                        voiceBeanList.remove(updatePosition);
+                        voiceBeanList.add(updatePosition, bean);
+                        voiceDataAdapter.remove(updatePosition);
+                        voiceDataAdapter.addData(updatePosition, bean);
+                        updatePosition = -1;
                     }
                 }
             }
@@ -172,7 +176,8 @@ public class DataVoiceActivity extends BarBaseActivity {
 
                     @Override
                     public void positiveText() {
-                        VoiceBean voiceBean = voiceBeanList.get(position);
+                        updatePosition = position;
+                        VoiceBean voiceBean = voiceBeanList.get(updatePosition);
                         AddVoiceActivity.newInstance(DataVoiceActivity.this, voiceBean.getId(), AddVoiceActivity.ADD_VOICE_REQUESTCODE);
                     }
                 });
