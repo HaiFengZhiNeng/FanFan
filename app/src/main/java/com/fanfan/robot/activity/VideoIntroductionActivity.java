@@ -9,6 +9,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,6 +35,8 @@ import com.fanfan.novel.ui.manager.carouse.CenterScrollListener;
 import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.VideoAdapter;
 import com.fanfan.robot.adapter.VideoVerticalAdapter;
+import com.github.florent37.viewanimator.AnimationListener;
+import com.github.florent37.viewanimator.ViewAnimator;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
@@ -65,6 +68,8 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     ImageView ivUpward;
     @BindView(R.id.iv_down)
     ImageView ivDown;
+    @BindView(R.id.rl_vertial)
+    RelativeLayout rlVertial;
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, VideoIntroductionActivity.class);
@@ -187,10 +192,32 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
             case R.id.iv_list_hd:
                 if (isOpen) {
                     isOpen = false;
-                    recyclerVideo.setVisibility(View.GONE);
+                    ViewAnimator
+                            .animate(recyclerVideo)
+                            .alpha(1, 0)
+                            .scale(1f, 0.3f)
+                            .duration(500)
+                            .onStop(new AnimationListener.Stop() {
+                                @Override
+                                public void onStop() {
+                                    recyclerVideo.setVisibility(View.GONE);
+                                }
+                            })
+                            .start();
                 } else {
                     isOpen = true;
-                    recyclerVideo.setVisibility(View.VISIBLE);
+                    ViewAnimator
+                            .animate(recyclerVideo)
+                            .alpha(0, 1)
+                            .scale(0.3f, 1f)
+                            .duration(500)
+                            .onStart(new AnimationListener.Start() {
+                                @Override
+                                public void onStart() {
+                                    recyclerVideo.setVisibility(View.VISIBLE);
+                                }
+                            })
+                            .start();
                 }
                 break;
             case R.id.iv_upward:

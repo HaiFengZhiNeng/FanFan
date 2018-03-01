@@ -60,33 +60,40 @@
 
         </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/iv_upward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/simple_list"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:src="@mipmap/upward" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/list_vertical"
+        <RelativeLayout
+            android:id="@+id/rl_vertial"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/iv_down"
-            android:layout_below="@+id/iv_upward"
-            android:layout_centerInParent="true"
-            android:layout_margin="@dimen/y20" />
+            android:layout_below="@+id/simple_list">
+
+            <ImageView
+                android:id="@+id/iv_upward"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:src="@mipmap/upward" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/list_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/iv_down"
+                android:layout_below="@+id/iv_upward"
+                android:layout_centerInParent="true"
+                android:layout_margin="@dimen/y20" />
 
 
-        <ImageView
-            android:id="@+id/iv_down"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
-            android:src="@mipmap/down" />
+            <ImageView
+                android:id="@+id/iv_down"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                android:src="@mipmap/down" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
