@@ -35,6 +35,7 @@ import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.ChatTextView;
 import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.VoiceAdapter;
+import com.fanfan.robot.fragment.ImageFragment;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
 import com.tencent.callsdk.ILVCallConstants;
@@ -82,6 +83,11 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
 
     private String speakText;
 
+    private int mCurrentPos;
+
+    private ImageFragment imageFragment;
+    private boolean isShow;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_problem_consulting;
@@ -110,11 +116,13 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         if (voiceBeanList != null && voiceBeanList.size() > 0) {
             isNuEmpty();
             voiceAdapter.replaceData(voiceBeanList);
-            voiceAdapter.notifyClick(0);
+            mCurrentPos = 0;
+            voiceAdapter.notifyClick(mCurrentPos);
             Glide.with(mContext).load(voiceBeanList.get(0).getImgUrl())
                     .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
                     .into(ivVoiceImage);
         } else {
+            mCurrentPos = -1;
             isEmpty();
         }
     }
@@ -152,6 +160,35 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     protected void onDestroy() {
         super.onDestroy();
         mSoundPresenter.finish();
+    }
+
+    @OnClick({R.id.iv_voice_image})
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_voice_image:
+                if (mCurrentPos > -1) {
+                    VoiceBean bean = voiceBeanList.get(mCurrentPos);
+                    showImage(bean);
+                }
+                break;
+        }
+    }
+
+    private void showImage(VoiceBean bean) {
+        isShow(true);
+        imageFragment = ImageFragment.newInstance(bean.getId());
+        imageFragment.show(getSupportFragmentManager(), "IMAGE");
+    }
+
+    private void dismissImage() {
+        if (imageFragment != null) {
+            imageFragment.dismiss();
+            imageFragment = null;
+        }
+    }
+
+    public void isShow(boolean isShow) {
+        this.isShow = isShow;
     }
 
 
@@ -215,7 +252,8 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     }
 
     private void refVoice(VoiceBean itemData, int position) {
-        voiceAdapter.notifyClick(position);
+        mCurrentPos = position;
+        voiceAdapter.notifyClick(mCurrentPos);
         speakText = itemData.getVoiceAnswer();
         Print.e("本地语音 说话 .......");
         addSpeakAnswer(speakText);
@@ -289,7 +327,23 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
 
     @Override
     public void back() {
-        finish();
+        if (isShow) {
+            dismissImage();
+            mSoundPresenter.onCompleted();
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isShow) {
+            dismissImage();
+            mSoundPresenter.stopRecognizerListener();
+        } else {
+            finish();
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -311,6 +365,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
 
     @Override
     public void refLocalPage(String result) {
+        dismissImage();
         List<VoiceBean> voiceBeans = mVoiceDBManager.queryLikeVoiceByQuestion(result);
         if (voiceBeans != null && voiceBeans.size() > 0) {
             VoiceBean itemData = null;
@@ -320,7 +375,11 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
                 itemData = voiceBeans.get(new Random().nextInt(voiceBeans.size()));
             }
             int index = voiceBeanList.indexOf(itemData);
-            refVoice(itemData, index);
+            if (index != -1) {
+                refVoice(itemData, index);
+            } else {
+                showMsg("数据有误");
+            }
         } else {
             if (new Random().nextBoolean()) {
                 addSpeakAnswer(resFoFinal(R.array.no_result));

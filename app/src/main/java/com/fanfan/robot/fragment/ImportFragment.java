@@ -79,6 +79,8 @@ public class ImportFragment extends BaseDialogFragment {
 //    RecyclerView voiceView;
 //    @BindView(R.id.video_view)
 //    RecyclerView videoView;
+    @BindView(R.id.tv_titlebar_name)
+    TextView mTvTitlebarName;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     @BindView(R.id.tv_import)
@@ -134,6 +136,7 @@ public class ImportFragment extends BaseDialogFragment {
 
     @Override
     protected void initData() {
+        mTvTitlebarName.setText("一键导入");
         loadFile(Constants.RES_DIR_NAME);
 
         action = resArray(R.array.action);

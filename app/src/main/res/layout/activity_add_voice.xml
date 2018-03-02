@@ -31,7 +31,7 @@
     </android.support.v7.widget.Toolbar>
 
     <LinearLayout
-        android:id="@+id/video_layout"
+        android:id="@+id/voice_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar"
@@ -150,14 +150,23 @@
 
         </RelativeLayout>
 
+    </LinearLayout>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/y7"
+        android:visibility="gone"
+        android:layout_below="@+id/voice_layout"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="@dimen/y4"
+        app:contentPadding="@dimen/y7">
+
         <ImageView
             android:id="@+id/img_voice"
-            android:layout_width="@dimen/y150"
-            android:layout_height="@dimen/y150"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/y15"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.v7.widget.CardView>
 
-    </LinearLayout>
 </RelativeLayout>

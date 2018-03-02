@@ -136,4 +136,12 @@ public class VoiceBean extends BaseItemData {
         this.expressionData = expressionData;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof VoiceBean) {
+            VoiceBean voiceBean= (VoiceBean) obj;
+            return voiceBean.showTitle.equals(getShowTitle());
+        }
+        return false;
+    }
 }

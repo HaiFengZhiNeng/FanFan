@@ -43,6 +43,8 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+     
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
@@ -61,8 +63,8 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="228d59a2838fda823ac92bc9e3d4a23c" />
-        
+            android:value="b11de4341cd0acd1cb134240436a4d1a" />
+
         <meta-data
             android:name="com.fanfan.novel.common.glide.BaseGlideModule"
             android:value="GlideModule" />
@@ -70,11 +72,11 @@
         <activity
             android:name="com.fanfan.novel.activity.SplashActivity"
             android:theme="@style/AppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
         <activity
@@ -88,11 +90,18 @@
         </activity>
 
         <activity
-            android:name=".activity.LockActivity"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"></activity>
+            android:name="com.fanfan.novel.activity.AMapActivity"
+            android:theme="@style/AppThemeAction" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <service android:name=".service.CameraSerivice" />
-        <service android:name=".service.ScreenService" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activity.LockActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
 
         <activity
             android:name="com.fanfan.novel.common.activity.CrashActivity"
@@ -203,15 +212,19 @@
         <activity
             android:name=".activity.PPTActivity"
             android:theme="@style/AppThemeAction" />
-        <activity
-            android:name="com.fanfan.novel.activity.AMapActivity"
-            android:theme="@style/AppThemeAction" />
 
         <service android:name="com.fanfan.novel.service.UdpService" />
 
         <service android:name="com.fanfan.novel.service.SerialService" />
 
         <service android:name="com.fanfan.novel.service.PlayService" />
+
+        <service android:name=".service.CameraSerivice" />
+
+        <service android:name=".service.ScreenService" />
+
+        <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
+        <service android:name="com.amap.api.location.APSService" />
 
         <!-- 身份证识别 -->
         <service

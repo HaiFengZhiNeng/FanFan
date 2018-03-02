@@ -8,29 +8,44 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
-        android:orientation="vertical"
-        android:padding="@dimen/y10">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/rl_top"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="@dimen/y25"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:visibility="visible">
 
             <ImageView
                 android:id="@+id/iv_back"
-                android:layout_width="?attr/actionBarSize"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@drawable/btn_action_bg_selector"
-                android:scaleType="centerInside"
+                android:layout_width="@dimen/y25"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/y5"
+                android:padding="@dimen/y5"
                 android:src="@mipmap/ic_arrow_down_black" />
 
+            <TextView
+                android:id="@+id/tv_titlebar_name"
+                android:layout_width="@dimen/x200"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:text=""
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/x10" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/y15"
+            android:paddingRight="@dimen/y15"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"

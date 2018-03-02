@@ -73,7 +73,7 @@ public class Constants {
     public static final String[] NAVIGATIONS = {"image_navigation"};
 
     public static final String MUSIC_UPDATE = "music_update";
-    public static long lockingTime = 60 * 1000 * 1;
+    public static long lockingTime = 60 * 1000 * 5;
     public static String SPEAK_ACTION = "A50C8020AA";
     public static String STOP_DANCE = "A50C80E2AA";
 }

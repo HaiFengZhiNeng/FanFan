@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -71,6 +72,8 @@ public class AddVoiceActivity extends BarBaseActivity {
     TextView tvImg;
     @BindView(R.id.img_voice)
     ImageView imgVoice;
+    @BindView(R.id.card_view)
+    CardView cardView;
 
     public static final String VOICE_ID = "voiceId";
     public static final String RESULT_CODE = "voice_title_result";
@@ -80,6 +83,7 @@ public class AddVoiceActivity extends BarBaseActivity {
 
     public static final int CHOOSE_PHOTO = 2;//选择相册
     public static final int PICTURE_CUT = 3;//剪切图片
+    public static final int SELECT_NO_PICTURE = 4;//剪切图片
 
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, AddVoiceActivity.class);
@@ -104,6 +108,7 @@ public class AddVoiceActivity extends BarBaseActivity {
     private String imagePath;//打开相册选择照片的路径
     private Uri outputUri;//裁剪万照片保存地址
     private boolean isClickCamera;//是否是拍照裁剪
+    private String noOutputPath;
 
     private VoiceBean voiceBean;
 
@@ -133,10 +138,7 @@ public class AddVoiceActivity extends BarBaseActivity {
             String savePath = voiceBean.getImgUrl();
             if (savePath != null) {
                 if (new File(savePath).exists()) {
-                    imgVoice.setVisibility(View.VISIBLE);
-                    Glide.with(AddVoiceActivity.this).load(savePath)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
-                            .into(imgVoice);
+                    loadImgVoice(savePath);
                 }
             }
         } else {
@@ -236,36 +238,61 @@ public class AddVoiceActivity extends BarBaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case CHOOSE_PHOTO://打开相册
-                // 判断手机系统版本号
-                if (data != null) {
-                    Uri uri = data.getData();
-                    if (Build.VERSION.SDK_INT >= 19) {
-                        // 4.4及以上系统使用这个方法处理图片
-                        imagePath = BitmapUtils.handleImageOnKitKat(this, uri);
-                        outputUri = BitmapUtils.cropPhoto(this, uri, "imgvoice", etQuestion.getText().toString() + ".jpg", PICTURE_CUT);
-                    } else {
-                        // 4.4以下系统使用这个方法处理图片
-                        imagePath = BitmapUtils.getImagePath(this, uri, null);
-                        outputUri = BitmapUtils.cropPhoto(AddVoiceActivity.this, uri, "imgvoice", etQuestion.getText().toString() + ".jpg", PICTURE_CUT);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case CHOOSE_PHOTO://打开相册
+                    // 判断手机系统版本号
+                    if (data != null) {
+                        Uri uri = data.getData();
+                        if (Build.VERSION.SDK_INT >= 19) {
+                            // 4.4及以上系统使用这个方法处理图片
+                            imagePath = BitmapUtils.handleImageOnKitKat(this, uri);
+                            outputUri = BitmapUtils.cropPhoto(this, uri, "imgvoice", etQuestion.getText().toString() + ".jpg", PICTURE_CUT);
+                        } else {
+                            // 4.4以下系统使用这个方法处理图片
+                            imagePath = BitmapUtils.getImagePath(this, uri, null);
+                            outputUri = BitmapUtils.cropPhoto(AddVoiceActivity.this, uri, "imgvoice", etQuestion.getText().toString() + ".jpg", PICTURE_CUT);
+                        }
                     }
-                }
-                break;
-            case PICTURE_CUT://裁剪完成
-                isClickCamera = true;
-                if (isClickCamera) {
-                    imgVoice.setVisibility(View.VISIBLE);
-                    Glide.with(AddVoiceActivity.this).load(outputUri)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
-                            .into(imgVoice);
-                } else {
-                    Glide.with(AddVoiceActivity.this).load(outputUri)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
-                            .into(imgVoice);
-                }
-                break;
+                    break;
+                case PICTURE_CUT://裁剪完成
+                    isClickCamera = true;
+                    if (isClickCamera) {
+                        loadImgVoice(outputUri);
+                    } else {
+                        loadImgVoice(outputUri);
+                    }
+                    break;
+                case SELECT_NO_PICTURE:
+                    if (data != null) {
+                        Uri uri = data.getData();
+                        if (Build.VERSION.SDK_INT >= 19) {
+                            // 4.4及以上系统使用这个方法处理图片
+                            noOutputPath = BitmapUtils.handleImageOnKitKat(this, uri);
+                            loadImgVoice(noOutputPath);
+                        } else {
+                            // 4.4以下系统使用这个方法处理图片
+                            noOutputPath = BitmapUtils.getImagePath(this, uri, null);
+                            loadImgVoice(noOutputPath);
+                        }
+                    }
+                    break;
+            }
         }
+    }
+
+    private void loadImgVoice(String path) {
+        cardView.setVisibility(View.VISIBLE);
+        Glide.with(AddVoiceActivity.this).load(path)
+                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
+                .into(imgVoice);
+    }
+
+    private void loadImgVoice(Uri uri) {
+        cardView.setVisibility(View.VISIBLE);
+        Glide.with(AddVoiceActivity.this).load(uri)
+                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
+                .into(imgVoice);
     }
 
     private void selectFromAlbum() {
@@ -274,14 +301,28 @@ public class AddVoiceActivity extends BarBaseActivity {
             ActivityCompat.requestPermissions(AddVoiceActivity.this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQCODE_SELALBUM);
         } else {
-            openAlbum();
+//            openAlbum();
+            selectPicture();
         }
     }
 
+    /**
+     * 裁剪
+     */
     private void openAlbum() {
         Intent intent = new Intent("android.intent.action.GET_CONTENT");
         intent.setType("image/*");
         startActivityForResult(intent, CHOOSE_PHOTO); // 打开相册
+    }
+
+    /**
+     * 从相冊选择照片（不裁切）
+     */
+    private void selectPicture() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_PICK);//Pick an item from the data
+        intent.setType("image/*");//从全部图片中进行选择
+        startActivityForResult(intent, SELECT_NO_PICTURE);
     }
 
 
@@ -317,6 +358,10 @@ public class AddVoiceActivity extends BarBaseActivity {
             String imagePath = BitmapUtils.getPathByUri4kitkat(AddVoiceActivity.this, outputUri);
             Print.e(imagePath);
             bean.setImgUrl(imagePath);
+        } else {
+            if (noOutputPath != null) {
+                bean.setImgUrl(noOutputPath);
+            }
         }
     }
 
