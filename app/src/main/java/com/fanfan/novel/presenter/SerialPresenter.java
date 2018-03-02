@@ -1,12 +1,17 @@
 package com.fanfan.novel.presenter;
 
+import android.content.res.Resources;
+
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
 import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.event.ActivityToServiceEvent;
+import com.fanfan.robot.R;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.Arrays;
 
 /**
  * Created by android on 2017/12/26.
@@ -71,13 +76,17 @@ public class SerialPresenter extends ISerialPresenter {
             }
 
         } else if (iBaudRate == SerialService.CRUISE_BAUDRATE) {
-            if (motion.toString().trim().equals("first") || motion.toString().trim().equals("second") || motion.toString().trim().equals("third")
-                    || motion.toString().trim().equals("fifth") || motion.toString().trim().equals("sixth")) {
+            if (Arrays.asList(resFoFinal(R.array.navigation_data)).contains(motion.toString().trim())) {
 
-                receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
+//                receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
                 mSerialView.onMoveStop();
             }
         }
+    }
+
+    private String[] resFoFinal(int id) {
+        String[] res = mSerialView.getContext().getResources().getStringArray(id);
+        return res;
     }
 
 

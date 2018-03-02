@@ -248,7 +248,6 @@ public class FaceCheckinActivity extends BarBaseActivity implements
         super.onStart();
         mCheckinPresenter.start();
         EventBus.getDefault().register(this);
-        mSoundPresenter.startRecognizerListener();
     }
 
     @Override

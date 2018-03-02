@@ -91,4 +91,6 @@
     <string name="mode_shuffle">随机播放</string>
     <string name="mode_one">单曲循环</string>
 
+    <string name="no_result">对不起，没有搜索到相关数据！</string>
+
 </resources>

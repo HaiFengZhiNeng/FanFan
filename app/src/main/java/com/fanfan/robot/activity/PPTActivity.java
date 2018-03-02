@@ -148,7 +148,6 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        mSoundPresenter.startRecognizerListener();
     }
 
     @Override
@@ -156,6 +155,8 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
         super.onResume();
         mSoundPresenter.buildTts();
         mSoundPresenter.buildIat();
+
+        addSpeakAnswer("请点击要播放的ppt", false);
     }
 
     @Override
@@ -165,6 +166,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
+
     }
 
     @Override
@@ -212,7 +214,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
             pptTextAdapter.replaceData(contentArray);
             curCount = 0;
             recyclerContent.scrollToPosition(curCount);
-            addSpeakAnswer(contentArray.get(curCount));
+            addSpeakAnswer(contentArray.get(curCount), true);
         }
     }
 
@@ -220,10 +222,12 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
         mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
     }
 
-    private void addSpeakAnswer(String messageContent) {
+    private void addSpeakAnswer(String messageContent, boolean isAction) {
         if (messageContent.length() > 0) {
             mSoundPresenter.doAnswer(messageContent);
-            speakingAddAction();
+            if (isAction) {
+                speakingAddAction();
+            }
         } else {
             onCompleted();
         }
@@ -321,12 +325,16 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
 
     @Override
     public void onCompleted() {
-        if (curCount < contentArray.size() - 1) {
-            mHandler.postDelayed(runnable, 2000);
-        } else if (curCount == contentArray.size() - 1) {
-            curCount++;
-            addSpeakAnswer("本次阅读完成");
-        } else if (curCount == contentArray.size()) {
+        if (contentArray != null && contentArray.size() > 0) {
+            if (curCount < contentArray.size() - 1) {
+                mHandler.postDelayed(runnable, 2000);
+            } else if (curCount == contentArray.size() - 1) {
+                curCount++;
+                addSpeakAnswer("本次阅读完成", false);
+            } else if (curCount == contentArray.size()) {
+                stopAction();
+            }
+        } else {
             stopAction();
         }
     }
@@ -338,7 +346,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
             curCount++;
             Print.e("curCount : " + curCount);
             recyclerContent.scrollToPosition(curCount);
-            addSpeakAnswer(contentArray.get(curCount));
+            addSpeakAnswer(contentArray.get(curCount), true);
         }
     };
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     tools:context="com.fanfan.novel.activity.AMapActivity">
 
@@ -14,8 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/orangered"
-        app:navigationIcon="@mipmap/ic_back_white"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:navigationIcon="@mipmap/ic_back_black"
+        app:popupTheme="@style/ToolbarPopupTheme"
         app:titleTextAppearance="@style/Toolbar.TitleText"
         app:titleTextColor="@android:color/white">
 
@@ -27,10 +27,16 @@
             android:layout_gravity="center"
             android:text="@string/title_amap"
             android:textAppearance="@style/Toolbar.TitleText"
-            android:textColor="@color/white" />
+            android:textColor="@color/black" />
 
     </android.support.v7.widget.Toolbar>
 
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@+id/toolbar"
+        android:background="#dfdfdf" />
 
 
     <com.amap.api.maps.MapView

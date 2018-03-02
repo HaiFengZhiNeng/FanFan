@@ -129,4 +129,5 @@ dependencies {
 
     compile rootProject.ext.dependencies["3dmap"]
     compile rootProject.ext.dependencies["location"]
+    compile rootProject.ext.dependencies["search"]
 }

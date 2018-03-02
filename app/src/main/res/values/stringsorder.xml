@@ -168,6 +168,15 @@
         <item>去forth</item>
         <item>去fifth</item>
         <item>去sixth</item>
+        <item>去seventh</item>
+        <item>去eighth</item>
+        <item>去ninth</item>
+        <item>去tenth</item>
+        <item>去eleventh</item>
+        <item>去twentieth</item>
+        <item>去thirteenth</item>
+        <item>去fourteenth</item>
+        <item>去fifteenth</item>
     </string-array>
 
     <string-array name="navigation_data">
@@ -177,6 +186,15 @@
         <item>forth</item>
         <item>fifth</item>
         <item>sixth</item>
+        <item>seventh</item>
+        <item>eighth</item>
+        <item>ninth</item>
+        <item>tenth</item>
+        <item>eleventh</item>
+        <item>twentieth</item>
+        <item>thirteenth</item>
+        <item>fourteenth</item>
+        <item>fifteenth</item>
     </string-array>
 
     <string-array name="dance">

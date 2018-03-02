@@ -131,7 +131,6 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        mSoundPresenter.startRecognizerListener();
     }
 
     @Override
@@ -139,6 +138,8 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
         super.onResume();
         mSoundPresenter.buildTts();
         mSoundPresenter.buildIat();
+
+        addSpeakAnswer("你好，这里是视频介绍页面，点击上下方列表或说出视屏名称可播放视频");
     }
 
     @Override

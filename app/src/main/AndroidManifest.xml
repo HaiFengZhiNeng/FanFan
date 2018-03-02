@@ -72,6 +72,16 @@
         <activity
             android:name="com.fanfan.novel.activity.SplashActivity"
             android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.fanfan.novel.activity.Main2Activity"
+            android:theme="@style/AppTheme">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
 
@@ -80,24 +90,8 @@
         </activity>
 
         <activity
-            android:name="com.fanfan.novel.activity.Main2Activity"
-            android:theme="@style/AppTheme">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
-
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
-
-        <activity
             android:name="com.fanfan.novel.activity.AMapActivity"
-            android:theme="@style/AppThemeAction" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppThemeAction" />
 
         <activity
             android:name=".activity.LockActivity"

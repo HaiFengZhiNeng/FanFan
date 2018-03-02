@@ -158,7 +158,6 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        mSoundPresenter.startRecognizerListener();
     }
 
     @Override
@@ -166,6 +165,8 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         super.onResume();
         mSoundPresenter.buildTts();
         mSoundPresenter.buildIat();
+
+        addSpeakAnswer("你好，这里是导航页面，点击地图上地点可到达指定区域");
     }
 
     @Override
@@ -353,7 +354,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
 
     @Override
     public void onCompleted() {
-
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
     }
 
     @Override
@@ -370,7 +371,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         if (mNavigationBean != null) {
             Print.e(mNavigationBean.getDatail());
             addSpeakAnswer(mNavigationBean.getDatail());
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.SPEAK_ACTION);
         }
     }
 

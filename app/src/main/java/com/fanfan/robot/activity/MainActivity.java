@@ -610,7 +610,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 mSoundPresenter.setSpeech(isSpeech);
                 break;
             case Text:
-
+                mSoundPresenter.stopRecognizerListener();
+                mSoundPresenter.stopVoice();
+                aiuiForLocal(bean.getOrder());
                 break;
             case SmartChat:
 
@@ -664,6 +666,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 }
                 break;
             case Anwser:
+                mSoundPresenter.stopRecognizerListener();
+                mSoundPresenter.stopVoice();
                 aiuiForLocal(bean.getOrder());
                 break;
         }
