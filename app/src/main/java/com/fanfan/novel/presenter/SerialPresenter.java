@@ -1,6 +1,7 @@
 package com.fanfan.novel.presenter;
 
 import android.content.res.Resources;
+import android.os.Handler;
 
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
@@ -21,9 +22,13 @@ public class SerialPresenter extends ISerialPresenter {
 
     private ISerialView mSerialView;
 
+    private Handler mHandler;
+
     public SerialPresenter(ISerialView baseView) {
         super(baseView);
         this.mSerialView = baseView;
+
+        mHandler = new Handler();
     }
 
     @Override
@@ -37,14 +42,20 @@ public class SerialPresenter extends ISerialPresenter {
     }
 
     @Override
-    public void receiveMotion(int type, String motion) {
-        Print.e("send " + motion);
-        SerialBean serialBean = new SerialBean();
-        serialBean.setBaudRate(type);
-        serialBean.setMotion(motion);
-        ActivityToServiceEvent serialEvent = new ActivityToServiceEvent("");
-        serialEvent.setEvent(200, serialBean);
-        EventBus.getDefault().post(serialEvent);
+    public void receiveMotion(final int type, final String motion) {
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Print.e("send " + motion);
+                SerialBean serialBean = new SerialBean();
+                serialBean.setBaudRate(type);
+                serialBean.setMotion(motion);
+                ActivityToServiceEvent serialEvent = new ActivityToServiceEvent("");
+                serialEvent.setEvent(200, serialBean);
+                EventBus.getDefault().post(serialEvent);
+            }
+        }, 100);
+
     }
 
 
