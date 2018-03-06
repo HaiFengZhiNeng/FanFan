@@ -4,31 +4,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.constraint.Guideline;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.ImageViewTarget;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.fanfan.novel.activity.AMapActivity;
 import com.fanfan.novel.activity.DanceActivity;
 import com.fanfan.novel.common.Constants;
@@ -62,7 +47,7 @@ import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.music.EventCallback;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.ChatTextView;
-import com.fanfan.novel.utils.FileUtil;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.novel.utils.customtabs.IntentUtil;
 import com.fanfan.robot.R;
@@ -72,7 +57,6 @@ import com.fanfan.robot.model.Dance;
 import com.fanfan.robot.presenter.LineSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 import com.fanfan.youtu.utils.GsonUtil;
-import com.github.florent37.viewanimator.AnimationListener;
 import com.github.florent37.viewanimator.ViewAnimator;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
@@ -526,17 +510,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     private void loadImage(int load, int place) {
-        Glide.with(this)
-                .load(load)
-                .apply(new RequestOptions().skipMemoryCache(true).placeholder(place))
-                .transition(new DrawableTransitionOptions().crossFade(1000))
-                .into(new SimpleTarget<Drawable>() {
-                    @Override
-                    public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-                        ivFanfan.setScaleType(ImageView.ScaleType.FIT_XY);
-                        ivFanfan.setImageDrawable(resource);
-                    }
-                });
+        ImageLoader.loadImage(this, ivFanfan, load, false, place, 1000);
     }
 
 

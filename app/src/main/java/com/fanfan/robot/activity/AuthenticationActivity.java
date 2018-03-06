@@ -6,20 +6,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
-import android.os.Bundle;
 import android.os.Environment;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.common.glide.GlideRoundTransform;
@@ -37,6 +33,7 @@ import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.camera.DetectOpenFaceView;
 import com.fanfan.novel.ui.camera.DetectionFaceView;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.presenter.FaceVerifPresenter;
 import com.fanfan.robot.presenter.HsOtgPresenter;
@@ -44,7 +41,6 @@ import com.fanfan.robot.presenter.ipersenter.IFaceVerifPresenter;
 import com.fanfan.robot.presenter.ipersenter.IHsOtgPresenter;
 import com.fanfan.youtu.api.base.event.BaseEvent;
 import com.fanfan.youtu.utils.ErrorMsg;
-import com.huashi.otg.sdk.HsOtgService;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
@@ -69,7 +65,6 @@ import java.net.DatagramPacket;
 import java.text.SimpleDateFormat;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by android on 2018/1/10.
@@ -450,18 +445,10 @@ public class AuthenticationActivity extends BarBaseActivity implements
 
     @Override
     public void faceCompare(Bitmap bitmap) {
-        RequestOptions options = new RequestOptions()
-                .centerCrop()
-                .placeholder(R.mipmap.ic_head)
-                .error(R.mipmap.ic_head)
-                .priority(Priority.HIGH)
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .transform(new GlideRoundTransform());
 
-        Glide.with(this).load(personInfo.getHeadUrl())
-                .apply(options)
-                .into(ivHead);
+        ImageLoader.loadImage(this, ivHead, personInfo.getHeadUrl(),
+                R.mipmap.ic_head, R.mipmap.ic_head, Priority.HIGH, true,
+                DiskCacheStrategy.NONE, new GlideRoundTransform());
     }
 
     @Override
@@ -513,10 +500,7 @@ public class AuthenticationActivity extends BarBaseActivity implements
 
     private void setPersonInfo() {
         infoLayout.setVisibility(View.VISIBLE);
-        Glide.with(AuthenticationActivity.this)
-                .load(personInfo.getHeadUrl())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                .into(ivHead);
+        ImageLoader.loadImage(AuthenticationActivity.this, ivHead, personInfo.getHeadUrl());
         tvName.setText(personInfo.getName());
         tvGender.setText(personInfo.getGender());
         tvFamily.setText(personInfo.getGender());

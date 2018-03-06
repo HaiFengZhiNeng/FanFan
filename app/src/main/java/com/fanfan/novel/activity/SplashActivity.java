@@ -1,35 +1,24 @@
 package com.fanfan.novel.activity;
 
 import android.Manifest;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
-import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.service.mediascanner.SingleMediaScanner;
-import com.fanfan.robot.R;
 import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.common.base.BaseActivity;
+import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.base.BaseHandler;
 import com.fanfan.novel.im.MyTLSService;
 import com.fanfan.novel.im.PushUtil;
@@ -46,16 +35,16 @@ import com.fanfan.novel.presenter.SplashView;
 import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.UdpService;
 import com.fanfan.novel.utils.DialogUtils;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.PermissionsChecker;
 import com.fanfan.novel.utils.PhoneUtil;
+import com.fanfan.robot.R;
 import com.fanfan.robot.activity.MainActivity;
 import com.seabreeze.log.Print;
 import com.tencent.TIMCallBack;
 import com.tencent.ilivesdk.ILiveCallBack;
 import com.tencent.ilivesdk.ILiveSDK;
 import com.tencent.ilivesdk.core.ILiveLoginManager;
-
-import java.io.File;
 
 /**
  * http://m.blog.csdn.net/guolin_blog/article/details/78582548
@@ -107,11 +96,10 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
         mChecker = new PermissionsChecker(this);
         presenter = new SplashPresenter(this);
 
-        Glide.with(this)
-                .load(R.mipmap.splash_bg)
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                .transition(new DrawableTransitionOptions().crossFade(2000))
-                .into(ivSplash);
+        ImageLoader.loadImage(this, ivSplash, R.mipmap.splash_bg, false,  2000);
+
+
+
 
         @SuppressLint("WrongConstant") WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 

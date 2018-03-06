@@ -1,15 +1,12 @@
 package com.fanfan.novel.adapter;
 
-import android.content.Context;
 import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.fanfan.novel.model.VideoBean;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.TimeUtils;
 import com.fanfan.robot.R;
 
@@ -30,9 +27,7 @@ public class VideoDataAdapter extends BaseQuickAdapter<VideoBean, BaseViewHolder
         helper.setText(R.id.show_title, item.getShowTitle());
         helper.setText(R.id.save_time, TimeUtils.getShortTime(item.getSaveTime()));
         helper.setText(R.id.tv_video_url, item.getVideoUrl());
-        Glide.with(mContext).load(item.getVideoImage())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
-                .into((ImageView) helper.getView(R.id.iv_video_image));
+        ImageLoader.loadImage(mContext, (ImageView) helper.getView(R.id.iv_video_image), item.getVideoImage(), R.mipmap.ic_logo);
     }
 
 }

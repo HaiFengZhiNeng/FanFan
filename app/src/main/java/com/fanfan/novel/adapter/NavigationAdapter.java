@@ -1,15 +1,12 @@
 package com.fanfan.novel.adapter;
 
-import android.content.Context;
 import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.fanfan.novel.model.NavigationBean;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.TimeUtils;
 import com.fanfan.robot.R;
 
@@ -31,9 +28,7 @@ public class NavigationAdapter extends BaseQuickAdapter<NavigationBean, BaseView
         helper.setText(R.id.save_time, TimeUtils.getShortTime(item.getSaveTime()));
         helper.setText(R.id.tv_guide, item.getGuide());
         helper.setText(R.id.tv_datail, item.getDatail());
-        Glide.with(mContext).load(item.getImgUrl())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
-                .into((ImageView) helper.getView(R.id.iv_navigation_image));
+        ImageLoader.loadImage(mContext, (ImageView) helper.getView(R.id.iv_navigation_image), item.getImgUrl(), R.mipmap.ic_logo);
     }
 
 

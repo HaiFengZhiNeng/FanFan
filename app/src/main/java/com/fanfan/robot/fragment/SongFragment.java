@@ -1,37 +1,23 @@
 package com.fanfan.robot.fragment;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseFragment;
-import com.fanfan.novel.common.glide.GlideRoundTransform;
 import com.fanfan.novel.service.PlayService;
 import com.fanfan.novel.service.cache.MusicCache;
 import com.fanfan.novel.service.music.OnPlayerEventListener;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.music.MusicUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.MultimediaActivity;
@@ -39,12 +25,8 @@ import com.fanfan.robot.adapter.LocalMusicAdapter;
 import com.fanfan.robot.model.Music;
 import com.seabreeze.log.Print;
 
-import java.util.List;
-
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 
 /**
  * Created by android on 2018/1/10.
@@ -128,7 +110,7 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
         if (isAdded()) {//判断Fragment已经依附Activity
             isPlay = getArguments().getBoolean(FRAG_IS_PLAY);
         }
-        if(isPlay){
+        if (isPlay) {
             onPlay();
         }
     }
@@ -166,15 +148,10 @@ public class SongFragment extends BaseFragment implements OnPlayerEventListener 
             return;
         }
 
-        RequestOptions options = new RequestOptions()
-                .error(R.mipmap.default_cover)
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .transform(new GlideRoundTransform());
-        Glide.with(this)
-                .load(music.getAlbumId() == -1 ? MusicUtils.getMediaDataAlbumPic(music.getPath()) : MusicUtils.getMediaStoreAlbumCoverUri(music.getAlbumId()))
-                .apply(options)
-                .into(ivPlayBarCover);
+        ImageLoader.loadImage(this, ivPlayBarCover,
+                music.getAlbumId() == -1 ? MusicUtils.getMediaDataAlbumPic(music.getPath()) : MusicUtils.getMediaStoreAlbumCoverUri(music.getAlbumId()),
+                R.mipmap.default_cover);
+
         tvPlayBarTitle.setText(music.getTitle());
         tvPlayBarArtist.setText(music.getArtist());
         ivPlayBarPlay.setSelected(getPlayService().isPlaying() || getPlayService().isPreparing());

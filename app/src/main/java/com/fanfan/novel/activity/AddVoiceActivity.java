@@ -4,8 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -19,9 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.instance.SpeakIat;
@@ -36,6 +31,7 @@ import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.BitmapUtils;
 import com.fanfan.novel.utils.DialogUtils;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.iflytek.cloud.ErrorCode;
@@ -47,7 +43,6 @@ import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -283,16 +278,12 @@ public class AddVoiceActivity extends BarBaseActivity {
 
     private void loadImgVoice(String path) {
         cardView.setVisibility(View.VISIBLE);
-        Glide.with(AddVoiceActivity.this).load(path)
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
-                .into(imgVoice);
+        ImageLoader.loadImage(AddVoiceActivity.this, imgVoice, path, R.mipmap.video_image);
     }
 
     private void loadImgVoice(Uri uri) {
         cardView.setVisibility(View.VISIBLE);
-        Glide.with(AddVoiceActivity.this).load(uri)
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
-                .into(imgVoice);
+        ImageLoader.loadImage(AddVoiceActivity.this, imgVoice, uri, R.mipmap.video_image);
     }
 
     private void selectFromAlbum() {

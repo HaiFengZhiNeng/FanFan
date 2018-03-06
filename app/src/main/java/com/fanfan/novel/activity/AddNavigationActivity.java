@@ -4,15 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,17 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.instance.SpeakIat;
@@ -42,10 +27,10 @@ import com.fanfan.novel.model.NavigationBean;
 import com.fanfan.novel.model.SiteBean;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
-import com.fanfan.novel.ui.RangeClickImageView;
 import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.BitmapUtils;
 import com.fanfan.novel.utils.DialogUtils;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.iflytek.cloud.ErrorCode;
@@ -57,7 +42,6 @@ import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -155,9 +139,7 @@ public class AddNavigationActivity extends BarBaseActivity {
             if (savePath != null) {
                 if (new File(savePath).exists()) {
                     imgNavigation.setVisibility(View.VISIBLE);
-                    Glide.with(AddNavigationActivity.this).load(savePath)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
-                            .into(imgNavigation);
+                    ImageLoader.loadImage(AddNavigationActivity.this, imgNavigation, savePath, R.mipmap.ic_logo);
                 }
             }
         }
@@ -264,13 +246,9 @@ public class AddNavigationActivity extends BarBaseActivity {
                 isClickCamera = true;
                 if (isClickCamera) {
                     imgNavigation.setVisibility(View.VISIBLE);
-                    Glide.with(AddNavigationActivity.this).load(outputUri)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
-                            .into(imgNavigation);
+                    ImageLoader.loadImage(AddNavigationActivity.this, imgNavigation, outputUri, R.mipmap.ic_logo);
                 } else {
-                    Glide.with(AddNavigationActivity.this).load(outputUri)
-                            .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.ic_logo))
-                            .into(imgNavigation);
+                    ImageLoader.loadImage(AddNavigationActivity.this, imgNavigation, outputUri, R.mipmap.ic_logo);
                 }
                 break;
         }

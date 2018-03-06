@@ -1,42 +1,24 @@
 package com.fanfan.robot.fragment;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.media.AudioManager;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.adapter.PlayPagerAdapter;
 import com.fanfan.novel.common.base.BaseFragment;
-import com.fanfan.novel.common.glide.GlideRoundTransform;
 import com.fanfan.novel.service.PlayService;
-import com.fanfan.novel.service.music.Actions;
 import com.fanfan.novel.service.music.OnPlayerEventListener;
 import com.fanfan.novel.service.music.PlayModeEnum;
 import com.fanfan.novel.ui.AlbumCoverView;
-import com.fanfan.novel.ui.MediaPlayView;
 import com.fanfan.novel.utils.AppUtil;
-import com.fanfan.novel.utils.FileUtil;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.novel.utils.ScreenUtil;
 import com.fanfan.novel.utils.SystemUtils;
@@ -44,17 +26,12 @@ import com.fanfan.novel.utils.music.MusicUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.MultimediaActivity;
 import com.fanfan.robot.model.Music;
-import com.seabreeze.log.Print;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 
 /**
  * Created by android on 2018/1/13.
@@ -158,15 +135,9 @@ public class PlayFragment extends BaseFragment implements OnPlayerEventListener,
 
         albumCoverView.setCoverBitmap(MusicUtils.loadRound(getActivity(), music));
 
-        RequestOptions options = new RequestOptions()
-                .error(R.mipmap.default_cover)
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .transform(new GlideRoundTransform());
-        Glide.with(this)
-                .load(music.getAlbumId() == -1 ? MusicUtils.getMediaDataAlbumPic(music.getPath()) : MusicUtils.getMediaStoreAlbumCoverUri(music.getAlbumId()))
-                .apply(options)
-                .into(ivPlayPageBg);
+        ImageLoader.loadImage(this, ivPlayPageBg,
+                music.getAlbumId() == -1 ? MusicUtils.getMediaDataAlbumPic(music.getPath()) : MusicUtils.getMediaStoreAlbumCoverUri(music.getAlbumId()),
+                R.mipmap.default_cover);
 
         if (getPlayService().isPlaying() || getPlayService().isPreparing()) {
             ivPlay.setSelected(true);

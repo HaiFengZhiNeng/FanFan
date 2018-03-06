@@ -4,20 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.SiteDBManager;
-import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.model.SiteBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
@@ -28,6 +20,7 @@ import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.customtabs.IntentUtil;
 import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.HotAdapter;
@@ -45,7 +38,6 @@ import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by android on 2018/1/6.
@@ -137,23 +129,9 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     }
 
     private void loadImage() {
-        RequestOptions options = new RequestOptions()
-                .centerCrop()
-//                .override(Constants.displayWidth, Constants.displayHeight - toolbar.getHeight())
-                .placeholder(R.mipmap.splash_bg)
-                .error(R.mipmap.splash_bg)
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE);
-        Glide.with(this)
-                .load(R.mipmap.splash_bg)
-                .apply(options)
-                .into(ivSplashBack);
+        ImageLoader.loadImage(this, ivSplashBack, R.mipmap.splash_bg, R.mipmap.splash_bg);
 
-        Glide.with(this)
-                .load(R.mipmap.ic_code)
-                .apply(new RequestOptions().override(300, 300)
-                        .skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                .into(ivCode);
+        ImageLoader.loadImage(mContext, ivCode, R.mipmap.ic_code, 300, 300, null);
     }
 
     private void refSite(SiteBean itemData, int position) {

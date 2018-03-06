@@ -3,26 +3,18 @@ package com.fanfan.robot.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.activity.SimpleCallActivity;
-import com.fanfan.novel.activity.VideoDetailActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.SerialBean;
-import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
 import com.fanfan.novel.presenter.SerialPresenter;
@@ -32,11 +24,10 @@ import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
-import com.fanfan.novel.ui.ChatTextView;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.VoiceAdapter;
 import com.fanfan.robot.fragment.ImageFragment;
-import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
 import com.tencent.callsdk.ILVCallConstants;
 
@@ -50,7 +41,6 @@ import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -118,9 +108,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
             voiceAdapter.replaceData(voiceBeanList);
             mCurrentPos = 0;
             voiceAdapter.notifyClick(mCurrentPos);
-            Glide.with(mContext).load(voiceBeanList.get(0).getImgUrl())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
-                    .into(ivVoiceImage);
+            ImageLoader.loadImage(mContext, ivVoiceImage, voiceBeanList.get(0).getImgUrl(), R.mipmap.video_image);
         } else {
             mCurrentPos = -1;
             isEmpty();
@@ -264,9 +252,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         if (itemData.getExpressionData() != null) {
             mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getExpressionData());
         }
-        Glide.with(mContext).load(itemData.getImgUrl())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
-                .into(ivVoiceImage);
+        ImageLoader.loadImage(mContext, ivVoiceImage, itemData.getImgUrl(), R.mipmap.video_image);
     }
 
     @Override

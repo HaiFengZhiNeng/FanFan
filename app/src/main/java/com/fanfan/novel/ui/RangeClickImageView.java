@@ -13,17 +13,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.model.NavigationBean;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
-import com.fanfan.youtu.api.base.Constant;
 import com.seabreeze.log.Print;
 
 import java.io.IOException;
@@ -304,17 +300,9 @@ public class RangeClickImageView extends ImageView implements RequestListener<Bi
         }
         Print.e(inSampleSize);
 
-        RequestOptions requestOptions = new RequestOptions()
-                .override((int) (realWidth / inSampleSize), (int) (realHeight / inSampleSize))
-                .fitCenter()
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE);
-        Glide.with(this)
-                .asBitmap()
-                .load(Constants.ASSEST_PATH + fileName)
-                .apply(requestOptions)
-                .listener(this)
-                .into(this);
+        ImageLoader.loadImage(getContext(), this, Constants.ASSEST_PATH + fileName,
+                (int) (realWidth / inSampleSize), (int) (realHeight / inSampleSize), this);
+
     }
 
     @Override

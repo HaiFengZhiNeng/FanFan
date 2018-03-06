@@ -10,11 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
-import com.fanfan.novel.model.ChatMessageBean;
 import com.fanfan.novel.model.VideoBean;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.WatermarkUtils;
 import com.fanfan.robot.R;
 
@@ -70,9 +67,7 @@ public class VideoVerticalAdapter extends RecyclerView.Adapter<VideoVerticalAdap
             Bitmap bitmap = WatermarkUtils.createWaterMaskCenter(src, watermark);
             holder.ivVideoImage.setImageBitmap(bitmap);
         } else {
-            Glide.with(mContext).load(bean.getVideoImage())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
-                    .into(holder.ivVideoImage);
+            ImageLoader.loadImage(mContext, holder.ivVideoImage, bean.getVideoImage(), R.mipmap.video_image);
         }
     }
 

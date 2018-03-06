@@ -16,6 +16,7 @@ import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.ui.MyScrollView;
 import com.fanfan.novel.ui.PinchImageView;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.ProblemConsultingActivity;
 
@@ -69,7 +70,7 @@ public class ImageFragment extends BaseDialogFragment {
         }
         mVoiceDBManager = new VoiceDBManager();
         mBean = mVoiceDBManager.selectByPrimaryKey(id);
-        if(mBean == null){
+        if (mBean == null) {
             return;
         }
 
@@ -80,10 +81,8 @@ public class ImageFragment extends BaseDialogFragment {
         mTvTitlebarName.setText(mBean.getShowTitle());
         mTvInfo.setText(mBean.getVoiceAnswer());
 
-        if(mBean.getImgUrl() != null) {
-            Glide.with(mContext).load(mBean.getImgUrl())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
-                    .into(mPinchImageView);
+        if (mBean.getImgUrl() != null) {
+            ImageLoader.loadImage(mContext, mPinchImageView, mBean.getImgUrl(), R.mipmap.video_image);
         }
         mPinchImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,7 +107,7 @@ public class ImageFragment extends BaseDialogFragment {
 
     @Override
     public void onDestroyView() {
-        ((ProblemConsultingActivity)getActivity()).isShow(false);
+        ((ProblemConsultingActivity) getActivity()).isShow(false);
         super.onDestroyView();
     }
 

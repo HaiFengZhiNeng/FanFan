@@ -1,25 +1,17 @@
 package com.fanfan.robot.adapter;
 
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.fanfan.novel.common.glide.GlideRoundTransform;
 import com.fanfan.novel.service.PlayService;
 import com.fanfan.novel.utils.FucUtil;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.music.MusicUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.model.Music;
-import com.seabreeze.log.Print;
 
 import java.util.List;
 
@@ -44,17 +36,9 @@ public class LocalMusicAdapter extends BaseQuickAdapter<Music, BaseViewHolder> {
             vPlaying.setVisibility(View.INVISIBLE);
         }
 
-        ImageView ivCover = helper.getView(R.id.iv_cover);
-        RequestOptions options = new RequestOptions()
-                .error(R.mipmap.default_cover)
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .transform(new GlideRoundTransform());
-        Glide.with(mContext)
-                .load(item.getAlbumId() == -1 ? MusicUtils.getMediaDataAlbumPic(item.getPath()) :
-                        MusicUtils.getMediaStoreAlbumCoverUri(item.getAlbumId()))
-                .apply(options)
-                .into(ivCover);
+        ImageLoader.loadImage(mContext, (ImageView) helper.getView(R.id.iv_cover),
+                item.getAlbumId() == -1 ? MusicUtils.getMediaDataAlbumPic(item.getPath()) : MusicUtils.getMediaStoreAlbumCoverUri(item.getAlbumId()),
+                R.mipmap.default_cover);
 
 
         helper.setText(R.id.tv_title, item.getTitle());
@@ -80,7 +64,7 @@ public class LocalMusicAdapter extends BaseQuickAdapter<Music, BaseViewHolder> {
         } else {
             mPlayingPosition = -1;
         }
-        if(mPlayingPosition != -1) {
+        if (mPlayingPosition != -1) {
             notifyItemChanged(forPos);
             notifyItemChanged(mPlayingPosition);
         }

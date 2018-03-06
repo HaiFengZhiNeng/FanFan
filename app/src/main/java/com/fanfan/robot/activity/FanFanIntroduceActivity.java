@@ -5,10 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.model.SerialBean;
@@ -20,6 +17,7 @@ import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.seabreeze.log.Print;
 
@@ -57,16 +55,8 @@ public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSo
 
     @Override
     protected void initData() {
-        RequestOptions requestOptions = new RequestOptions()
-//                .override((int) (realWidth / inSampleSize), (int) (realHeight / inSampleSize))
-                .fitCenter()
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE);
-        Glide.with(this)
-                .asBitmap()
-                .load(R.mipmap.fanfan_introduce)
-                .apply(requestOptions)
-                .into(ivIntroduce);
+        RequestOptions requestOptions = new RequestOptions().fitCenter();
+        ImageLoader.loadImage(this, ivIntroduce, R.mipmap.fanfan_introduce, requestOptions);
 
         mSoundPresenter = new LocalSoundPresenter(this);
         mSoundPresenter.start();

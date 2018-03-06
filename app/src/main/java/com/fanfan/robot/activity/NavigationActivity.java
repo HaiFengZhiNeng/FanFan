@@ -3,29 +3,19 @@ package com.fanfan.robot.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.fanfan.novel.activity.DataNavigationActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.NavigationDBManager;
-import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.model.NavigationBean;
 import com.fanfan.novel.model.SerialBean;
-import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
 import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
@@ -35,10 +25,9 @@ import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.RangeClickImageView;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.NavigationAdapter;
-import com.fanfan.robot.adapter.VoiceAdapter;
-import com.fanfan.youtu.api.base.Constant;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
@@ -51,10 +40,6 @@ import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-
-import static com.fanfan.novel.ui.RangeClickImageView.getPointX;
-import static com.fanfan.novel.ui.RangeClickImageView.getPointY;
 
 /**
  * Created by android on 2018/1/6.
@@ -63,7 +48,7 @@ import static com.fanfan.novel.ui.RangeClickImageView.getPointY;
 public class NavigationActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
         ISerialPresenter.ISerialView, RangeClickImageView.OnResourceReadyListener, RangeClickImageView.OnRangeClickListener {
 
-//    @BindView(R.id.iv_navigation)
+    //    @BindView(R.id.iv_navigation)
     RangeClickImageView ivNavigation;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -116,9 +101,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         if (navigationBeanList != null && navigationBeanList.size() > 0) {
             navigationAdapter.replaceData(navigationBeanList);
             navigationAdapter.notifyClick(0);
-            Glide.with(mContext).load(navigationBeanList.get(0).getImgUrl())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
-                    .into(ivNavigationImage);
+            ImageLoader.loadImage(mContext, ivNavigationImage, navigationBeanList.get(0).getImgUrl(), R.mipmap.video_image);
         } else {
             isEmpty();
         }
@@ -149,9 +132,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     private void refVoice(NavigationBean itemData, int position) {
         navigationAdapter.notifyClick(position);
         refLocalPage(itemData.getTitle());
-        Glide.with(mContext).load(itemData.getImgUrl())
-                .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).error(R.mipmap.video_image))
-                .into(ivNavigationImage);
+        ImageLoader.loadImage(mContext, ivNavigationImage, itemData.getImgUrl(), R.mipmap.video_image);
     }
 
     @Override

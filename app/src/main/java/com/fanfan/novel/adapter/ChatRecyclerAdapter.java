@@ -15,15 +15,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.ChatConst;
+import com.fanfan.novel.common.glide.CustomShapeTransformation;
 import com.fanfan.novel.model.ChatMessageBean;
 import com.fanfan.novel.ui.BubbleImageView;
 import com.fanfan.novel.ui.ChatTextView;
-import com.fanfan.novel.common.glide.CustomShapeTransformation;
 import com.fanfan.novel.utils.FileUtil;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 
 import java.io.File;
@@ -146,13 +146,9 @@ public class ChatRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.chatTime.setText(showTime);
         }
         if (cmb.getUserHeadIcon() != null) {
-            Glide.with(context).load(cmb.getUserHeadIcon())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(holder.otherUserIcon);
+            ImageLoader.loadImage(context, holder.otherUserIcon, cmb.getUserHeadIcon());
         } else {
-            Glide.with(context).load(R.mipmap.ic_head)
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(holder.otherUserIcon);
+            ImageLoader.loadImage(context, holder.otherUserIcon, R.mipmap.ic_head);
         }
         holder.chatContent.setSpanText(mHandler, cmb.getMessageContent(), true);
         holder.itemView.setTag(position);
@@ -173,13 +169,9 @@ public class ChatRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.toChatTime.setText(showTime);
         }
         if (cmb.getUserHeadIcon() != null) {
-            Glide.with(context).load(cmb.getUserHeadIcon())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(holder.myUserIcon);
+            ImageLoader.loadImage(context, holder.myUserIcon, cmb.getUserHeadIcon());
         } else {
-            Glide.with(context).asGif().load(R.mipmap.ic_head_s)
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(holder.myUserIcon);
+            ImageLoader.loadImageAsGif(context, holder.myUserIcon, R.mipmap.ic_head_s);
         }
         holder.toChatContent.setSpanText(mHandler, cmb.getMessageContent(), true);
         holder.itemView.setTag(position);
@@ -200,28 +192,20 @@ public class ChatRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.chatTime.setText(showTime);
         }
         if (cmb.getUserHeadIcon() != null) {
-            Glide.with(context).load(cmb.getUserHeadIcon())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(holder.otherUserIcon);
+            ImageLoader.loadImage(context, holder.otherUserIcon, cmb.getUserHeadIcon());
         } else {
-            Glide.with(context).load(R.mipmap.ic_head)
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(holder.otherUserIcon);
+            ImageLoader.loadImage(context, holder.otherUserIcon, R.mipmap.ic_head);
         }
         final String imageSrc = cmb.getImageLocal() == null ? "" : cmb.getImageLocal();
         final String imageUrlSrc = cmb.getImageUrl() == null ? "" : cmb.getImageUrl();
         File file = new File(imageSrc);
         final boolean hasLocal = !imageSrc.equals("") && FileUtil.isFileExists(file);
-        RequestOptions options = new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE)
-                .transform(new CustomShapeTransformation(context, R.drawable.chatfrom_bg_focused));
         if (hasLocal) {
-            Glide.with(context).load(imageSrc)
-                    .apply(options)
-                    .into(holder.imageMsg);
+            ImageLoader.loadImage(context, holder.imageMsg, imageSrc, -1, -1, Priority.NORMAL, true,
+                    DiskCacheStrategy.NONE, new CustomShapeTransformation(context, R.drawable.chatfrom_bg_focused));
         } else {
-            Glide.with(context).load(imageUrlSrc)
-                    .apply(options)
-                    .into(holder.imageMsg);
+            ImageLoader.loadImage(context, holder.imageMsg, imageUrlSrc, -1, -1, Priority.NORMAL, true,
+                    DiskCacheStrategy.NONE, new CustomShapeTransformation(context, R.drawable.chatfrom_bg_focused));
         }
         holder.imageMsg.setOnClickListener(new View.OnClickListener() {
 
@@ -289,27 +273,17 @@ public class ChatRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder.toChatTime.setText(showTime);
         }
         if (cmb.getUserHeadIcon() != null) {
-            Glide.with(context).load(cmb.getUserHeadIcon())
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(holder.myUserIcon);
+            ImageLoader.loadImage(context, holder.myUserIcon, cmb.getUserHeadIcon());
         } else {
-            Glide.with(context)
-                    .asGif()
-                    .load(R.mipmap.ic_head_s)
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(holder.myUserIcon);
+            ImageLoader.loadImageAsGif(context, holder.myUserIcon, R.mipmap.ic_head_s);
         }
         holder.imageGroup.setVisibility(View.VISIBLE);
         final String imageSrc = cmb.getImageLocal() == null ? "" : cmb.getImageLocal();
         final String imageUrl = cmb.getImageUrl() == null ? "" : cmb.getImageUrl();
         if (imageSrc != null && !imageSrc.equals("")) {
-            Glide.with(context).load(imageSrc)
-                    .apply(new RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
-//                .placeholder(R.mipmap.ic_launcher)
-//                .transform(new CustomShapeTransformation(context, res))
-                    .into(holder.toImageMsg);
+            ImageLoader.loadImage(context, holder.toImageMsg, imageSrc);
         } else if (imageUrl != null) {
-            Glide.with(context).load(imageUrl).into(holder.toImageMsg);
+            ImageLoader.loadImage(context, holder.toImageMsg, imageUrl);
         }
         holder.toImageMsg.setOnClickListener(new View.OnClickListener() {
 
