@@ -72,6 +72,7 @@
     <string name="title_fanfan_introduce">F A N F A N 介 绍</string>
     <string name="title_ppt">P P T</string>
     <string name="title_amap">地 图</string>
+    <string name="title_amap_detail">驾车路线详情</string>
 
     <string name="open_map">此页面暂不支持打开地图</string>
     <string name="open_artificial">此页面暂不支持人工客服</string>

@@ -11,9 +11,12 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.NaviPara;
 import com.amap.api.services.core.LatLonPoint;
+import com.fanfan.robot.R;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -21,6 +24,52 @@ import java.util.Locale;
  */
 
 public class AMapUtil {
+
+    /**
+     * 路径规划方向指示和图片对应
+     *
+     * @param actionName
+     * @return
+     */
+    public static int getDriveActionID(String actionName) {
+        if (actionName == null || actionName.equals("")) {
+            return R.drawable.dir3;
+        }
+        if ("左转".equals(actionName)) {
+            return R.drawable.dir2;
+        }
+        if ("右转".equals(actionName)) {
+            return R.drawable.dir1;
+        }
+        if ("向左前方行驶".equals(actionName) || "靠左".equals(actionName)) {
+            return R.drawable.dir6;
+        }
+        if ("向右前方行驶".equals(actionName) || "靠右".equals(actionName)) {
+            return R.drawable.dir5;
+        }
+        if ("向左后方行驶".equals(actionName) || "左转调头".equals(actionName)) {
+            return R.drawable.dir7;
+        }
+        if ("向右后方行驶".equals(actionName)) {
+            return R.drawable.dir8;
+        }
+        if ("直行".equals(actionName)) {
+            return R.drawable.dir3;
+        }
+        if ("减速行驶".equals(actionName)) {
+            return R.drawable.dir4;
+        }
+        return R.drawable.dir3;
+    }
+
+    public static ArrayList<LatLng> convertArrList(List<LatLonPoint> shapes) {
+        ArrayList<LatLng> lineShapes = new ArrayList<LatLng>();
+        for (LatLonPoint point : shapes) {
+            LatLng latLngTemp = AMapUtil.convertToLatLng(point);
+            lineShapes.add(latLngTemp);
+        }
+        return lineShapes;
+    }
 
     /**
      * 判断高德地图app是否已经安装

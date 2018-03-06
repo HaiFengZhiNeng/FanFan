@@ -12,17 +12,16 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -52,21 +51,21 @@ import com.amap.api.services.route.DrivePath;
 import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
+import com.amap.api.services.route.WalkPath;
 import com.amap.api.services.route.WalkRouteResult;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.model.map.AMapUtil;
 import com.fanfan.novel.model.map.DrivingRouteOverlay;
 import com.fanfan.novel.model.map.PoiOverlay;
-import com.fanfan.novel.model.map.AMapUtil;
-import com.fanfan.novel.utils.ScreenUtil;
+import com.fanfan.novel.model.map.WalkRouteOverlay;
 import com.fanfan.robot.R;
 import com.seabreeze.log.Print;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -85,6 +84,20 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
     TextView tvToolbar;
     @BindView(R.id.line)
     View line;
+    @BindView(R.id.routemap_header)
+    RelativeLayout routemapHeader;
+    @BindView(R.id.route_bus)
+    ImageView mBus;
+    @BindView(R.id.route_drive)
+    ImageView mDrive;
+    @BindView(R.id.route_walk)
+    ImageView mWalk;
+    @BindView(R.id.bottom_layout)
+    RelativeLayout mBottomLayout;
+    @BindView(R.id.firstline)
+    TextView mRotueTimeDes;
+    @BindView(R.id.secondline)
+    TextView mRouteDetailDes;
 
     //map
     private AMap aMap;
@@ -110,11 +123,17 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
     private RouteSearch mRouteSearch;
     private DriveRouteResult mDriveRouteResult;
 
+    private WalkRouteResult mWalkRouteResult;
+
     //起始位置
     private LatLonPoint mStartPoint;
     private LatLonPoint mEndPoint;
 
+    private String mCurrentCityName = "北京";
+    private final int ROUTE_TYPE_BUS = 1;
     private final int ROUTE_TYPE_DRIVE = 2;
+    private final int ROUTE_TYPE_WALK = 3;
+    private final int ROUTE_TYPE_CROSSTOWN = 4;
 
     private String keyWord;
 
@@ -129,6 +148,8 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
     private RecyclerView mRecyclerView;
     private BaseQuickAdapter baseAdapter;
 
+    private Marker targetMarker;
+
     public static void newInstance(Context context) {
         Intent intent = new Intent(context, AMapActivity.class);
         context.startActivity(intent);
@@ -139,6 +160,7 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
         super.onCreate(savedInstanceState);
         mapView.onCreate(savedInstanceState);
         initMap();
+        routemapHeader.setVisibility(View.GONE);
     }
 
     @Override
@@ -335,6 +357,55 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
         }
     }
 
+    //**********************************************************************************************
+
+    /**
+     * 公交路线搜索
+     */
+    public void onBusClick(View view) {
+        searchRouteResult(ROUTE_TYPE_BUS, RouteSearch.BusDefault);
+        mDrive.setImageResource(R.drawable.route_drive_normal);
+        mBus.setImageResource(R.drawable.route_bus_select);
+        mWalk.setImageResource(R.drawable.route_walk_normal);
+        mapView.setVisibility(View.GONE);
+    }
+
+    /**
+     * 驾车路线搜索
+     */
+    public void onDriveClick(View view) {
+        searchRouteResult(ROUTE_TYPE_DRIVE, RouteSearch.DrivingDefault);
+        mDrive.setImageResource(R.drawable.route_drive_select);
+        mBus.setImageResource(R.drawable.route_bus_normal);
+        mWalk.setImageResource(R.drawable.route_walk_normal);
+        mapView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 步行路线搜索
+     */
+    public void onWalkClick(View view) {
+        searchRouteResult(ROUTE_TYPE_WALK, RouteSearch.WalkDefault);
+        mDrive.setImageResource(R.drawable.route_drive_normal);
+        mBus.setImageResource(R.drawable.route_bus_normal);
+        mWalk.setImageResource(R.drawable.route_walk_select);
+        mapView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 跨城公交路线搜索
+     */
+    public void onCrosstownBusClick(View view) {
+//        searchRouteResult(ROUTE_TYPE_CROSSTOWN, RouteSearch.BusDefault);
+//        mDrive.setImageResource(R.drawable.route_drive_normal);
+//        mBus.setImageResource(R.drawable.route_bus_normal);
+//        mWalk.setImageResource(R.drawable.route_walk_normal);
+//        mapView.setVisibility(View.GONE);
+        AMapUtil.startAMapNavi(this, targetMarker);
+    }
+
+    //**********************************************************************************************
+
     /**
      * 显示进度框
      */
@@ -369,6 +440,7 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
                 double longitude = aMapLocation.getLongitude();//经    度
                 float accuracy = aMapLocation.getAccuracy();//精    度
                 String address = aMapLocation.getAddress();
+                mCurrentCityName = aMapLocation.getCity();
                 String time = AMapUtil.formatUTC(aMapLocation.getTime(), "yyyy-MM-dd HH:mm:ss");
 
                 if (isFirstIn) {
@@ -457,6 +529,7 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
      */
     @Override
     public View getInfoWindow(final Marker marker) {
+        targetMarker = marker;
         View view = getLayoutInflater().inflate(R.layout.poikeywordsearch_uri, null);
 
         TextView title = (TextView) view.findViewById(R.id.title);
@@ -491,11 +564,19 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
         }
         showProgressDialog("规划路径中");
         final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(mStartPoint, mEndPoint);
-        if (routeType == ROUTE_TYPE_DRIVE) {// 驾车路径规划
+        if (routeType == ROUTE_TYPE_BUS) {
+            // 第一个参数表示路径规划的起点和终点，第二个参数表示公交查询模式，第三个参数表示公交查询城市区号，第四个参数表示是否计算夜班车，0表示不计算
+            RouteSearch.BusRouteQuery query = new RouteSearch.BusRouteQuery(fromAndTo, mode, mCurrentCityName, 0);
+            mRouteSearch.calculateBusRouteAsyn(query);
+        } else if (routeType == ROUTE_TYPE_DRIVE) {// 驾车路径规划
             // 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
             RouteSearch.DriveRouteQuery query = new RouteSearch.DriveRouteQuery(fromAndTo, mode, null, null, "");
             mRouteSearch.calculateDriveRouteAsyn(query);// 异步路径规划驾车模式查询
+        } else if (routeType == ROUTE_TYPE_WALK) {
+            RouteSearch.WalkRouteQuery query = new RouteSearch.WalkRouteQuery(fromAndTo, mode);
+            mRouteSearch.calculateWalkRouteAsyn(query);// 异步路径规划步行模式查询
         }
+
     }
 
     @Override
@@ -640,14 +721,33 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
 
 
     @Override
-    public void onBusRouteSearched(BusRouteResult busRouteResult, int i) {
-
+    public void onBusRouteSearched(BusRouteResult result, int errorCode) {
+        dissmissProgressDialog();
+        routemapHeader.setVisibility(View.VISIBLE);
+        mBottomLayout.setVisibility(View.GONE);
+        aMap.clear();// 清理地图上的所有覆盖物
+        if (errorCode == AMapException.CODE_AMAP_SUCCESS) {
+            if (result != null && result.getPaths() != null) {
+                if (result.getPaths().size() > 0) {
+//                    mBusRouteResult = result;
+//                    BusResultListAdapter mBusResultListAdapter = new BusResultListAdapter(mContext, mBusRouteResult);
+//                    mBusResultList.setAdapter(mBusResultListAdapter);
+                } else if (result != null && result.getPaths() == null) {
+                    showToast(R.string.no_result);
+                }
+            } else {
+                showToast(R.string.no_result);
+            }
+        } else {
+            showToast(errorCode);
+        }
     }
 
     @Override
     public void onDriveRouteSearched(DriveRouteResult result, int errorCode) {
         Print.e("onDriveRouteSearched : " + errorCode);
         dissmissProgressDialog();
+        routemapHeader.setVisibility(View.VISIBLE);
         aMap.clear();// 清理地图上的所有覆盖物
         if (errorCode == AMapException.CODE_AMAP_SUCCESS) {
             if (result != null && result.getPaths() != null) {
@@ -662,6 +762,25 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
                     drivingRouteOverlay.addToMap();
                     drivingRouteOverlay.zoomToSpan();
 
+                    mBottomLayout.setVisibility(View.VISIBLE);
+                    int dis = (int) drivePath.getDistance();
+                    int dur = (int) drivePath.getDuration();
+                    String des = AMapUtil.getFriendlyTime(dur)+"("+AMapUtil.getFriendlyLength(dis)+")";
+                    mRotueTimeDes.setText(des);
+                    mRouteDetailDes.setVisibility(View.VISIBLE);
+                    int taxiCost = (int) mDriveRouteResult.getTaxiCost();
+                    mRouteDetailDes.setText("打车约"+taxiCost+"元");
+                    mBottomLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(mContext,
+                                    DriveRouteDetailActivity.class);
+                            intent.putExtra("drive_path", drivePath);
+                            intent.putExtra("drive_result",
+                                    mDriveRouteResult);
+                            startActivity(intent);
+                        }
+                    });
                 } else if (result != null && result.getPaths() == null) {
                     showToast(R.string.no_result);
                 }
@@ -675,8 +794,34 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
     }
 
     @Override
-    public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int i) {
+    public void onWalkRouteSearched(WalkRouteResult result, int errorCode) {
+        dissmissProgressDialog();
+        routemapHeader.setVisibility(View.VISIBLE);
+        mBottomLayout.setVisibility(View.GONE);
+        aMap.clear();// 清理地图上的所有覆盖物
+        if (errorCode == AMapException.CODE_AMAP_SUCCESS) {
+            if (result != null && result.getPaths() != null) {
+                if (result.getPaths().size() > 0) {
+                    mWalkRouteResult = result;
+                    final WalkPath walkPath = result.getPaths().get(0);
+                    WalkRouteOverlay walkRouteOverlay = new WalkRouteOverlay(mContext, aMap, walkPath,
+                            mWalkRouteResult.getStartPos(), mWalkRouteResult.getTargetPos());
+                    walkRouteOverlay.removeFromMap();
+                    walkRouteOverlay.addToMap();
+                    walkRouteOverlay.zoomToSpan();
+                    int dis = (int) walkPath.getDistance();
+                    int dur = (int) walkPath.getDuration();
+                    String des = AMapUtil.getFriendlyTime(dur) + "(" + AMapUtil.getFriendlyLength(dis) + ")";
 
+                } else if (result != null && result.getPaths() == null) {
+                    showToast(R.string.no_result);
+                }
+            } else {
+                showToast(R.string.no_result);
+            }
+        } else {
+            showToast(errorCode);
+        }
     }
 
     @Override

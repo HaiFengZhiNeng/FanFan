@@ -4,7 +4,7 @@ ext {
             compileSdkVersion:      26,
             buildToolsVersion:      "26.0.2",
             applicationId    :      "com.fanfan.robot",
-            minSdkVersion    :      15,
+            minSdkVersion    :      19,
             targetSdkVersion :      26,
             versionCode      :      1,
             versionName      :      "1.0"
@@ -108,6 +108,7 @@ ext {
             "location"              :   "com.amap.api:location:latest.integration",
 
             //other
-            "gms"                   :   "com.google.android.gms:play-services-appindexing:8.1.0"
+            "gms"                   :   "com.google.android.gms:play-services-appindexing:8.1.0",
+            "panowidget"            :   "com.google.vr:sdk-panowidget:1.80.0"
     ]
 }

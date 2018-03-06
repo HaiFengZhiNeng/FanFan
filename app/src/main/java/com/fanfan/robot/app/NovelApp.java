@@ -1,6 +1,5 @@
 package com.fanfan.robot.app;
 
-import android.app.IntentService;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
@@ -11,8 +10,6 @@ import com.fanfan.novel.common.lifecycle.Foreground;
 import com.fanfan.novel.db.base.BaseManager;
 import com.fanfan.novel.service.cache.Config;
 import com.fanfan.novel.service.cache.UserInfoCache;
-import com.fanfan.novel.utils.CrashHandler;
-import com.fanfan.novel.utils.crash.RCrashHandler;
 import com.fanfan.robot.BuildConfig;
 import com.fanfan.robot.R;
 import com.fanfan.youtu.Youtucode;
@@ -24,8 +21,6 @@ import com.seabreeze.log.inner.FileTree;
 import com.seabreeze.log.inner.LogcatTree;
 import com.squareup.leakcanary.LeakCanary;
 import com.youdao.sdk.app.YouDaoApplication;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by android on 2017/12/18.
@@ -45,7 +40,7 @@ public class NovelApp extends MultiDexApplication {
         instance = this;
 
 //        if (initLeak()) return;
-        RCrashHandler.getInstance(Constants.CRASH_PATH).init(this, null);
+//        RCrashHandler.getInstance(Constants.CRASH_PATH).init(this, null);
         Stetho.initializeWithDefaults(this);
         initLogger(this);
         Foreground.init(this);
