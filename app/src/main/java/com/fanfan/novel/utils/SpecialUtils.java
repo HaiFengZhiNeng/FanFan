@@ -62,6 +62,19 @@ public class SpecialUtils {
             return SpecialType.Navigation;
         } else if (txtInTxt(resources, speakTxt, R.string.Face)) {
             return SpecialType.Face;
+
+        } else if (txtInTxt(resources, speakTxt, R.string.TrainInquiry)) {
+            return SpecialType.TrainInquiry;
+        } else if (txtInTxt(resources, speakTxt, R.string.PanoramicMap)) {
+            return SpecialType.PanoramicMap;
+        } else if (txtInTxt(resources, speakTxt, R.string.TalkBack)) {
+            return SpecialType.TalkBack;
+        } else if (txtInTxt(resources, speakTxt, R.string.StationService)) {
+            return SpecialType.StationService;
+        } else if (txtInTxt(resources, speakTxt, R.string.InternalNavigation)) {
+            return SpecialType.InternalNavigation;
+        } else if (txtInTxt(resources, speakTxt, R.string.TrafficTravel)) {
+            return SpecialType.TrafficTravel;
         }
         return SpecialType.NoSpecial;
     }

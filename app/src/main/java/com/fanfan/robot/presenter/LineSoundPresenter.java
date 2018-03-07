@@ -290,7 +290,10 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         } else if (specialType == SpecialType.Fanfan || specialType == SpecialType.Video
                 || specialType == SpecialType.Problem || specialType == SpecialType.Face
                 || specialType == SpecialType.Seting_up || specialType == SpecialType.Public_num
-                || specialType == SpecialType.Navigation || specialType == SpecialType.MultiMedia) {
+                || specialType == SpecialType.Navigation || specialType == SpecialType.MultiMedia
+                || specialType == SpecialType.TrainInquiry || specialType == SpecialType.PanoramicMap
+                || specialType == SpecialType.TalkBack || specialType == SpecialType.StationService
+                || specialType == SpecialType.InternalNavigation || specialType == SpecialType.TrafficTravel) {
             mSoundView.startPage(specialType);
         } else if (specialType == SpecialType.Forward || specialType == SpecialType.Backoff ||
                 specialType == SpecialType.Turnleft || specialType == SpecialType.Turnright) {
@@ -535,6 +538,9 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 isTrans = false;
                 mSoundView.doAiuiAnwer(finalText);
                 mSoundView.refHomePage(question, finalText);
+                if(Constants.isTrain) {
+                    mSoundView.train(trains);
+                }
                 for (int i = 0; i < trains.size(); i++) {
                     Train train = trains.get(i);
                     mSoundView.refHomePage(null, train.getEndtime_for_voice() + "的" + train.getTrainType() + " " + train.getTrainNo() + "" +
@@ -547,6 +553,9 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         } else {
             mSoundView.doAiuiAnwer(finalText);
             mSoundView.refHomePage(question, finalText);
+            if(Constants.isTrain) {
+                mSoundView.train(trains);
+            }
             for (int i = 0; i < trains.size(); i++) {
                 Train train = trains.get(i);
                 mSoundView.refHomePage(null, train.getEndtime_for_voice() + "的" + train.getTrainType() + " " + train.getTrainNo() + "" +

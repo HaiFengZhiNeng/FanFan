@@ -76,4 +76,6 @@ public class Constants {
     public static long lockingTime = 60 * 1000 * 5;
     public static String SPEAK_ACTION = "A50C8020AA";
     public static String STOP_DANCE = "A50C80E2AA";
+
+    public static boolean isTrain = true;
 }

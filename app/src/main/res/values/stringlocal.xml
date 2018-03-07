@@ -389,4 +389,11 @@
     <string name="Next">下一个</string>
     <string name="Lase">上一个</string>
 
+    <string name="TrainInquiry">列车查询</string>
+    <string name="PanoramicMap">全景地图</string>
+    <string name="TalkBack">求助对讲</string>
+    <string name="StationService">车站服务</string>
+    <string name="InternalNavigation">站内导航</string>
+    <string name="TrafficTravel">交通出行</string>
+
 </resources>

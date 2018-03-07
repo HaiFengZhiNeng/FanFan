@@ -39,4 +39,11 @@ public enum SpecialType {
     Next,
     Lase,
 
+    TrainInquiry,
+    PanoramicMap,
+    TalkBack,
+    StationService,
+    InternalNavigation,
+    TrafficTravel,
+
 }

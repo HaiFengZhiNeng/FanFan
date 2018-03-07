@@ -1,4 +1,4 @@
-package com.fanfan.robot.activity;
+package com.fanfan.novel.activity;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -6,15 +6,20 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.IBinder;
+import android.os.Process;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.fanfan.novel.activity.DanceActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.RobotType;
@@ -48,15 +53,23 @@ import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.music.EventCallback;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.ChatTextView;
-import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.novel.utils.customtabs.IntentUtil;
 import com.fanfan.robot.R;
+import com.fanfan.robot.activity.MultimediaActivity;
+import com.fanfan.robot.activity.NavigationActivity;
+import com.fanfan.robot.activity.PPTActivity;
+import com.fanfan.robot.activity.ProblemConsultingActivity;
+import com.fanfan.robot.activity.PublicNumberActivity;
+import com.fanfan.robot.activity.SettingActivity;
+import com.fanfan.robot.adapter.TrainAdapter;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.db.DanceDBManager;
 import com.fanfan.robot.model.Dance;
 import com.fanfan.robot.presenter.LineSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
+import com.fanfan.robot.train.PanoramicMapActivity;
+import com.fanfan.robot.train.TrainInquiryActivity;
 import com.fanfan.youtu.utils.GsonUtil;
 import com.github.florent37.viewanimator.ViewAnimator;
 import com.iflytek.cloud.SpeechConstant;
@@ -64,6 +77,7 @@ import com.seabreeze.log.Print;
 import com.tencent.TIMCallBack;
 import com.tencent.TIMConversationType;
 import com.tencent.TIMMessage;
+import com.tencent.callsdk.ILVCallConstants;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -80,27 +94,36 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MainActivity extends BarBaseActivity implements ISynthesizerPresenter.ITtsView, IChatPresenter.IChatView,
+public class MainNewActivity extends BarBaseActivity implements ISynthesizerPresenter.ITtsView, IChatPresenter.IChatView,
         ISerialPresenter.ISerialView, ILineSoundPresenter.ILineSoundView {
 
-    @BindView(R.id.iv_fanfan)
-    ImageView ivFanfan;
-    @BindView(R.id.iv_video)
-    ImageView ivVideo;
-    @BindView(R.id.iv_problem)
-    ImageView ivProblem;
-    @BindView(R.id.iv_multi_media)
-    ImageView ivMultiMedia;
-    @BindView(R.id.iv_face)
-    ImageView ivFace;
-    @BindView(R.id.iv_seting_up)
-    ImageView ivSetingUp;
-    @BindView(R.id.iv_public)
-    ImageView ivPublic;
-    @BindView(R.id.iv_navigation)
-    ImageView ivNavigation;
+
+    @BindView(R.id.iv_lccx)
+    ImageView ivLccx;
+    @BindView(R.id.iv_vrdt)
+    ImageView ivVrdt;
+    @BindView(R.id.iv_qzdj)
+    ImageView ivQzdj;
+    @BindView(R.id.iv_ztfw)
+    ImageView ivZtfw;
+    @BindView(R.id.iv_zndh)
+    ImageView ivZndh;
+    @BindView(R.id.iv_jtcx)
+    ImageView ivJtcx;
+    @BindView(R.id.iv_setting)
+    ImageView ivSetting;
+    @BindView(R.id.iv_qrcode)
+    ImageView ivQrcode;
     @BindView(R.id.chat_content)
     ChatTextView chatContent;
+    @BindView(R.id.show_laout)
+    RelativeLayout showLaout;
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
+    @BindView(R.id.train_layout)
+    RelativeLayout trainLayout;
+
+    private boolean isShowing;
 
     private boolean quit;
 
@@ -120,7 +143,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main1;
+        return R.layout.activity_new_main;
     }
 
     @Override
@@ -148,6 +171,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         mNavigationDBManager = new NavigationDBManager();
 
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
+
     }
 
     @Override
@@ -203,56 +227,68 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void onBackPressed() {
-        if (!quit) {
-            showToast("再按一次退出程序");
-            new Timer(true).schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    quit = false;
-                }
-            }, 2000);
-            quit = true;
+        if (isShowing) {
+            trainShow(false);
         } else {
-            super.onBackPressed();
-            finish();
-            android.os.Process.killProcess(android.os.Process.myPid());
+            if (!quit) {
+                showToast("再按一次退出程序");
+                new Timer(true).schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        quit = false;
+                    }
+                }, 2000);
+                quit = true;
+            } else {
+                super.onBackPressed();
+                finish();
+                Process.killProcess(Process.myPid());
+            }
         }
     }
 
-    @OnClick({R.id.iv_fanfan, R.id.iv_video, R.id.iv_problem, R.id.iv_multi_media, R.id.iv_face, R.id.iv_seting_up,
-            R.id.iv_public, R.id.iv_navigation})
+
+    @OnClick({R.id.iv_lccx, R.id.iv_vrdt, R.id.iv_qzdj, R.id.iv_ztfw, R.id.iv_zndh, R.id.iv_jtcx, R.id.iv_setting,
+            R.id.iv_qrcode, R.id.chat_content})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.iv_fanfan:
-                animateSequentially(ivFanfan);
+            case R.id.iv_lccx:
+                TrainInquiryActivity.newInstance(this);
                 break;
-            case R.id.iv_video:
-                VideoIntroductionActivity.newInstance(this);
+            case R.id.iv_vrdt:
+                PanoramicMapActivity.newInstance(this);
                 break;
-            case R.id.iv_problem:
+            case R.id.iv_qzdj:
+                ArrayList<String> nums = new ArrayList<>();
+                nums.add("hotel003");
+                SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
+                break;
+            case R.id.iv_ztfw:
                 ProblemConsultingActivity.newInstance(this);
                 break;
-            case R.id.iv_multi_media:
-                bindService(false);
+            case R.id.iv_zndh:
+                NavigationActivity.newInstance(this);
                 break;
-            case R.id.iv_face:
-                FaceRecognitionActivity.newInstance(this);
+            case R.id.iv_jtcx:
+                Intent intent = new Intent("android.intent.action.VIEW",
+                        Uri.parse("androidamap://showTraffic?sourceApplication=softname&amp;poiid=BGVIS1&amp;lat=36.2&amp;lon=116.1&amp;level=10&amp;dev=0"));
+                intent.setPackage("com.autonavi.minimap");
+                startActivity(intent);
                 break;
-            case R.id.iv_seting_up:
+            case R.id.iv_setting:
                 SettingActivity.newInstance(this, SettingActivity.LOGOUT_TO_MAIN_REQUESTCODE);
                 break;
-            case R.id.iv_public:
+            case R.id.iv_qrcode:
                 PublicNumberActivity.newInstance(this);
                 break;
-            case R.id.iv_navigation:
-                NavigationActivity.newInstance(this);
+            case R.id.chat_content:
                 break;
         }
     }
 
     private void bindService(boolean isPlay) {
         this.isPlay = isPlay;
-        if (!PreferencesUtils.getBoolean(MainActivity.this, Constants.MUSIC_UPDATE, false))
+        if (!PreferencesUtils.getBoolean(MainNewActivity.this, Constants.MUSIC_UPDATE, false))
             showLoading();
         Intent intent = new Intent();
         intent.setClass(this, PlayService.class);
@@ -323,8 +359,18 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             case KeyEvent.KEYCODE_BUTTON_A:
                 stopAutoAction();
                 break;
+            case KeyEvent.KEYCODE_BACK:
+                if (isShowing) {
+                    trainShow(false);
+                }
         }
         return false;
+    }
+
+    private void trainShow(boolean isShow) {
+        isShowing = isShow;
+        trainLayout.setVisibility(isShow ? View.VISIBLE : View.GONE);
+        showLaout.setVisibility(isShow ? View.GONE : View.VISIBLE);
     }
 
     private void sendMsg(final int keyCode) {
@@ -418,7 +464,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             @Override
             public void run() {
 //                FanFanIntroduceActivity.newInstance(MainActivity.this);
-                PPTActivity.newInstance(MainActivity.this);
+                PPTActivity.newInstance(MainNewActivity.this);
             }
         }, 400);
         ViewAnimator
@@ -511,7 +557,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     private void loadImage(int load, int place) {
-        ImageLoader.loadImage(this, ivFanfan, load, false, place, 1000);
+//        ImageLoader.loadImage(this, ivFanfan, load, false, place, 1000);
     }
 
 
@@ -777,35 +823,50 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void train(List<Train> trains) {
-
+//        String jsonResult = "[{\"arrivalTime\":\"2018-03-08 13:06\",\"endtime_for_voice\":\"明天13:06\",\"endtimestamp\":1520485560,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时6分\",\"startTime\":\"2018-03-08 08:00\",\"startTimeStamp\":\"1520467200\",\"starttime_for_voice\":\"明天08:00\",\"starttimestamp\":1520467200,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G11\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 12:39\",\"endtime_for_voice\":\"明天12:39\",\"endtimestamp\":1520483940,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时56分\",\"startTime\":\"2018-03-08 06:43\",\"startTimeStamp\":\"1520462580\",\"starttime_for_voice\":\"明天06:43\",\"starttimestamp\":1520462580,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G101\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 11:34\",\"endtime_for_voice\":\"明天11:34\",\"endtimestamp\":1520480040,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"4时34分\",\"startTime\":\"2018-03-08 07:00\",\"startTimeStamp\":\"1520463600\",\"starttime_for_voice\":\"明天07:00\",\"starttimestamp\":1520463600,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G5\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 13:11\",\"endtime_for_voice\":\"明天13:11\",\"endtimestamp\":1520485860,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时36分\",\"startTime\":\"2018-03-08 07:35\",\"startTimeStamp\":\"1520465700\",\"starttime_for_voice\":\"明天07:35\",\"starttimestamp\":1520465700,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G105\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 13:49\",\"endtime_for_voice\":\"明天13:49\",\"endtimestamp\":1520488140,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时44分\",\"startTime\":\"2018-03-08 08:05\",\"startTimeStamp\":\"1520467500\",\"starttime_for_voice\":\"明天08:05\",\"starttimestamp\":1520467500,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G107\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 14:22\",\"endtime_for_voice\":\"明天14:22\",\"endtimestamp\":1520490120,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时47分\",\"startTime\":\"2018-03-08 08:35\",\"startTimeStamp\":\"1520469300\",\"starttime_for_voice\":\"明天08:35\",\"starttimestamp\":1520469300,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G111\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 14:33\",\"endtime_for_voice\":\"明天14:33\",\"endtimestamp\":1520490780,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时40分\",\"startTime\":\"2018-03-08 08:53\",\"startTimeStamp\":\"1520470380\",\"starttime_for_voice\":\"明天08:53\",\"starttimestamp\":1520470380,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G113\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 13:28\",\"endtime_for_voice\":\"明天13:28\",\"endtimestamp\":1520486880,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"4时28分\",\"startTime\":\"2018-03-08 09:00\",\"startTimeStamp\":\"1520470800\",\"starttime_for_voice\":\"明天09:00\",\"starttimestamp\":1520470800,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G1\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 14:49\",\"endtime_for_voice\":\"明天14:49\",\"endtimestamp\":1520491740,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时34分\",\"startTime\":\"2018-03-08 09:15\",\"startTimeStamp\":\"1520471700\",\"starttime_for_voice\":\"明天09:15\",\"starttimestamp\":1520471700,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G41\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 15:10\",\"endtime_for_voice\":\"明天15:10\",\"endtimestamp\":1520493000,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时50分\",\"startTime\":\"2018-03-08 09:20\",\"startTimeStamp\":\"1520472000\",\"starttime_for_voice\":\"明天09:20\",\"starttimestamp\":1520472000,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G115\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 15:37\",\"endtime_for_voice\":\"明天15:37\",\"endtimestamp\":1520494620,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"6时12分\",\"startTime\":\"2018-03-08 09:25\",\"startTimeStamp\":\"1520472300\",\"starttime_for_voice\":\"明天09:25\",\"starttimestamp\":1520472300,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G117\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 14:28\",\"endtime_for_voice\":\"明天14:28\",\"endtimestamp\":1520490480,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"4时28分\",\"startTime\":\"2018-03-08 10:00\",\"startTimeStamp\":\"1520474400\",\"starttime_for_voice\":\"明天10:00\",\"starttimestamp\":1520474400,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G13\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 15:43\",\"endtime_for_voice\":\"明天15:43\",\"endtimestamp\":1520494980,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时38分\",\"startTime\":\"2018-03-08 10:05\",\"startTimeStamp\":\"1520474700\",\"starttime_for_voice\":\"明天10:05\",\"starttimestamp\":1520474700,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G119\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 16:32\",\"endtime_for_voice\":\"明天16:32\",\"endtimestamp\":1520497920,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"6时4分\",\"startTime\":\"2018-03-08 10:28\",\"startTimeStamp\":\"1520476080\",\"starttime_for_voice\":\"明天10:28\",\"starttimestamp\":1520476080,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G121\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 15:56\",\"endtime_for_voice\":\"明天15:56\",\"endtimestamp\":1520495760,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"4时56分\",\"startTime\":\"2018-03-08 11:00\",\"startTimeStamp\":\"1520478000\",\"starttime_for_voice\":\"明天11:00\",\"starttimestamp\":1520478000,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G15\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 16:56\",\"endtime_for_voice\":\"明天16:56\",\"endtimestamp\":1520499360,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时46分\",\"startTime\":\"2018-03-08 11:10\",\"startTimeStamp\":\"1520478600\",\"starttime_for_voice\":\"明天11:10\",\"starttimestamp\":1520478600,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G125\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 17:08\",\"endtime_for_voice\":\"明天17:08\",\"endtimestamp\":1520500080,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时48分\",\"startTime\":\"2018-03-08 11:20\",\"startTimeStamp\":\"1520479200\",\"starttime_for_voice\":\"明天11:20\",\"starttimestamp\":1520479200,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G411\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-09 07:19\",\"endtime_for_voice\":\"03月09号07:19\",\"endtimestamp\":1520551140,\"originStation\":\"北京\",\"price\":[{\"name\":\"硬座\",\"value\":\"156.5\"},{\"name\":\"硬卧\",\"value\":\"304.5\"},{\"name\":\"软卧\",\"value\":\"476.5\"},{\"name\":\"无座\",\"value\":\"156.5\"}],\"runTime\":\"19时25分\",\"startTime\":\"2018-03-08 11:54\",\"startTimeStamp\":\"1520481240\",\"starttime_for_voice\":\"明天11:54\",\"starttimestamp\":1520481240,\"terminalStation\":\"上海\",\"trainNo\":\"1461\",\"trainType\":\"普速\"},{\"arrivalTime\":\"2018-03-08 17:56\",\"endtime_for_voice\":\"明天17:56\",\"endtimestamp\":1520502960,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时46分\",\"startTime\":\"2018-03-08 12:10\",\"startTimeStamp\":\"1520482200\",\"starttime_for_voice\":\"明天12:10\",\"starttimestamp\":1520482200,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G129\",\"trainType\":\"高铁\"},{\"arrivalTime\":\"2018-03-08 18:06\",\"endtime_for_voice\":\"明天18:06\",\"endtimestamp\":1520503560,\"originStation\":\"北京南\",\"price\":[{\"name\":\"二等座\",\"value\":\"553\"},{\"name\":\"一等座\",\"value\":\"933\"},{\"name\":\"商务座\",\"value\":\"1748\"}],\"runTime\":\"5时46分\",\"startTime\":\"2018-03-08 12:20\",\"startTimeStamp\":\"1520482800\",\"starttime_for_voice\":\"明天12:20\",\"starttimestamp\":1520482800,\"terminalStation\":\"上海虹桥\",\"trainNo\":\"G131\",\"trainType\":\"高铁\"}]";
+//        trains = GsonUtil.GsonToArrayList(jsonResult.toString(), Train.class);
+        Print.e(trains);
+        trainShow(true);
+        TrainAdapter trainAdapter = new TrainAdapter(trains);
+        trainAdapter.isFirstOnly(false); //设置不仅是首次填充数据时有动画,以后上下滑动也会有动画
+        trainAdapter.openLoadAnimation();
+        recyclerView.setAdapter(trainAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
     @Override
     public void startPage(SpecialType specialType) {
         switch (specialType) {
-            case Fanfan:
-                animateSequentially(ivFanfan);
+            case TrainInquiry:
+                TrainInquiryActivity.newInstance(this);
                 break;
-            case Video:
-                VideoIntroductionActivity.newInstance(this);
+            case PanoramicMap:
+                PanoramicMapActivity.newInstance(this);
                 break;
-            case Problem:
+            case TalkBack:
+                ArrayList<String> nums = new ArrayList<>();
+                nums.add("hotel003");
+                SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
+                break;
+            case StationService:
                 ProblemConsultingActivity.newInstance(this);
                 break;
-            case MultiMedia:
-                bindService(false);
+            case InternalNavigation:
+                NavigationActivity.newInstance(this);
                 break;
-            case Face:
-                FaceRecognitionActivity.newInstance(this);
+            case TrafficTravel:
+                Intent intent = new Intent("android.intent.action.VIEW",
+                        Uri.parse("androidamap://showTraffic?sourceApplication=softname&amp;poiid=BGVIS1&amp;lat=36.2&amp;lon=116.1&amp;level=10&amp;dev=0"));
+                intent.setPackage("com.autonavi.minimap");
+                startActivity(intent);
                 break;
             case Seting_up:
                 SettingActivity.newInstance(this, SettingActivity.LOGOUT_TO_MAIN_REQUESTCODE);
                 break;
             case Public_num:
                 PublicNumberActivity.newInstance(this);
-                break;
-            case Navigation:
-                NavigationActivity.newInstance(this);
                 break;
             default:
                 onCompleted();
@@ -872,7 +933,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 @Override
                 public void onEvent(Void aVoid) {
                     dismissLoading();
-                    MultimediaActivity.newInstance(MainActivity.this, isPlay, MultimediaActivity.MULTIMEDIA_REQUESTCODE);
+                    MultimediaActivity.newInstance(MainNewActivity.this, isPlay, MultimediaActivity.MULTIMEDIA_REQUESTCODE);
                 }
             });
         }

@@ -81,7 +81,7 @@
         </activity>
 
         <activity
-            android:name="com.fanfan.novel.activity.Main2Activity"
+            android:name="com.fanfan.novel.activity.MainNewActivity"
             android:theme="@style/AppTheme">
             <!--<intent-filter>-->
             <!--<action android:name="android.intent.action.MAIN" />-->
@@ -215,6 +215,15 @@
             android:theme="@style/AppThemeAction" />
         <activity
             android:name="com.fanfan.novel.map.activity.BusRouteDetailActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".train.TrainInquiryActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".train.PanoramicMapActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".activity.PanoramaDetailActivity"
             android:theme="@style/AppThemeAction" />
 
         <service android:name="com.fanfan.novel.service.UdpService" />

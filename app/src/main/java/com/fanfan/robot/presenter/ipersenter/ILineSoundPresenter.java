@@ -9,6 +9,9 @@ import com.fanfan.novel.model.xf.service.News;
 import com.fanfan.novel.model.xf.service.Poetry;
 import com.fanfan.novel.model.xf.service.englishEveryday.EnglishEveryday;
 import com.fanfan.novel.model.xf.service.radio.Radio;
+import com.fanfan.novel.model.xf.service.train.Train;
+
+import java.util.List;
 
 /**
  * Created by android on 2018/1/6.
@@ -66,6 +69,8 @@ public abstract class ILineSoundPresenter implements BasePresenter {
         void special(String result, SpecialType type);
 
         void doCallPhone(String value);
+
+        void train(List<Train> trains);
 
         void startPage(SpecialType specialType);
 
