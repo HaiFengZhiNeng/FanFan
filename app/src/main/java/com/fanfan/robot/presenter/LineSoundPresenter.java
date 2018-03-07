@@ -1,9 +1,7 @@
 package com.fanfan.robot.presenter;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.enums.SpecialType;
@@ -33,14 +31,11 @@ import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.AudioUtil;
 import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.FucUtil;
-import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.novel.utils.SpecialUtils;
 import com.fanfan.novel.utils.music.MediaPlayerUtil;
 import com.fanfan.novel.utils.tele.TelNumMatch;
 import com.fanfan.novel.utils.tele.TelePhoneUtils;
 import com.fanfan.novel.utils.youdao.TranslateData;
-import com.fanfan.novel.utils.youdao.TranslateLanguage;
-import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
@@ -67,7 +62,6 @@ import com.youdao.sdk.ydtranslate.Translate;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -303,6 +297,8 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
             mSoundView.spakeMove(specialType, result);
         } else if (specialType == SpecialType.Map) {
             mSoundView.openMap();
+        } else if (specialType == SpecialType.Vr) {
+            mSoundView.openVr();
         } else if (specialType == SpecialType.Logout) {
             mSoundView.spakeLogout();
         }

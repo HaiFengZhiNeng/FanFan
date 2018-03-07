@@ -1,10 +1,9 @@
 package com.fanfan.novel.utils;
 
-import android.app.Activity;
 import android.content.res.Resources;
 
-import com.fanfan.robot.R;
 import com.fanfan.novel.common.enums.SpecialType;
+import com.fanfan.robot.R;
 
 import java.util.Arrays;
 
@@ -43,6 +42,8 @@ public class SpecialUtils {
             return SpecialType.Logout;
         } else if (txtInTxt(resources, speakTxt, R.string.Map)) {
             return SpecialType.Map;
+        } else if (txtInTxt(resources, speakTxt, R.string.Vr)) {
+            return SpecialType.Vr;
         } else if (txtInTxt(resources, speakTxt, R.string.StopListener)) {
             return SpecialType.StopListener;
         } else if (txtInTxt(resources, speakTxt, R.string.FanFan)) {

@@ -373,6 +373,7 @@
     <string name="Navigation">导航</string>
     <string name="Face">人脸识别</string>
     <string name="Map">打开地图</string>
+    <string name="Vr">哎呀</string>
     <string name="Logout">退出登录</string>
     <string name="StopListener">关闭监听</string>
     <string name="Forward">前进</string>

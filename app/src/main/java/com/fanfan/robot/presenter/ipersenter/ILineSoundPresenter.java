@@ -73,6 +73,8 @@ public abstract class ILineSoundPresenter implements BasePresenter {
 
         void openMap();
 
+        void openVr();
+
         void spakeLogout();
 
         void onCompleted();

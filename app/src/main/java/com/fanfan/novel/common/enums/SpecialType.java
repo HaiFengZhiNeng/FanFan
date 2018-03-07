@@ -23,6 +23,7 @@ public enum SpecialType {
     Face,
 
     Map,
+    Vr,
     Logout,
     StopListener,
 

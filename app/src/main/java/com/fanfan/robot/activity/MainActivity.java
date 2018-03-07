@@ -829,6 +829,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     @Override
+    public void openVr() {
+        showMsg("Vr");
+    }
+
+    @Override
     public void spakeLogout() {
         LoginBusiness.logout(new TIMCallBack() {
             @Override
