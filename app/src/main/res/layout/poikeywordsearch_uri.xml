@@ -6,17 +6,17 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/y80"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/x10"
+        android:textSize="@dimen/x7"
         android:textColor="@color/black"/>
 
     <TextView
         android:id="@+id/snippet"
-        android:layout_width="200dp"
+        android:layout_width="@dimen/y80"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:textSize="@dimen/x8"
+        android:textSize="@dimen/x6"
         android:layout_below="@id/title" />
 
     <TextView
@@ -27,6 +27,7 @@
         android:layout_toRightOf="@+id/snippet"
         android:padding="@dimen/y3"
         android:text="到这去"
+        android:gravity="right"
         android:background="@color/orangered"
         android:textSize="@dimen/x8" />
 

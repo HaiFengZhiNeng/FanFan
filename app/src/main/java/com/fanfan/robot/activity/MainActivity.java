@@ -14,7 +14,6 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.fanfan.novel.activity.AMapActivity;
 import com.fanfan.novel.activity.DanceActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
@@ -24,6 +23,7 @@ import com.fanfan.novel.db.manager.NavigationDBManager;
 import com.fanfan.novel.db.manager.VideoDBManager;
 import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.im.init.LoginBusiness;
+import com.fanfan.novel.map.activity.AMapActivity;
 import com.fanfan.novel.model.RobotBean;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.model.VoiceBean;

@@ -1,4 +1,4 @@
-package com.fanfan.novel.model.map;
+package com.fanfan.novel.map.overlay;
 
 /**
  * Created by Administrator on 2018/3/6/006.
@@ -14,6 +14,7 @@ import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.WalkPath;
 import com.amap.api.services.route.WalkStep;
+import com.fanfan.novel.map.AMapUtil;
 
 import java.util.List;
 

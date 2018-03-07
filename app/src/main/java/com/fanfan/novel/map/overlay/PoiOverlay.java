@@ -1,4 +1,4 @@
-package com.fanfan.novel.model.map;
+package com.fanfan.novel.map.overlay;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;

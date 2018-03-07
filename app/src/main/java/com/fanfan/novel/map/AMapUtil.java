@@ -1,4 +1,4 @@
-package com.fanfan.novel.model.map;
+package com.fanfan.novel.map;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -11,6 +11,11 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.NaviPara;
 import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.route.BusPath;
+import com.amap.api.services.route.BusStep;
+import com.amap.api.services.route.RouteBusLineItem;
+import com.amap.api.services.route.RouteRailwayItem;
+import com.fanfan.novel.map.model.ChString;
 import com.fanfan.robot.R;
 
 import java.text.DecimalFormat;
@@ -24,6 +29,61 @@ import java.util.Locale;
  */
 
 public class AMapUtil {
+
+    public static String getBusPathDes(BusPath busPath) {
+        if (busPath == null) {
+            return String.valueOf("");
+        }
+        long second = busPath.getDuration();
+        String time = getFriendlyTime((int) second);
+        float subDistance = busPath.getDistance();
+        String subDis = getFriendlyLength((int) subDistance);
+        float walkDistance = busPath.getWalkDistance();
+        String walkDis = getFriendlyLength((int) walkDistance);
+        return String.valueOf(time + " | " + subDis + " | 步行" + walkDis);
+    }
+
+    public static String getBusPathTitle(BusPath busPath) {
+        if (busPath == null) {
+            return String.valueOf("");
+        }
+        List<BusStep> busSetps = busPath.getSteps();
+        if (busSetps == null) {
+            return String.valueOf("");
+        }
+        StringBuffer sb = new StringBuffer();
+        for (BusStep busStep : busSetps) {
+            StringBuffer title = new StringBuffer();
+            if (busStep.getBusLines().size() > 0) {
+                for (RouteBusLineItem busline : busStep.getBusLines()) {
+                    if (busline == null) {
+                        continue;
+                    }
+
+                    String buslineName = getSimpleBusLineName(busline.getBusLineName());
+                    title.append(buslineName);
+                    title.append(" / ");
+                }
+
+                sb.append(title.substring(0, title.length() - 3));
+                sb.append(" > ");
+            }
+            if (busStep.getRailway() != null) {
+                RouteRailwayItem railway = busStep.getRailway();
+                sb.append(railway.getTrip() + "(" + railway.getDeparturestop().getName()
+                        + " - " + railway.getArrivalstop().getName() + ")");
+                sb.append(" > ");
+            }
+        }
+        return sb.substring(0, sb.length() - 3);
+    }
+
+    public static String getSimpleBusLineName(String busLineName) {
+        if (busLineName == null) {
+            return String.valueOf("");
+        }
+        return busLineName.replaceAll("\\(.*?\\)", "");
+    }
 
     /**
      * 路径规划方向指示和图片对应

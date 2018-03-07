@@ -1,11 +1,11 @@
-package com.fanfan.novel.adapter;
+package com.fanfan.novel.map.adapter;
 
 import android.support.annotation.Nullable;
 
-import com.amap.api.services.route.DriveStep;
+import com.amap.api.services.route.WalkStep;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.fanfan.novel.model.map.AMapUtil;
+import com.fanfan.novel.map.AMapUtil;
 import com.fanfan.robot.R;
 
 import java.util.List;
@@ -14,14 +14,14 @@ import java.util.List;
  * Created by Administrator on 2018/3/6/006.
  */
 
-public class DriveSegmentAdapter extends BaseQuickAdapter<DriveStep, BaseViewHolder> {
+public class WalkSegmentAdapter extends BaseQuickAdapter<WalkStep, BaseViewHolder> {
 
-    public DriveSegmentAdapter(@Nullable List<DriveStep> data) {
+    public WalkSegmentAdapter(@Nullable List<WalkStep> data) {
         super(R.layout.item_drive_segment, data);
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, DriveStep item) {
+    protected void convert(BaseViewHolder helper, WalkStep item) {
         if (helper.getLayoutPosition() == 0) {
             helper.setBackgroundRes(R.id.bus_dir_icon, R.drawable.dir_start);
             helper.setText(R.id.bus_line_name, "出发");

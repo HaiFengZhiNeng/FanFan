@@ -1,4 +1,4 @@
-package com.fanfan.novel.model.map;
+package com.fanfan.novel.map.model;
 
 /**
  * Created by android on 2018/3/2.

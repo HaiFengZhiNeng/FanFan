@@ -1,4 +1,4 @@
-package com.fanfan.novel.model.map;
+package com.fanfan.novel.map.overlay;
 
 import android.content.Context;
 import android.graphics.Bitmap;

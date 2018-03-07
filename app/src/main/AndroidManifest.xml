@@ -73,11 +73,11 @@
         <activity
             android:name="com.fanfan.novel.activity.SplashActivity"
             android:theme="@style/AppTheme">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -91,14 +91,8 @@
         </activity>
 
         <activity
-            android:name="com.fanfan.novel.activity.AMapActivity"
-            android:theme="@style/AppThemeAction">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:name="com.fanfan.novel.map.activity.AMapActivity"
+            android:theme="@style/AppThemeAction" />
 
         <activity
             android:name=".activity.LockActivity"
@@ -214,7 +208,13 @@
             android:name=".activity.PPTActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.DriveRouteDetailActivity"
+            android:name="com.fanfan.novel.map.activity.DriveRouteDetailActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name="com.fanfan.novel.map.activity.WalkRouteDetailActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name="com.fanfan.novel.map.activity.BusRouteDetailActivity"
             android:theme="@style/AppThemeAction" />
 
         <service android:name="com.fanfan.novel.service.UdpService" />

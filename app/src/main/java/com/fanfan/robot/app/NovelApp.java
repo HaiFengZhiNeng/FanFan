@@ -10,6 +10,7 @@ import com.fanfan.novel.common.lifecycle.Foreground;
 import com.fanfan.novel.db.base.BaseManager;
 import com.fanfan.novel.service.cache.Config;
 import com.fanfan.novel.service.cache.UserInfoCache;
+import com.fanfan.novel.utils.crash.RCrashHandler;
 import com.fanfan.robot.BuildConfig;
 import com.fanfan.robot.R;
 import com.fanfan.youtu.Youtucode;
@@ -40,7 +41,7 @@ public class NovelApp extends MultiDexApplication {
         instance = this;
 
 //        if (initLeak()) return;
-//        RCrashHandler.getInstance(Constants.CRASH_PATH).init(this, null);
+        RCrashHandler.getInstance(Constants.CRASH_PATH).init(this, null);
         Stetho.initializeWithDefaults(this);
         initLogger(this);
         Foreground.init(this);

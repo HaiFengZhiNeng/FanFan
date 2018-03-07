@@ -1,4 +1,4 @@
-package com.fanfan.novel.activity;
+package com.fanfan.novel.map.activity;
 
 import android.content.Intent;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -11,9 +11,9 @@ import com.amap.api.services.route.DrivePath;
 import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.DriveStep;
 import com.amap.api.services.route.TMC;
-import com.fanfan.novel.adapter.DriveSegmentAdapter;
+import com.fanfan.novel.map.adapter.DriveSegmentAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.model.map.AMapUtil;
+import com.fanfan.novel.map.AMapUtil;
 import com.fanfan.robot.R;
 
 import java.util.List;
@@ -26,6 +26,8 @@ import butterknife.BindView;
 
 public class DriveRouteDetailActivity extends BarBaseActivity {
 
+    @BindView(R.id.tv_toolbar)
+    TextView tvTitle;
     @BindView(R.id.firstline)
     TextView mTitleDriveRoute;
     @BindView(R.id.secondline)
@@ -59,6 +61,8 @@ public class DriveRouteDetailActivity extends BarBaseActivity {
                 String s = "" + tmclist.get(j).getPolyline().size();
             }
         }
+
+        tvTitle.setText("驾车路线详情");
 
         String dur = AMapUtil.getFriendlyTime((int) mDrivePath.getDuration());
         String dis = AMapUtil.getFriendlyLength((int) mDrivePath.getDistance());

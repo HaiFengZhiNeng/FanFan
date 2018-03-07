@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.fanfan.novel.activity.AMapActivity">
+    tools:context="com.fanfan.novel.map.activity.AMapActivity">
 
 
     <android.support.v7.widget.Toolbar
@@ -55,7 +55,7 @@
         <LinearLayout
             android:id="@+id/routemap_choose"
             android:layout_width="match_parent"
-            android:layout_height="44dp"
+            android:layout_height="@dimen/y20"
             android:background="@drawable/title_background"
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
@@ -68,8 +68,8 @@
 
                 <ImageView
                     android:id="@+id/route_drive"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="@dimen/y10"
+                    android:layout_height="@dimen/y10"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:src="@drawable/route_drive_normal" />
@@ -83,8 +83,8 @@
 
                 <ImageView
                     android:id="@+id/route_bus"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="@dimen/y10"
+                    android:layout_height="@dimen/y10"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:layout_weight="1"
@@ -99,8 +99,8 @@
 
                 <ImageView
                     android:id="@+id/route_walk"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="@dimen/y10"
+                    android:layout_height="@dimen/y10"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:layout_weight="1"
@@ -116,10 +116,11 @@
                 <TextView
                     android:id="@+id/route_CrosstownBus"
                     android:layout_width="wrap_content"
-                    android:layout_height="22dp"
+                    android:layout_height="@dimen/y10"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:text="导航"
+                    android:textSize="@dimen/x10"
                     android:textColor="@color/gray" />
             </RelativeLayout>
         </LinearLayout>
@@ -128,40 +129,42 @@
     <RelativeLayout
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="@dimen/y30"
         android:layout_alignParentBottom="true"
         android:background="@drawable/bg_bottom_bar"
         android:gravity="center_vertical"
-        android:padding="5dp"
+        android:paddingLeft="@dimen/y5"
+        android:paddingRight="@dimen/y5"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/firstline"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_marginLeft="12dp"
+            android:layout_height="@dimen/y15"
+            android:gravity="center"
+            android:layout_marginLeft="@dimen/y5"
             android:singleLine="true"
             android:textColor="#333333"
-            android:textSize="16sp" />
+            android:textSize="@dimen/x8" />
 
         <TextView
             android:id="@+id/secondline"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/y15"
             android:layout_below="@+id/firstline"
-            android:layout_marginLeft="12dp"
+            android:layout_marginLeft="@dimen/y5"
             android:gravity="right"
             android:singleLine="true"
             android:textColor="#999999"
-            android:textSize="13sp"
+            android:textSize="@dimen/x6"
             android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/detail"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_height="@dimen/y30"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="@dimen/y10"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -171,15 +174,30 @@
                 android:gravity="center_vertical"
                 android:text="详情"
                 android:textColor="@color/blue"
-                android:textSize="14sp" />
+                android:textSize="@dimen/x8" />
 
             <Button
                 android:layout_width="7dp"
-                android:layout_height="13dp"
-                android:layout_marginLeft="4dp"
+                android:layout_height="@dimen/y7"
+                android:layout_marginLeft="@dimen/y7"
                 android:background="@drawable/arrow_right_blue"
                 android:gravity="center_vertical" />
         </LinearLayout>
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/bus_result"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/routemap_header"
+        android:background="@color/transparent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/bus_result_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
 </RelativeLayout>
