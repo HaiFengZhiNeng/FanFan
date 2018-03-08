@@ -57,6 +57,7 @@ import com.fanfan.robot.db.DanceDBManager;
 import com.fanfan.robot.model.Dance;
 import com.fanfan.robot.presenter.LineSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
+import com.fanfan.robot.train.PanoramicMapActivity;
 import com.fanfan.youtu.utils.GsonUtil;
 import com.github.florent37.viewanimator.ViewAnimator;
 import com.iflytek.cloud.SpeechConstant;
@@ -839,7 +840,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void openVr() {
-        showMsg("Vr");
+        PanoramicMapActivity.newInstance(this);
     }
 
     @Override

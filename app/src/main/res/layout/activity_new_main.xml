@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/beijing">
+    android:background="@mipmap/beijing"
+    tools:context=".activity.MainNewActivity">
 
     <RelativeLayout
         android:id="@+id/show_laout"
@@ -181,15 +183,16 @@
 
         <RelativeLayout
             android:id="@+id/title"
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="30dp">
+            android:layout_height="30dp"
+            android:visibility="visible">
 
             <ImageView
-                android:padding="@dimen/y2"
-                android:layout_marginLeft="@dimen/y10"
+                android:id="@+id/back"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/y10"
+                android:padding="@dimen/y2"
                 android:src="@mipmap/ic_back_white" />
 
             <TextView

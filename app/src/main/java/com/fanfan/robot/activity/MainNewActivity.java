@@ -1,4 +1,4 @@
-package com.fanfan.novel.activity;
+package com.fanfan.robot.activity;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.novel.activity.DanceActivity;
+import com.fanfan.novel.activity.SimpleCallActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.RobotType;
@@ -56,12 +58,6 @@ import com.fanfan.novel.ui.ChatTextView;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.novel.utils.customtabs.IntentUtil;
 import com.fanfan.robot.R;
-import com.fanfan.robot.activity.MultimediaActivity;
-import com.fanfan.robot.activity.NavigationActivity;
-import com.fanfan.robot.activity.PPTActivity;
-import com.fanfan.robot.activity.ProblemConsultingActivity;
-import com.fanfan.robot.activity.PublicNumberActivity;
-import com.fanfan.robot.activity.SettingActivity;
 import com.fanfan.robot.adapter.TrainAdapter;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.db.DanceDBManager;
@@ -122,6 +118,8 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     RecyclerView recyclerView;
     @BindView(R.id.train_layout)
     RelativeLayout trainLayout;
+    @BindView(R.id.back)
+    ImageView back;
 
     private boolean isShowing;
 
@@ -249,7 +247,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
 
 
     @OnClick({R.id.iv_lccx, R.id.iv_vrdt, R.id.iv_qzdj, R.id.iv_ztfw, R.id.iv_zndh, R.id.iv_jtcx, R.id.iv_setting,
-            R.id.iv_qrcode, R.id.chat_content})
+            R.id.iv_qrcode, R.id.chat_content, R.id.back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_lccx:
@@ -282,6 +280,11 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
                 PublicNumberActivity.newInstance(this);
                 break;
             case R.id.chat_content:
+                break;
+            case R.id.back:
+                if(isShowing) {
+                    trainShow(false);
+                }
                 break;
         }
     }

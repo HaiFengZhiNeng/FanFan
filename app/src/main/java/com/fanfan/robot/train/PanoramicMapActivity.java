@@ -51,9 +51,10 @@ public class PanoramicMapActivity extends BarBaseActivity {
     @Override
     protected void initData() {
 //        mVrPanoramaView.setDisplayMode(VrWidgetView.DisplayMode.FULLSCREEN_MONO);//全屏模式，弹出一个全屏的Dialog
-        mVrPanoramaView.setInfoButtonEnabled(false);//隐藏信息按钮
-        mVrPanoramaView.setStereoModeButtonEnabled(false);//隐藏cardboard按钮
-        mVrPanoramaView.setFullscreenButtonEnabled(false);//隐藏全屏按钮
+        mVrPanoramaView.setInfoButtonEnabled(false);//信息按钮禁掉
+        mVrPanoramaView.setStereoModeButtonEnabled(false);//眼镜模式按钮禁掉
+        mVrPanoramaView.setFullscreenButtonEnabled(false);//全屏模式按钮禁掉
+        mVrPanoramaView.setTouchTrackingEnabled(true); //开启手触模式
 
         options = new VrPanoramaView.Options();
         //设置图片类型为单通道图片

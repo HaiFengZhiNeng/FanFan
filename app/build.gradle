@@ -132,4 +132,7 @@ dependencies {
     compile rootProject.ext.dependencies["search"]
 
     compile rootProject.ext.dependencies["panowidget"]
+
+    compile rootProject.ext.dependencies["dagger"]
+    compile rootProject.ext.dependencies["dagger-compiler"]
 }
