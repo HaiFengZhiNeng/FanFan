@@ -1,7 +1,6 @@
 package com.fanfan.novel.presenter;
 
 import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.common.enums.RobotType;
 import com.fanfan.novel.im.event.MessageEvent;
 import com.fanfan.novel.im.event.RefreshEvent;
 import com.fanfan.novel.model.RobotBean;
@@ -35,6 +34,8 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.inject.Inject;
+
 /**
  * Created by zhangyuanyuan on 2017/9/26.
  */
@@ -51,17 +52,17 @@ public class ChatPresenter extends IChatPresenter implements Observer {
     private TIMConversation conversation;
     private RobotInfo robotInfo;
 
-    public ChatPresenter(IChatView baseView, TIMConversationType type, String peer) {
+    @Inject
+    public ChatPresenter(IChatView baseView) {
         super(baseView);
         mChatView = baseView;
-        //peer 参与会话的对方, C2C会话为对方帐号identifier, 群组会话为群组Id
-        conversation = TIMManager.getInstance().getConversation(type, peer);
         robotInfo = RobotInfo.getInstance();
     }
 
 
     @Override
     public void start() {
+        conversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, robotInfo.getControlId());
         //注册消息监听
         MessageEvent.getInstance().addObserver(this);
         RefreshEvent.getInstance().addObserver(this);

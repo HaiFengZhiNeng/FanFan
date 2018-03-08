@@ -20,14 +20,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.dagger.componet.DaggerMainComponet;
+import com.fanfan.dagger.manager.MainManager;
+import com.fanfan.dagger.module.MainModule;
 import com.fanfan.novel.activity.DanceActivity;
 import com.fanfan.novel.activity.SimpleCallActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.RobotType;
 import com.fanfan.novel.common.enums.SpecialType;
-import com.fanfan.novel.db.manager.NavigationDBManager;
-import com.fanfan.novel.db.manager.VideoDBManager;
 import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.im.init.LoginBusiness;
 import com.fanfan.novel.map.activity.AMapActivity;
@@ -40,9 +41,6 @@ import com.fanfan.novel.model.xf.service.Poetry;
 import com.fanfan.novel.model.xf.service.englishEveryday.EnglishEveryday;
 import com.fanfan.novel.model.xf.service.radio.Radio;
 import com.fanfan.novel.model.xf.service.train.Train;
-import com.fanfan.novel.presenter.ChatPresenter;
-import com.fanfan.novel.presenter.SerialPresenter;
-import com.fanfan.novel.presenter.SynthesizerPresenter;
 import com.fanfan.novel.presenter.ipresenter.IChatPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISynthesizerPresenter;
@@ -62,7 +60,6 @@ import com.fanfan.robot.adapter.TrainAdapter;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.db.DanceDBManager;
 import com.fanfan.robot.model.Dance;
-import com.fanfan.robot.presenter.LineSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 import com.fanfan.robot.train.PanoramicMapActivity;
 import com.fanfan.robot.train.TrainInquiryActivity;
@@ -71,7 +68,6 @@ import com.github.florent37.viewanimator.ViewAnimator;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
 import com.tencent.TIMCallBack;
-import com.tencent.TIMConversationType;
 import com.tencent.TIMMessage;
 import com.tencent.callsdk.ILVCallConstants;
 
@@ -86,6 +82,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -125,13 +123,10 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
 
     private boolean quit;
 
-    private ChatPresenter mChatPresenter;
-    private SerialPresenter mSerialPresenter;
-    private SynthesizerPresenter mTtsPresenter;
-    private LineSoundPresenter mSoundPresenter;
+    @Inject
+    MainManager mMainManager;
+    
     private VoiceDBManager mVoiceDBManager;
-    private VideoDBManager mVideoDBManager;
-    private NavigationDBManager mNavigationDBManager;
 
     private ServiceConnection mPlayServiceConnection;
 
@@ -148,25 +143,15 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     protected void initView() {
         super.initView();
 
-        mChatPresenter = new ChatPresenter(this, TIMConversationType.C2C, RobotInfo.getInstance().getControlId());
-        mChatPresenter.start();
+        DaggerMainComponet.builder().mainModule(new MainModule(this)).build().inject(this);
 
-        mSerialPresenter = new SerialPresenter(this);
-        mSerialPresenter.start();
-
-        mTtsPresenter = new SynthesizerPresenter(this);
-        mTtsPresenter.start();
-
-        mSoundPresenter = new LineSoundPresenter(this);
-        mSoundPresenter.start();
+        mMainManager.onCreate();
 
     }
 
     @Override
     protected void initData() {
         mVoiceDBManager = new VoiceDBManager();
-        mVideoDBManager = new VideoDBManager();
-        mNavigationDBManager = new NavigationDBManager();
 
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
 
@@ -174,10 +159,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
 
     @Override
     protected void callStop() {
-        mTtsPresenter.stopTts();
-        mTtsPresenter.stopHandler();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopVoice();
+        mMainManager.callStop();
     }
 
     @Override
@@ -190,18 +172,13 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     protected void onResume() {
         super.onResume();
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
-        mTtsPresenter.buildTts();
-        mSoundPresenter.buildIat();
+        mMainManager.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
-        mTtsPresenter.stopTts();
-        mTtsPresenter.stopHandler();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopVoice();
+        mMainManager.onPause();
     }
 
     @Override
@@ -218,9 +195,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
         stopService(new Intent(this, UdpService.class));
         stopService(new Intent(this, SerialService.class));
         super.onDestroy();
-        mTtsPresenter.finish();
-        mChatPresenter.finish();
-        mSoundPresenter.finish();
+        mMainManager.onDestroy();
     }
 
     @Override
@@ -310,8 +285,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
             if (resultCode == MultimediaActivity.MULTIMEDIA_RESULTCODE) {
                 Print.e("断开与音乐服务的连接");
                 unbindService(mPlayServiceConnection);
-                mTtsPresenter.buildTts();
-                mSoundPresenter.buildIat();
+                mMainManager.onResume();
             }
         }
     }
@@ -321,6 +295,14 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     private boolean isSuspendAction;
     private boolean isAutoAction;
 
+    private void sendOrder(int type, String motion){
+        mMainManager.receiveMotion(type, motion);
+    }
+
+    private void sendCustom(RobotBean localVoice) {
+        mMainManager.sendCustomMessage(localVoice);
+    }
+    
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
@@ -351,10 +333,10 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
 //                onEventLR();
                 break;
             case KeyEvent.KEYCODE_BUTTON_B:
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80F3AA");
+                sendOrder(SerialService.DEV_BAUDRATE, "A50C80F3AA");
                 break;
             case KeyEvent.KEYCODE_BUTTON_X:
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C80F2AA");
+                sendOrder(SerialService.DEV_BAUDRATE, "A50C80F2AA");
                 break;
             case KeyEvent.KEYCODE_BUTTON_Y:
                 sendAutoAction();
@@ -383,19 +365,19 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
             public void run() {
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_DPAD_UP://19
-                        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038002AA");
+                        sendOrder(SerialService.DEV_BAUDRATE, "A5038002AA");
                         Print.e("up");
                         break;
                     case KeyEvent.KEYCODE_DPAD_DOWN://20
-                        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038008AA");
+                        sendOrder(SerialService.DEV_BAUDRATE, "A5038008AA");
                         Print.e("down");
                         break;
                     case KeyEvent.KEYCODE_DPAD_LEFT://21
-                        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038004AA");
+                        sendOrder(SerialService.DEV_BAUDRATE, "A5038004AA");
                         Print.e("left");
                         break;
                     case KeyEvent.KEYCODE_DPAD_RIGHT://20
-                        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038006AA");
+                        sendOrder(SerialService.DEV_BAUDRATE, "A5038006AA");
                         Print.e("right");
                         break;
                     default:
@@ -411,7 +393,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
             stopAutoAction();
         } else {
             isAutoAction = true;
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A503800AAA");
+            sendOrder(SerialService.DEV_BAUDRATE, "A503800AAA");
             Print.e("自由运动(开)");
             mHandler.postDelayed(runnable, 600);
         }
@@ -421,7 +403,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
         if (isAutoAction) {
             Print.e("自由运动(关)");
             mHandler.removeCallbacks(runnable);
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038005AA");
+            sendOrder(SerialService.DEV_BAUDRATE, "A5038005AA");
             isAutoAction = false;
         }
     }
@@ -430,7 +412,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
         @Override
         public void run() {
             if (isAutoAction) {
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A503800AAA");
+                sendOrder(SerialService.DEV_BAUDRATE, "A503800AAA");
                 mHandler.postDelayed(runnable, 600);
                 Print.e("自由运动(开)");
             }
@@ -440,7 +422,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     //**********************************************************************************************
 
     private void addSpeakAnswer(String messageContent, boolean isAction) {
-        mTtsPresenter.doAnswer(messageContent);
+        mMainManager.doAnswer(messageContent);
         if (isAction) {
             speakingAddAction(messageContent.length());
         }
@@ -452,13 +434,13 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
 
     private void speakingAddAction(int length) {
 //        if (length <= 13) {
-//            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
+//            sendOrder(SerialService.DEV_BAUDRATE, "A50C8001AA");
 //        } else if (length > 13 && length <= 40) {
-//            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8003AA");
+//            sendOrder(SerialService.DEV_BAUDRATE, "A50C8003AA");
 //        } else {
-//            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8021AA");
+//            sendOrder(SerialService.DEV_BAUDRATE, "A50C8021AA");
 //        }
-        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.SPEAK_ACTION);
+        sendOrder(SerialService.DEV_BAUDRATE, Constants.SPEAK_ACTION);
     }
 
     //************************anim****************************
@@ -491,7 +473,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
             }
             String recvStr = new String(packet.getData(), 0, packet.getLength());
             Print.e("udp发送过来消息 ： " + recvStr);
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, recvStr);
+            sendOrder(SerialService.DEV_BAUDRATE, recvStr);
         } else {
             Print.e("ReceiveEvent error");
         }
@@ -501,7 +483,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     public void onResultEvent(ServiceToActivityEvent event) {
         if (event.isOk()) {
             SerialBean serialBean = event.getBean();
-            mSerialPresenter.onDataReceiverd(serialBean);
+            mMainManager.onDataReceiverd(serialBean);
         } else {
             Print.e("ReceiveEvent error");
         }
@@ -555,8 +537,8 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     public void onRunable() {
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
-        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
-        mSoundPresenter.startRecognizerListener();
+        sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
+        mMainManager.startVoice();
     }
 
     private void loadImage(int load, int place) {
@@ -631,18 +613,17 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
                 break;
             case VoiceSwitch:
                 boolean isSpeech = bean.getOrder().equals("语音开");
-                mSoundPresenter.setSpeech(isSpeech);
+                mMainManager.setSpeech(isSpeech);
                 break;
             case Text:
-                mSoundPresenter.stopRecognizerListener();
-                mSoundPresenter.stopVoice();
+                mMainManager.stopVoice();
                 addSpeakAnswer(bean.getOrder(), true);
                 break;
             case SmartChat:
 
                 break;
             case Motion:
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, bean.getOrder());
+                sendOrder(SerialService.DEV_BAUDRATE, bean.getOrder());
                 break;
             case GETIP:
                 Constants.CONNECT_IP = bean.getOrder();
@@ -656,7 +637,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
                         robotBean.setType(RobotType.GETIP);
                         Print.e("发送: " + object.toString());
                         showToast("发送: " + object.toString());
-                        mChatPresenter.sendCustomMessage(robotBean);
+                        sendCustom(robotBean);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -669,7 +650,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
                         robotBean.setOrder(object.toString());
                         robotBean.setType(RobotType.GETIP);
                         Print.e("发送: " + object.toString());
-                        mChatPresenter.sendCustomMessage(robotBean);
+                        sendCustom(robotBean);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -686,12 +667,11 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
                     RobotBean localVoice = new RobotBean();
                     localVoice.setType(RobotType.LocalVoice);
                     localVoice.setOrder(voiceJson);
-                    mChatPresenter.sendCustomMessage(localVoice);
+                    sendCustom(localVoice);
                 }
                 break;
             case Anwser:
-                mSoundPresenter.stopRecognizerListener();
-                mSoundPresenter.stopVoice();
+                mMainManager.stopVoice();
                 aiuiForLocal(bean.getOrder());
                 break;
         }
@@ -700,12 +680,11 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     //**********************************************************************************************
     @Override
     public void stopAll() {
-        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopVoice();
+        sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
+        mMainManager.stopVoice();
         String wakeUp = resFoFinal(R.array.wake_up);
         setChatContent(wakeUp);
-        mTtsPresenter.stopAll(wakeUp);
+        mMainManager.stopAll(wakeUp);
     }
 
     @Override
@@ -733,7 +712,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
                     }
                 }
             }
-            mSoundPresenter.onlineResult(unicode);
+            mMainManager.onlineResult(unicode);
         }
     }
 
@@ -745,9 +724,9 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     @Override
     public void refHomePage(VoiceBean voiceBean) {
         if (voiceBean.getActionData() != null)
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, voiceBean.getActionData());
+            sendOrder(SerialService.DEV_BAUDRATE, voiceBean.getActionData());
         if (voiceBean.getExpressionData() != null)
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, voiceBean.getExpressionData());
+            sendOrder(SerialService.DEV_BAUDRATE, voiceBean.getExpressionData());
 
         setChatContent(voiceBean.getVoiceAnswer());
         addSpeakAnswer(voiceBean.getVoiceAnswer(), true);
@@ -811,7 +790,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
                 }
                 break;
             case Hand:
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C800CAA");
+                sendOrder(SerialService.DEV_BAUDRATE, "A50C800CAA");
                 addSpeakAnswer("你好", false);
                 break;
         }
@@ -879,19 +858,19 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
 
     @Override
     public void spakeMove(SpecialType type, String result) {
-        mTtsPresenter.onCompleted();
+        mMainManager.onCompleted();
         switch (type) {
             case Forward:
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038002AA");
+                sendOrder(SerialService.DEV_BAUDRATE, "A5038002AA");
                 break;
             case Backoff:
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038008AA");
+                sendOrder(SerialService.DEV_BAUDRATE, "A5038008AA");
                 break;
             case Turnleft:
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038004AA");
+                sendOrder(SerialService.DEV_BAUDRATE, "A5038004AA");
                 break;
             case Turnright:
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038006AA");
+                sendOrder(SerialService.DEV_BAUDRATE, "A5038006AA");
                 break;
         }
     }
@@ -924,7 +903,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
 
     @Override
     public void onCompleted() {
-        mTtsPresenter.onCompleted();
+        mMainManager.onCompleted();
     }
 
     private class PlayServiceConnection implements ServiceConnection {

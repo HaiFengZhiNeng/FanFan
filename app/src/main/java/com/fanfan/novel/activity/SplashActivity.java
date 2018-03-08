@@ -40,6 +40,7 @@ import com.fanfan.novel.utils.PermissionsChecker;
 import com.fanfan.novel.utils.PhoneUtil;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.MainActivity;
+import com.fanfan.robot.activity.MainNewActivity;
 import com.seabreeze.log.Print;
 import com.tencent.TIMCallBack;
 import com.tencent.ilivesdk.ILiveCallBack;

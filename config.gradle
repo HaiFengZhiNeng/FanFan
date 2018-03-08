@@ -82,11 +82,6 @@ ext {
             "leakcanary"            :   "com.squareup.leakcanary:leakcanary-android:1.5",
             "leakcanary-no-op"      :   "com.squareup.leakcanary:leakcanary-android-no-op:1.5",
 
-            // dagger 2 的配置
-            "dagger"                :   "com.google.dagger:dagger:2.4",
-            "dagger-compiler"       :   "com.google.dagger:dagger-compiler:2.4",
-            "annotation"            :   "org.glassfish:javax.:10.0-b28",
-
             //glide
             "glide"                 :   "com.github.bumptech.glide:glide:4.0.0",
             "glide-compiler"        :   "com.github.bumptech.glide:compiler:4.4.0",
