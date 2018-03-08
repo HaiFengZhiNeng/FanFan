@@ -50,7 +50,11 @@ public class PanoramicMapActivity extends BarBaseActivity {
 
     @Override
     protected void initData() {
-//        mVrPanoramaView.setDisplayMode(VrWidgetView.DisplayMode.FULLSCREEN_MONO);//全屏模式，弹出一个全屏的Dialog
+        //  切换VR模式
+        //  有两个模式：1.VrWidgetView.DisplayMode.FULLSCREEN_STEREO（手机模式）
+        //            2.VrWidgetView.DisplayMode.FULLSCREEN_MONO（默认模式）；
+//        mVrPanoramaView.setDisplayMode(VrWidgetView.DisplayMode.FULLSCREEN_MONO);
+        mVrPanoramaView.setPureTouchTracking(true);
         mVrPanoramaView.setInfoButtonEnabled(false);//信息按钮禁掉
         mVrPanoramaView.setStereoModeButtonEnabled(false);//眼镜模式按钮禁掉
         mVrPanoramaView.setFullscreenButtonEnabled(false);//全屏模式按钮禁掉
@@ -58,7 +62,7 @@ public class PanoramicMapActivity extends BarBaseActivity {
 
         options = new VrPanoramaView.Options();
         //设置图片类型为单通道图片
-        options.inputType = VrPanoramaView.Options.TYPE_MONO;
+        options.inputType = VrPanoramaView.Options.TYPE_STEREO_OVER_UNDER;
 
         paNormalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.andes);
         mVrPanoramaView.loadImageFromBitmap(paNormalBitmap, options);
@@ -71,12 +75,22 @@ public class PanoramicMapActivity extends BarBaseActivity {
         VrImageAdapter vrImageAdapter = new VrImageAdapter(vrImages);
         recyclerView.setAdapter(vrImageAdapter);
 
-        for (int i = 0; i < 10; i++) {
-            VrImage vrImage = new VrImage();
-            vrImage.setName("测试图片1");
-            vrImage.setPath(R.drawable.andes);
-            vrImages.add(vrImage);
-        }
+        VrImage vrImage = new VrImage();
+        vrImage.setName("andes");
+        vrImage.setPath(R.drawable.andes);
+        vrImages.add(vrImage);
+        VrImage vrImage1 = new VrImage();
+        vrImage1.setName("vr_dating");
+        vrImage1.setPath(R.drawable.vr_dating);
+        vrImages.add(vrImage1);
+        VrImage vrImage2 = new VrImage();
+        vrImage2.setName("vr_huiyishi");
+        vrImage2.setPath(R.drawable.vr_huiyishi);
+        vrImages.add(vrImage2);
+        VrImage vrImage3 = new VrImage();
+        vrImage3.setName("vr_yanfaqu");
+        vrImage3.setPath(R.drawable.vr_yanfaqu);
+        vrImages.add(vrImage3);
 
         vrImageAdapter.replaceData(vrImages);
 
