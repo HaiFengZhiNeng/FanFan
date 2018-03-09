@@ -72,6 +72,7 @@
     <string name="title_fanfan_introduce">F A N F A N 介 绍</string>
     <string name="title_ppt">P P T</string>
     <string name="title_amap">地 图</string>
+    <string name="title_train_inquiry">列 车 查 询</string>
     <string name="title_panorama_detail">全 景 地 图</string>
     <string name="title_amap_detail">驾车路线详情</string>
 
@@ -95,4 +96,16 @@
 
     <string name="no_result">对不起，没有搜索到相关数据！</string>
 
+    <string name="string_out_time">出发时间</string>
+    <string name="string_select_time">选择时间</string>
+    <string name="string_nav_select_num">按列车号</string>
+    <string name="string_nav_select_add">按始发地</string>
+    <string name="string_nav_select_add_hint">请输入列车号</string>
+
+    <string name="string_select">查询</string>
+    <string name="previous">Go to previous</string>
+    <string name="next">Go to next</string>
+    <string name="calendar">Calendar</string>
+    <string name="string_air_start">出发地</string>
+    <string name="string_air_end">目的地</string>
 </resources>
