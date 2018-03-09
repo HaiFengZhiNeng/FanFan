@@ -344,7 +344,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     @Override
     public void artificial() {
         ArrayList<String> nums = new ArrayList<>();
-        nums.add("hotel003");
+        nums.add("fanc105");
         SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
     }
 

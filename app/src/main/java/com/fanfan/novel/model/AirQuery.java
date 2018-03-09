@@ -1,15 +1,12 @@
 package com.fanfan.novel.model;
 
-import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.annotation.Id;
 
 /**
  * Created by dell on 2018/1/22.
  */
-@Entity
 public class AirQuery {
-    @Id
+
     private Long id;
     private String airName;//航班信息
     private String airPlanTime;//计划起飞
@@ -20,8 +17,6 @@ public class AirQuery {
     private String airArrive;//到达地
     private String airOnTime;//准点率
     private String airStatus;//状态
-
-
 
 
     public AirQuery(String airName, String airPlanTime, String airActualTime,
@@ -39,11 +34,10 @@ public class AirQuery {
     }
 
 
-
     @Generated(hash = 1472524479)
     public AirQuery(Long id, String airName, String airPlanTime,
-            String airActualTime, String airStart, String airPlanArriveTime,
-            String airArrive, String airOnTime, String airStatus) {
+                    String airActualTime, String airStart, String airPlanArriveTime,
+                    String airArrive, String airOnTime, String airStatus) {
         this.id = id;
         this.airName = airName;
         this.airPlanTime = airPlanTime;
@@ -56,11 +50,9 @@ public class AirQuery {
     }
 
 
-
     @Generated(hash = 348962291)
     public AirQuery() {
     }
-
 
 
     public String getAirName() {

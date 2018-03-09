@@ -19,7 +19,7 @@ public class Constants {
 
     public static int IMSDK_ACCOUNT_TYPE = 17967;
 
-    public static String controlId = "hotel003";
+    public static String controlId = "fanc105";
     public static final String roomAVId = "@TGS#2GOCMM6EN";
     // exit
     public static final String EXIT_APP = "EXIT_APP";

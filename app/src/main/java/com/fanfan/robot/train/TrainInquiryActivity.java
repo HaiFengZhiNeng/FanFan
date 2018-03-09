@@ -106,6 +106,7 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
     private SerialPresenter mSerialPresenter;
 
     private boolean isSelectWhat = true;
+
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, TrainInquiryActivity.class);
         context.startActivity(intent);
@@ -116,6 +117,7 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
     protected int getLayoutId() {
         return R.layout.activity_train_inquiry;
     }
+
     @Override
     protected void initView() {
         super.initView();
@@ -124,17 +126,13 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
         mSoundPresenter.start();
         mSerialPresenter = new SerialPresenter(this);
         mSerialPresenter.start();
-        airAdapter = new AirAdapter(TrainInquiryActivity.this, airListQuery);
-
-
+        airAdapter = new AirAdapter(airListQuery);
 
         rvAir.setAdapter(airAdapter);
-
     }
 
     @Override
     protected void initData() {
-
 
 
         //布局格式
@@ -145,6 +143,7 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
 
         addTrainData();
     }
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @OnClick({R.id.tv_selectNum, R.id.tv_selectAdd, R.id.ll_selectTime, R.id.tv_select, R.id.iv_changeAdd, R.id.tv_selectLeft, R.id.tv_selectRight})
     public void onViewClicked(View view) {
@@ -159,7 +158,7 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
 
                 break;
             case R.id.ll_selectTime://选择时间
-             //   new CalendarDialogFragment().show(getSupportFragmentManager(), "test-simple-calendar");
+                //   new CalendarDialogFragment().show(getSupportFragmentManager(), "test-simple-calendar");
                 break;
             case R.id.tv_select://查询
         /*        if (isSelectWhat) {
@@ -173,16 +172,13 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
                 ivChangeAdd.setEnabled(false);
                 break;
             case R.id.tv_selectLeft:
-             //   JumpItent.jump(AirQueryView.this, CitySelectView.class, REQUEST_CODE_LEFT);
+                //   JumpItent.jump(AirQueryView.this, CitySelectView.class, REQUEST_CODE_LEFT);
                 break;
             case R.id.tv_selectRight:
-              //  JumpItent.jump(AirQueryView.this, CitySelectView.class, REQUEST_CODE_RIGHT);
+                //  JumpItent.jump(AirQueryView.this, CitySelectView.class, REQUEST_CODE_RIGHT);
                 break;
         }
     }
-
-
-
 
 
     // 按照列车号查询
@@ -406,27 +402,27 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
     }
 
 
-void addTrainData(){
+    private void addTrainData() {
 
 
-    airListQuery.add(new AirQuery("T298", "00:06", "10:50", "长春", "32张", "北京", "10小时44分", "候车中"));
-    airListQuery.add(new AirQuery("G400", "07:52", "14:48", "长春", "0张",  "北京", "6小时12分", "正在检票"));
-    airListQuery.add(new AirQuery("Z4016", "08:46", "20:30", "长春", "125张", "北京南", "11小时44分", "未发车"));
-    airListQuery.add(new AirQuery("K4022", "09:40", "01:06", "长春", "0张", "北京南", "15小时26分", "正在检票"));
-    airListQuery.add(new AirQuery("D74", "11:05", "17:47", "长春", "13张", "北京南", "6小时42分", "大约晚点5分钟"));
-    airListQuery.add(new AirQuery("D26", "11:06", "17:28", "长春西", "56张",  "北京南", "6小时22分", "候车中"));
-    airListQuery.add(new AirQuery("G240", "11:14", "16:29", "长春", "2张", "北京南", "5小时15分", "候车中"));
-    airListQuery.add(new AirQuery("D102", "12:02", "18:31", "长春西", "133张",  "北京", "6小时29分", "候车中"));
-    airListQuery.add(new AirQuery("Z158", "12:48", "21:08", "长春", "0张", "北京南", "8小时20分", "候车中"));
-    airListQuery.add(new AirQuery("T3018", "14:19", "03:18", "长春", "0张",  "北京", "12小时59分", "候车中"));
-    airListQuery.add(new AirQuery("D30", "16:00", "08:45", "长春", "78张", "北京南", "6小时22分%", "候车中"));
-    airListQuery.add(new AirQuery("D22", "16:01", "08:45", "长春", "37张",  "北京南", "6小时29分", "候车中"));
+        airListQuery.add(new AirQuery("T298", "00:06", "10:50", "长春", "32张", "北京", "10小时44分", "候车中"));
+        airListQuery.add(new AirQuery("G400", "07:52", "14:48", "长春", "0张", "北京", "6小时12分", "正在检票"));
+        airListQuery.add(new AirQuery("Z4016", "08:46", "20:30", "长春", "125张", "北京南", "11小时44分", "未发车"));
+        airListQuery.add(new AirQuery("K4022", "09:40", "01:06", "长春", "0张", "北京南", "15小时26分", "正在检票"));
+        airListQuery.add(new AirQuery("D74", "11:05", "17:47", "长春", "13张", "北京南", "6小时42分", "大约晚点5分钟"));
+        airListQuery.add(new AirQuery("D26", "11:06", "17:28", "长春西", "56张", "北京南", "6小时22分", "候车中"));
+        airListQuery.add(new AirQuery("G240", "11:14", "16:29", "长春", "2张", "北京南", "5小时15分", "候车中"));
+        airListQuery.add(new AirQuery("D102", "12:02", "18:31", "长春西", "133张", "北京", "6小时29分", "候车中"));
+        airListQuery.add(new AirQuery("Z158", "12:48", "21:08", "长春", "0张", "北京南", "8小时20分", "候车中"));
+        airListQuery.add(new AirQuery("T3018", "14:19", "03:18", "长春", "0张", "北京", "12小时59分", "候车中"));
+        airListQuery.add(new AirQuery("D30", "16:00", "08:45", "长春", "78张", "北京南", "6小时22分%", "候车中"));
+        airListQuery.add(new AirQuery("D22", "16:01", "08:45", "长春", "37张", "北京南", "6小时29分", "候车中"));
 
-}
+    }
+
     private void stopAction() {
         mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
     }
-
 
 
     @Override
@@ -477,6 +473,7 @@ void addTrainData(){
         Print.e("STOP_DANCE");
         mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.SPEAK_ACTION);
     }
+
     @Override
     public void showLoading() {
 
