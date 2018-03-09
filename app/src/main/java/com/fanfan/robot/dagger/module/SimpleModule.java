@@ -1,11 +1,11 @@
-package com.fanfan.dagger.module;
+package com.fanfan.robot.dagger.module;
 
-import com.fanfan.dagger.manager.SimpleManager;
 import com.fanfan.novel.common.presenter.BaseView;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
 import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
+import com.fanfan.robot.dagger.manager.SimpleManager;
 
 import dagger.Module;
 import dagger.Provides;

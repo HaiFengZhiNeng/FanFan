@@ -1,30 +1,15 @@
 package com.fanfan.robot.fragment;
 
-import android.app.Dialog;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.fanfan.novel.adapter.TreeRecyclerAdapter;
-import com.fanfan.novel.adapter.VideoDataAdapter;
-import com.fanfan.novel.common.ChatConst;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseDialogFragment;
 import com.fanfan.novel.common.instance.SpeakIat;
@@ -36,20 +21,15 @@ import com.fanfan.novel.model.NavigationBean;
 import com.fanfan.novel.model.SiteBean;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
-import com.fanfan.novel.service.animator.SlideInOutBottomItemAnimator;
-import com.fanfan.novel.ui.recyclerview.tree.factory.ItemConfig;
 import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.BitmapUtils;
 import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.MediaFile;
-import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.SettingActivity;
 import com.fanfan.robot.adapter.ImportAdapter;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.model.Channel;
-import com.fanfan.robot.service.item.DataGroupItem;
-import com.fanfan.robot.service.item.SingItem;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.LexiconListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -59,15 +39,13 @@ import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 
 /**
  * Created by android on 2018/1/19.
@@ -95,6 +73,7 @@ public class ImportFragment extends BaseDialogFragment {
 
     private List<File> videoFiles = new ArrayList<>();
     private List<File> imageFiles = new ArrayList<>();
+    private List<String> navigationFiles = new ArrayList<>();
 
     private String[] action;
     private String[] actionOrder;
@@ -112,6 +91,7 @@ public class ImportFragment extends BaseDialogFragment {
     private String[] localSiteUrl;
 
     private String[] localNavigation;
+    private String[] localNavigationDatail;
 
     private List<VoiceBean> voiceBeanList = new ArrayList<>();
     private List<VideoBean> videoBeanList = new ArrayList<>();
@@ -155,6 +135,9 @@ public class ImportFragment extends BaseDialogFragment {
         localSiteUrl = resArray(R.array.local_site_url);
 
         localNavigation = resArray(R.array.local_navigation);
+        localNavigationDatail = resArray(R.array.local_navigation_datail);
+
+        loadNavigationImage();
 
         loadVoice();
 
@@ -171,6 +154,7 @@ public class ImportFragment extends BaseDialogFragment {
 
         setAdapter();
     }
+
 
     @Override
     protected void setListener(View rootView) {
@@ -189,6 +173,21 @@ public class ImportFragment extends BaseDialogFragment {
         super.onPause();
         assert ((SettingActivity) getActivity()) != null;
         ((SettingActivity) getActivity()).dismissLoading();
+    }
+
+
+    private void loadNavigationImage() {
+        AssetManager manager = getResources().getAssets();
+        try {
+            String fileNames[] = manager.list("train");
+            if (fileNames != null && fileNames.length > 0) {
+                for (int i = 0; i < fileNames.length; i++) {
+                    navigationFiles.add("file:///android_asset/train/" + fileNames[i]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadVoice() {
@@ -257,13 +256,18 @@ public class ImportFragment extends BaseDialogFragment {
 
             navigationBean.setSaveTime(System.currentTimeMillis());
             navigationBean.setTitle(localNavigation[i]);
-            navigationBean.setGuide("已经到达" + localNavigation[i]);
-            navigationBean.setDatail("这里是" + localNavigation[i]);
+            navigationBean.setGuide(localNavigationDatail[i]);
+            navigationBean.setDatail(localNavigationDatail[i]);
             navigationBean.setNavigation(navigation[navigationIndex]);
             navigationBean.setNavigationData(navigationData[navigationIndex]);
-            if (imageFiles.size() > 0) {
-                int imageIndex = new Random().nextInt(imageFiles.size());
-                navigationBean.setImgUrl(imageFiles.get(imageIndex).getAbsolutePath());
+            if (navigationFiles.size() > 0) {
+                for (int j = 0; j < navigationFiles.size(); j++) {
+                    if (navigationFiles.get(j).indexOf(localNavigation[i]) > 0) {
+                        navigationBean.setImgUrl(navigationFiles.get(j));
+                    }
+                }
+//                int imageIndex = new Random().nextInt(imageFiles.size());
+//                navigationBean.setImgUrl(imageFiles.get(imageIndex).getAbsolutePath());
             }
             navigationBeanList.add(navigationBean);
         }

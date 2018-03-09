@@ -28,6 +28,7 @@ import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.VoiceAdapter;
 import com.fanfan.robot.fragment.ImageFragment;
+import com.fanfan.robot.model.ImageBean;
 import com.seabreeze.log.Print;
 import com.tencent.callsdk.ILVCallConstants;
 
@@ -165,7 +166,11 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
 
     private void showImage(VoiceBean bean) {
         isShow(true);
-        imageFragment = ImageFragment.newInstance(bean.getId());
+        ImageBean imageBean = new ImageBean();
+        imageBean.setTop(bean.getShowTitle());
+        imageBean.setBottom(bean.getVoiceAnswer());
+        imageBean.setImgUrl(bean.getImgUrl());
+        imageFragment = ImageFragment.newInstance(imageBean);
         imageFragment.show(getSupportFragmentManager(), "IMAGE");
     }
 

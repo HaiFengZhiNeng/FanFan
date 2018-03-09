@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,13 +67,17 @@ public class AddNavigationActivity extends BarBaseActivity {
     TextView tvImg;
     @BindView(R.id.img_navigation)
     ImageView imgNavigation;
+    @BindView(R.id.card_view)
+    CardView cardView;
 
     private String imagePath;//打开相册选择照片的路径
     private Uri outputUri;//裁剪万照片保存地址
     private boolean isClickCamera;//是否是拍照裁剪
+    private String noOutputPath;
 
     public static final int CHOOSE_PHOTO = 2;//选择相册
     public static final int PICTURE_CUT = 3;//剪切图片
+    public static final int SELECT_NO_PICTURE = 4;//剪切图片
 
     private static final int REQCODE_SELALBUM = 102;
 
@@ -138,8 +143,7 @@ public class AddNavigationActivity extends BarBaseActivity {
             String savePath = navigationBean.getImgUrl();
             if (savePath != null) {
                 if (new File(savePath).exists()) {
-                    imgNavigation.setVisibility(View.VISIBLE);
-                    ImageLoader.loadImage(AddNavigationActivity.this, imgNavigation, savePath, R.mipmap.ic_logo);
+                    loadImgNavigation(savePath);
                 }
             }
         }
@@ -245,13 +249,36 @@ public class AddNavigationActivity extends BarBaseActivity {
             case PICTURE_CUT://裁剪完成
                 isClickCamera = true;
                 if (isClickCamera) {
-                    imgNavigation.setVisibility(View.VISIBLE);
-                    ImageLoader.loadImage(AddNavigationActivity.this, imgNavigation, outputUri, R.mipmap.ic_logo);
+                    loadImgNavigation(outputUri);
                 } else {
-                    ImageLoader.loadImage(AddNavigationActivity.this, imgNavigation, outputUri, R.mipmap.ic_logo);
+                    loadImgNavigation(outputUri);
+                }
+                break;
+            case SELECT_NO_PICTURE:
+                if (data != null) {
+                    Uri uri = data.getData();
+                    if (Build.VERSION.SDK_INT >= 19) {
+                        // 4.4及以上系统使用这个方法处理图片
+                        noOutputPath = BitmapUtils.handleImageOnKitKat(this, uri);
+                        loadImgNavigation(noOutputPath);
+                    } else {
+                        // 4.4以下系统使用这个方法处理图片
+                        noOutputPath = BitmapUtils.getImagePath(this, uri, null);
+                        loadImgNavigation(noOutputPath);
+                    }
                 }
                 break;
         }
+    }
+
+    private void loadImgNavigation(String path) {
+        cardView.setVisibility(View.VISIBLE);
+        ImageLoader.loadImage(AddNavigationActivity.this, imgNavigation, path, R.mipmap.video_image);
+    }
+
+    private void loadImgNavigation(Uri uri) {
+        cardView.setVisibility(View.VISIBLE);
+        ImageLoader.loadImage(AddNavigationActivity.this, imgNavigation, uri, R.mipmap.video_image);
     }
 
     private void selectFromAlbum() {
@@ -260,7 +287,8 @@ public class AddNavigationActivity extends BarBaseActivity {
             ActivityCompat.requestPermissions(AddNavigationActivity.this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQCODE_SELALBUM);
         } else {
-            openAlbum();
+//            openAlbum();
+            selectPicture();
         }
     }
 
@@ -269,6 +297,17 @@ public class AddNavigationActivity extends BarBaseActivity {
         intent.setType("image/*");
         startActivityForResult(intent, CHOOSE_PHOTO); // 打开相册
     }
+
+    /**
+     * 从相冊选择照片（不裁切）
+     */
+    private void selectPicture() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_PICK);//Pick an item from the data
+        intent.setType("image/*");//从全部图片中进行选择
+        startActivityForResult(intent, SELECT_NO_PICTURE);
+    }
+
 
     private void navigationIsexit() {
         if (navigationBean == null) {

@@ -28,6 +28,8 @@ import com.fanfan.novel.ui.RangeClickImageView;
 import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.NavigationAdapter;
+import com.fanfan.robot.fragment.ImageFragment;
+import com.fanfan.robot.model.ImageBean;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
@@ -40,6 +42,7 @@ import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * Created by android on 2018/1/6.
@@ -74,6 +77,11 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
 
     private NavigationAdapter navigationAdapter;
 
+    private int mCurrentPos;
+
+    private ImageFragment imageFragment;
+    private boolean isShow;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_navigation;
@@ -99,40 +107,15 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
 
         navigationBeanList = mNavigationDBManager.loadAll();
         if (navigationBeanList != null && navigationBeanList.size() > 0) {
+            isNuEmpty();
             navigationAdapter.replaceData(navigationBeanList);
-            navigationAdapter.notifyClick(0);
+            mCurrentPos = 0;
+            navigationAdapter.notifyClick(mCurrentPos);
             ImageLoader.loadImage(mContext, ivNavigationImage, navigationBeanList.get(0).getImgUrl(), R.mipmap.video_image);
         } else {
+            mCurrentPos = -1;
             isEmpty();
         }
-    }
-
-    private void initImage() {
-
-        ivNavigation.setFileName(fileName, (int) (Constants.displayWidth), (int) (Constants.displayHeight * 0.7));
-        ivNavigation.setOnResourceReadyListener(this);
-        ivNavigation.setOnRangeClickListener(this);
-    }
-
-    private void initSimpleAdapter() {
-        navigationAdapter = new NavigationAdapter(navigationBeanList);
-        navigationAdapter.openLoadAnimation();
-        navigationAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                refVoice(navigationBeanList.get(position), position);
-            }
-        });
-
-        recyclerView.setAdapter(navigationAdapter);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-    }
-
-    private void refVoice(NavigationBean itemData, int position) {
-        navigationAdapter.notifyClick(position);
-        refLocalPage(itemData.getTitle());
-        ImageLoader.loadImage(mContext, ivNavigationImage, itemData.getImgUrl(), R.mipmap.video_image);
     }
 
     @Override
@@ -169,6 +152,40 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         super.onDestroy();
         mSoundPresenter.finish();
     }
+
+    @OnClick({R.id.iv_navigation_image})
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_navigation_image:
+                if (mCurrentPos > -1) {
+                    NavigationBean bean = navigationBeanList.get(mCurrentPos);
+                    showImage(bean);
+                }
+                break;
+        }
+    }
+
+    private void showImage(NavigationBean bean) {
+        isShow(true);
+        ImageBean imageBean = new ImageBean();
+        imageBean.setTop(bean.getTitle());
+        imageBean.setBottom(bean.getDatail());
+        imageBean.setImgUrl(bean.getImgUrl());
+        imageFragment = ImageFragment.newInstance(imageBean);
+        imageFragment.show(getSupportFragmentManager(), "IMAGE");
+    }
+
+    private void dismissImage() {
+        if (imageFragment != null) {
+            imageFragment.dismiss();
+            imageFragment = null;
+        }
+    }
+
+    public void isShow(boolean isShow) {
+        this.isShow = isShow;
+    }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onResultEvent(ServiceToActivityEvent event) {
@@ -232,12 +249,37 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         mSoundPresenter.doAnswer(getResources().getString(res));
     }
 
+    private void initImage() {
+
+        ivNavigation.setFileName(fileName, (int) (Constants.displayWidth), (int) (Constants.displayHeight * 0.7));
+        ivNavigation.setOnResourceReadyListener(this);
+        ivNavigation.setOnRangeClickListener(this);
+    }
+
+    private void initSimpleAdapter() {
+        navigationAdapter = new NavigationAdapter(navigationBeanList);
+        navigationAdapter.openLoadAnimation();
+        navigationAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                refNavigation(navigationBeanList.get(position), position);
+            }
+        });
+
+        recyclerView.setAdapter(navigationAdapter);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+    }
+
     private void refNavigation(NavigationBean itemData, int position) {
+        mCurrentPos = position;
+        navigationAdapter.notifyClick(mCurrentPos);
         mNavigationBean = itemData;
         addSpeakAnswer(itemData.getGuide());
         if (itemData.getNavigationData() != null) {
             mSerialPresenter.receiveMotion(SerialService.CRUISE_BAUDRATE, itemData.getNavigationData());
         }
+        ImageLoader.loadImage(mContext, ivNavigationImage, itemData.getImgUrl(), R.mipmap.video_image);
     }
 
     @Override
@@ -298,7 +340,23 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
 
     @Override
     public void back() {
-        finish();
+        if (isShow) {
+            dismissImage();
+            mSoundPresenter.onCompleted();
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isShow) {
+            dismissImage();
+            mSoundPresenter.stopRecognizerListener();
+        } else {
+            finish();
+        }
+        super.onBackPressed();
     }
 
     @Override

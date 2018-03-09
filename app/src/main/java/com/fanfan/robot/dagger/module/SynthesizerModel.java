@@ -1,4 +1,4 @@
-package com.fanfan.dagger.module;
+package com.fanfan.robot.dagger.module;
 
 import com.fanfan.novel.presenter.SynthesizerPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISynthesizerPresenter;

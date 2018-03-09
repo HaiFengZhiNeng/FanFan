@@ -331,36 +331,61 @@
     </string-array>
 
     <!--<string-array name="local_video_question">-->
-        <!--<item>公司简介</item>-->
-        <!--<item>你会唱歌吗</item>-->
+    <!--<item>公司简介</item>-->
+    <!--<item>你会唱歌吗</item>-->
     <!--</string-array>-->
 
     <!--<string-array name="local_video_answer">-->
-        <!--<item>公司简介的url</item>-->
-        <!--<item>唱歌的url</item>-->
+    <!--<item>公司简介的url</item>-->
+    <!--<item>唱歌的url</item>-->
     <!--</string-array>-->
 
     <string-array name="local_navigation">
-        <item>去展示墙</item>
-        <item>去展示区</item>
-        <item>回去吧</item>
-        <item>无</item>
+        <item>一层平面图</item>
+        <item>二层平面图</item>
+        <item>售票厅</item>
+        <item>餐饮区</item>
+        <item>出站口</item>
+        <item>观景平台</item>
+        <item>书店</item>
+        <item>卫生间</item>
+        <item>西服务台</item>
+        <item>休闲娱乐区</item>
+    </string-array>
+
+    <string-array name="local_navigation_datail">
+        <item>您所看到的是一层平面图</item>
+        <item>您所看到的是二层平面图</item>
+        <item>售票厅在大厅入口的右侧，您可以按照屏幕下方地图上的红色路线到达售票厅</item>
+        <item>餐饮区在大厅入口的左侧，您可以按照屏幕下方地图上的红色路线到达餐饮区</item>
+        <item>出站口就在我的正前方，您可以按照屏幕下方地图上的红色路线到达出站口</item>
+        <item>您可以按照屏幕下方地图上的红色路线到达观景平台</item>
+        <item>您可以按照屏幕下方地图上的红色路线到达书店</item>
+        <item>大厅的左右两侧都设有卫生间，您可以按照屏幕下方地图上的红色路线到达卫生间</item>
+        <item>您可以按照屏幕下方地图上的红色路线到达西服务台</item>
+        <item>您可以按照屏幕下方地图上的红色路线到达休闲娱乐区</item>
     </string-array>
 
     <string-array name="local_site">
-        <item>环卫科技网</item>
-        <item>中国循环经济</item>
-        <item>中国环联</item>
-        <item>E20水网固废网</item>
-        <item>重庆环保</item>
+        <!--<item>环卫科技网</item>-->
+        <!--<item>中国循环经济</item>-->
+        <!--<item>中国环联</item>-->
+        <!--<item>E20水网固废网</item>-->
+        <!--<item>重庆环保</item>-->
+        <item>12306</item>
+        <item>国家铁路局</item>
+        <item>中国铁路总公司</item>
     </string-array>
 
     <string-array name="local_site_url">
-        <item>http://www.cn-hw.net/</item>
-        <item>http://www.chinacace.org/</item>
-        <item>http://www.envirunion.com/</item>
-        <item>http://wewen.io/analysis/chinawaternet</item>
-        <item>http://www.cepb.gov.cn/</item>
+        <!--<item>http://www.cn-hw.net/</item>-->
+        <!--<item>http://www.chinacace.org/</item>-->
+        <!--<item>http://www.envirunion.com/</item>-->
+        <!--<item>http://wewen.io/analysis/chinawaternet</item>-->
+        <!--<item>http://www.cepb.gov.cn/</item>-->
+        <item>https://kyfw.12306.cn/otn/leftTicket/init/</item>
+        <item>http://www.nra.gov.cn/</item>
+        <item>http://www.china-railway.com.cn/</item>
     </string-array>
 
 

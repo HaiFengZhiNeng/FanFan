@@ -29,7 +29,7 @@
                     android:id="@+id/iv_lccx"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@mipmap/lccx" />
+                    android:background="@mipmap/train_lccx" />
 
             </LinearLayout>
 
@@ -44,7 +44,7 @@
                     android:id="@+id/iv_vrdt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@mipmap/vrdt" />
+                    android:background="@mipmap/train_vrdt" />
 
             </LinearLayout>
 
@@ -59,7 +59,7 @@
                     android:id="@+id/iv_qzdj"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@mipmap/qzdj" />
+                    android:background="@mipmap/train_qzdj" />
 
             </LinearLayout>
         </LinearLayout>
@@ -82,7 +82,7 @@
                     android:id="@+id/iv_ztfw"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@mipmap/ztfw" />
+                    android:background="@mipmap/train_ztfw" />
 
             </LinearLayout>
 
@@ -98,7 +98,7 @@
                     android:id="@+id/iv_zndh"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@mipmap/zndh" />
+                    android:background="@mipmap/train_zndh" />
 
             </LinearLayout>
 
@@ -113,7 +113,7 @@
                     android:id="@+id/iv_jtcx"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@mipmap/jtcx" />
+                    android:background="@mipmap/train_jtcx" />
 
             </LinearLayout>
         </LinearLayout>

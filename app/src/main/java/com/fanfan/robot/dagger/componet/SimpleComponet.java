@@ -1,7 +1,7 @@
-package com.fanfan.dagger.componet;
+package com.fanfan.robot.dagger.componet;
 
-import com.fanfan.dagger.module.SimpleModule;
 import com.fanfan.robot.activity.AuthenticationActivity;
+import com.fanfan.robot.dagger.module.SimpleModule;
 
 import dagger.Component;
 

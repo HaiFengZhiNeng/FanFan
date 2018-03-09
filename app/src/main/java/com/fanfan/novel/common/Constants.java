@@ -77,5 +77,5 @@ public class Constants {
     public static String SPEAK_ACTION = "A50C8020AA";
     public static String STOP_DANCE = "A50C80E2AA";
 
-    public static boolean isTrain = true;
+    public static boolean isTrain = false;
 }

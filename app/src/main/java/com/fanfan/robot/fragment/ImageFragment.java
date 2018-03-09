@@ -4,24 +4,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.base.BaseDialogFragment;
-import com.fanfan.novel.db.manager.VoiceDBManager;
-import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.ui.MyScrollView;
 import com.fanfan.novel.ui.PinchImageView;
 import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
+import com.fanfan.robot.activity.NavigationActivity;
 import com.fanfan.robot.activity.ProblemConsultingActivity;
+import com.fanfan.robot.model.ImageBean;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 /**
  * Created by android on 2018/3/1.
@@ -44,16 +39,15 @@ public class ImageFragment extends BaseDialogFragment {
 
     public static final String IMAGE_ID = "image_id";
 
-    public static ImageFragment newInstance(long id) {
+    public static ImageFragment newInstance(ImageBean imageBean) {
         ImageFragment imageFragment = new ImageFragment();
         Bundle bundle = new Bundle();
-        bundle.putLong(IMAGE_ID, id);
+        bundle.putSerializable(IMAGE_ID, imageBean);
         imageFragment.setArguments(bundle);
         return imageFragment;
     }
 
-    private VoiceDBManager mVoiceDBManager;
-    private VoiceBean mBean;
+    private ImageBean mBean;
 
     private boolean isShow = true;
 
@@ -64,12 +58,7 @@ public class ImageFragment extends BaseDialogFragment {
 
     @Override
     protected void initData() {
-        long id = getArguments().getLong(IMAGE_ID, -1);
-        if (id == -1) {
-            return;
-        }
-        mVoiceDBManager = new VoiceDBManager();
-        mBean = mVoiceDBManager.selectByPrimaryKey(id);
+        mBean = (ImageBean) getArguments().getSerializable(IMAGE_ID);
         if (mBean == null) {
             return;
         }
@@ -78,8 +67,8 @@ public class ImageFragment extends BaseDialogFragment {
         mScrollview.getBackground().mutate().setAlpha(100);
         mRlTop.getBackground().mutate().setAlpha(100);
 
-        mTvTitlebarName.setText(mBean.getShowTitle());
-        mTvInfo.setText(mBean.getVoiceAnswer());
+        mTvTitlebarName.setText(mBean.getTop());
+        mTvInfo.setText(mBean.getBottom());
 
         if (mBean.getImgUrl() != null) {
             ImageLoader.loadImage(mContext, mPinchImageView, mBean.getImgUrl(), R.mipmap.video_image);
@@ -107,7 +96,12 @@ public class ImageFragment extends BaseDialogFragment {
 
     @Override
     public void onDestroyView() {
-        ((ProblemConsultingActivity) getActivity()).isShow(false);
+        if (getActivity() instanceof ProblemConsultingActivity) {
+            ((ProblemConsultingActivity) getActivity()).isShow(false);
+        }
+        if (getActivity() instanceof NavigationActivity) {
+            ((NavigationActivity) getActivity()).isShow(false);
+        }
         super.onDestroyView();
     }
 

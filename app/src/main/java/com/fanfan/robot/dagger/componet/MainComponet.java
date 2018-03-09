@@ -1,8 +1,8 @@
-package com.fanfan.dagger.componet;
+package com.fanfan.robot.dagger.componet;
 
-import com.fanfan.dagger.module.MainModule;
 import com.fanfan.robot.activity.MainActivity;
 import com.fanfan.robot.activity.MainNewActivity;
+import com.fanfan.robot.dagger.module.MainModule;
 
 import dagger.Component;
 

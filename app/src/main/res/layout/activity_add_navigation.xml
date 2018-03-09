@@ -32,7 +32,7 @@
     </android.support.v7.widget.Toolbar>
 
     <LinearLayout
-        android:id="@+id/video_layout"
+        android:id="@+id/navigation_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar"
@@ -47,18 +47,6 @@
             android:layout_height="@dimen/y30"
             android:orientation="horizontal">
 
-
-            <!--<TextView-->
-            <!--android:id="@+id/tv_title"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_weight="1"-->
-            <!--android:background="@null"-->
-            <!--android:gravity="center_vertical"-->
-            <!--android:text="标题"-->
-            <!--android:textColor="@color/black"-->
-            <!--android:textColorHint="@color/gray"-->
-            <!--android:textSize="@dimen/x8" />-->
             <EditText
                 android:id="@+id/et_title"
                 android:layout_width="match_parent"
@@ -162,14 +150,23 @@
 
         </RelativeLayout>
 
+    </LinearLayout>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/navigation_layout"
+        android:layout_margin="@dimen/y7"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="@dimen/y4"
+        app:contentPadding="@dimen/y7">
+
         <ImageView
             android:id="@+id/img_navigation"
-            android:layout_width="@dimen/y150"
-            android:layout_height="@dimen/y150"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/y15"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
-    </LinearLayout>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.v7.widget.CardView>
 
 </RelativeLayout>

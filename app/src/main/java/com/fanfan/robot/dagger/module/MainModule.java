@@ -1,6 +1,5 @@
-package com.fanfan.dagger.module;
+package com.fanfan.robot.dagger.module;
 
-import com.fanfan.dagger.manager.MainManager;
 import com.fanfan.novel.common.presenter.BaseView;
 import com.fanfan.novel.presenter.ChatPresenter;
 import com.fanfan.novel.presenter.SerialPresenter;
@@ -8,6 +7,7 @@ import com.fanfan.novel.presenter.SynthesizerPresenter;
 import com.fanfan.novel.presenter.ipresenter.IChatPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISynthesizerPresenter;
+import com.fanfan.robot.dagger.manager.MainManager;
 import com.fanfan.robot.presenter.LineSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 

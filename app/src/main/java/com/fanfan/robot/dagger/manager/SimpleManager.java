@@ -1,4 +1,4 @@
-package com.fanfan.dagger.manager;
+package com.fanfan.robot.dagger.manager;
 
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
