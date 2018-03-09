@@ -1,6 +1,7 @@
 package com.fanfan.robot.train;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,9 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.common.enums.SpecialType;
+import com.fanfan.novel.presenter.LocalSoundPresenter;
+import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
 import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.VrImageAdapter;
 import com.fanfan.robot.model.VrImage;
@@ -25,7 +29,7 @@ import butterknife.OnClick;
  * Created by Administrator on 2018/3/7/007.
  */
 
-public class PanoramicMapActivity extends BarBaseActivity {
+public class PanoramicMapActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView {
 
     @BindView(R.id.vr_panorama_view)
     VrPanoramaView mVrPanoramaView;
@@ -42,6 +46,8 @@ public class PanoramicMapActivity extends BarBaseActivity {
     private Bitmap paNormalBitmap;
 
     private List<VrImage> vrImages = new ArrayList<>();
+
+    private LocalSoundPresenter mSoundPresenter;
 
     @Override
     protected int getLayoutId() {
@@ -103,33 +109,127 @@ public class PanoramicMapActivity extends BarBaseActivity {
                 mVrPanoramaView.loadImageFromBitmap(paNormalBitmap, options);
             }
         });
+
+        mSoundPresenter = new LocalSoundPresenter(this);
+        mSoundPresenter.start();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mVrPanoramaView.resumeRendering();
+
+        mSoundPresenter.buildTts();
+        mSoundPresenter.buildIat();
+
+        addSpeakAnswer("你好，这里是全景地图页面");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mVrPanoramaView.pauseRendering();
+
+        mSoundPresenter.stopTts();
+        mSoundPresenter.stopRecognizerListener();
+        mSoundPresenter.stopHandler();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mVrPanoramaView.shutdown();
+
+        mSoundPresenter.finish();
     }
 
     @OnClick(R.id.vr_panorama_view)
     public void onClick(View view) {
         switch (view.getId()) {
-
             case R.id.vr_panorama_view:
 
                 break;
         }
+    }
+
+    private void addSpeakAnswer(String messageContent) {
+        mSoundPresenter.doAnswer(messageContent);
+    }
+
+    private void addSpeakAnswer(int res) {
+        mSoundPresenter.doAnswer(getResources().getString(res));
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void dismissLoading() {
+
+    }
+
+    @Override
+    public void showMsg(String msg) {
+        showToast(msg);
+    }
+
+    @Override
+    public void showMsg(int msg) {
+        showToast(msg);
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    public void spakeMove(SpecialType type, String result) {
+        addSpeakAnswer("此页面暂不支持此功能");
+    }
+
+    @Override
+    public void openMap() {
+        addSpeakAnswer(R.string.open_map);
+    }
+
+    @Override
+    public void stopListener() {
+        mSoundPresenter.stopTts();
+        mSoundPresenter.stopRecognizerListener();
+        mSoundPresenter.stopHandler();
+    }
+
+    @Override
+    public void back() {
+        finish();
+    }
+
+    @Override
+    public void artificial() {
+        addSpeakAnswer(R.string.open_artificial);
+    }
+
+    @Override
+    public void face(SpecialType type, String result) {
+        addSpeakAnswer(R.string.open_face);
+    }
+
+    @Override
+    public void control(SpecialType type, String result) {
+        addSpeakAnswer(R.string.open_control);
+    }
+
+
+    @Override
+    public void refLocalPage(String result) {
+        addSpeakAnswer(R.string.open_local);
+    }
+
+    @Override
+    public void onCompleted() {
+
     }
 }

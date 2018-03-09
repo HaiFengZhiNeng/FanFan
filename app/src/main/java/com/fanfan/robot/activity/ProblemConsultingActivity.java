@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.activity.SimpleCallActivity;
+import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.VoiceDBManager;
@@ -251,11 +252,13 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         speakText = itemData.getVoiceAnswer();
         Print.e("本地语音 说话 .......");
         addSpeakAnswer(speakText);
-        if (itemData.getActionData() != null) {
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getActionData());
-        }
-        if (itemData.getExpressionData() != null) {
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getExpressionData());
+        if(!Constants.isTrain) {
+            if (itemData.getActionData() != null) {
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getActionData());
+            }
+            if (itemData.getExpressionData() != null) {
+                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getExpressionData());
+            }
         }
         ImageLoader.loadImage(mContext, ivVoiceImage, itemData.getImgUrl(), R.mipmap.video_image);
     }

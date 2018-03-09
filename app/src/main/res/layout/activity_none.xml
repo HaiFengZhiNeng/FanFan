@@ -13,8 +13,7 @@
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:contentDescription="@null"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/splash_bg" />
+        android:scaleType="centerCrop" />
 
     <TextView
         android:layout_width="wrap_content"

@@ -97,8 +97,11 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
         mChecker = new PermissionsChecker(this);
         presenter = new SplashPresenter(this);
 
-        ImageLoader.loadImage(this, ivSplash, R.mipmap.splash_bg, false, 2000);
-
+        if (Constants.isTrain) {
+            ImageLoader.loadImage(this, ivSplash, R.mipmap.train_splash_bg, false, 2000);
+        } else {
+            ImageLoader.loadImage(this, ivSplash, R.mipmap.splash_bg, false, 2000);
+        }
 
         @SuppressLint("WrongConstant") WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 

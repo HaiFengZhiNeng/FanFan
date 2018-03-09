@@ -384,8 +384,13 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
             } else {
                 itemData = navigationBeans.get(new Random().nextInt(navigationBeans.size()));
             }
-            int index = navigationBeans.indexOf(itemData);
+            int index = navigationBeanList.indexOf(itemData);
             refNavigation(itemData, index);
+            if (index != -1) {
+                refNavigation(itemData, index);
+            } else {
+                showMsg("数据有误");
+            }
         } else {
             addSpeakAnswer("点击地图上地点，我也可以带你去");
         }

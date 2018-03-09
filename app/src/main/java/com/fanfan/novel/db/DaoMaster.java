@@ -30,6 +30,7 @@ public class DaoMaster extends AbstractDaoMaster {
         CheckInDao.createTable(db, ifNotExists);
         DanceDao.createTable(db, ifNotExists);
         MusicDao.createTable(db, ifNotExists);
+        AirQueryDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
@@ -43,6 +44,7 @@ public class DaoMaster extends AbstractDaoMaster {
         CheckInDao.dropTable(db, ifExists);
         DanceDao.dropTable(db, ifExists);
         MusicDao.dropTable(db, ifExists);
+        AirQueryDao.dropTable(db, ifExists);
     }
 
     /**
@@ -70,6 +72,7 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(CheckInDao.class);
         registerDaoClass(DanceDao.class);
         registerDaoClass(MusicDao.class);
+        registerDaoClass(AirQueryDao.class);
     }
 
     public DaoSession newSession() {

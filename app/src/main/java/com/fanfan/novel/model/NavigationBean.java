@@ -1,6 +1,5 @@
 package com.fanfan.novel.model;
 
-import com.fanfan.novel.common.ChatConst;
 import com.fanfan.novel.ui.recyclerview.tree.base.BaseItemData;
 
 import org.greenrobot.greendao.annotation.Entity;
@@ -113,6 +112,15 @@ public class NavigationBean extends BaseItemData {
 
     public void setGuide(String guide) {
         this.guide = guide;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NavigationBean) {
+            NavigationBean navigationBean= (NavigationBean) obj;
+            return navigationBean.title.equals(getTitle());
+        }
+        return false;
     }
 
 }

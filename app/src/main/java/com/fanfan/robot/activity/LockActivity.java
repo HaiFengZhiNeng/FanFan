@@ -9,14 +9,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.instance.SpeakTts;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.SerialPresenter;
@@ -27,9 +24,10 @@ import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.listener.TtsListener;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.utils.FucUtil;
+import com.fanfan.novel.utils.ImageLoader;
+import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.RobotInfo;
-import com.fanfan.robot.R;
 import com.fanfan.robot.service.CameraSerivice;
 import com.fanfan.robot.service.event.FaceEvent;
 import com.iflytek.cloud.ErrorCode;
@@ -119,6 +117,11 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
         Intent bindIntent = new Intent(this, CameraSerivice.class);
         bindService(bindIntent, connection, BIND_AUTO_CREATE);
 
+        if (Constants.isTrain) {
+            ImageLoader.loadImage(this, ivSplashBack, R.mipmap.train_splash_bg, false, 2000);
+        } else {
+            ImageLoader.loadImage(this, ivSplashBack, R.mipmap.splash_bg, false, 2000);
+        }
     }
 
     @Override

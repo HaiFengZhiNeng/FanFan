@@ -424,7 +424,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     private void addSpeakAnswer(String messageContent, boolean isAction) {
         mMainManager.doAnswer(messageContent);
         if (isAction) {
-            speakingAddAction(messageContent.length());
+//            speakingAddAction(messageContent.length());
         }
     }
 

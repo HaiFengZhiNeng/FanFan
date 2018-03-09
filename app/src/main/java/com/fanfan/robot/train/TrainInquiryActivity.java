@@ -9,20 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.os.Build;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatDialogFragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.text.TextUtils;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -32,27 +23,20 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.adapter.AirAdapter;
 import com.fanfan.novel.animator.RegisterAnimation;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.model.AirQuery;
-
 import com.fanfan.novel.presenter.LocalSoundPresenter;
 import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
 import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.animator.SlideInOutBottomItemAnimator;
-
 import com.fanfan.robot.R;
-import com.fanfan.robot.adapter.PPTAdapter;
-import com.fanfan.robot.adapter.PptTextAdapter;
 import com.seabreeze.log.Print;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -450,8 +434,7 @@ void addTrainData(){
         super.onResume();
         mSoundPresenter.buildTts();
         mSoundPresenter.buildIat();
-
-        addSpeakAnswer("请点击要播放的ppt", false);
+        addSpeakAnswer("你好，这里是列车查询页面");
     }
 
     @Override
@@ -480,6 +463,10 @@ void addTrainData(){
         } else {
             onCompleted();
         }
+    }
+
+    private void addSpeakAnswer(String messageContent) {
+        mSoundPresenter.doAnswer(messageContent);
     }
 
     private void addSpeakAnswer(int res) {

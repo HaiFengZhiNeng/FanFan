@@ -26,7 +26,7 @@ public class NavigationAdapter extends BaseQuickAdapter<NavigationBean, BaseView
     protected void convert(BaseViewHolder helper, NavigationBean item) {
         helper.setText(R.id.show_title, item.getTitle());
         helper.setText(R.id.save_time, TimeUtils.getShortTime(item.getSaveTime()));
-        helper.setText(R.id.tv_guide, item.getGuide());
+        helper.setText(R.id.tv_guide, item.getNavigation());
         helper.setText(R.id.tv_datail, item.getDatail());
         ImageLoader.loadImage(mContext, (ImageView) helper.getView(R.id.iv_navigation_image), item.getImgUrl(), R.mipmap.ic_logo);
     }

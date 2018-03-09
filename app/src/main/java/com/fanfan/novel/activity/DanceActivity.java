@@ -7,15 +7,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.widget.ImageView;
 
+import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
 import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.event.ServiceToActivityEvent;
+import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.music.DanceUtils;
 import com.fanfan.robot.R;
-import com.fanfan.robot.activity.FaceRegisterActivity;
 import com.fanfan.robot.db.DanceDBManager;
 import com.fanfan.robot.model.Dance;
 import com.seabreeze.log.Print;
@@ -71,6 +72,12 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
             dance = danceDBManager.selectByPrimaryKey(danceId);
             DanceUtils.getInstance().startDance(this, dance.getPath());
             mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, dance.getOrderData());
+        }
+
+        if(Constants.isTrain){
+            ImageLoader.loadImage(this, ivSplashBack, R.mipmap.train_splash_bg, false, 2000);
+        }else {
+            ImageLoader.loadImage(this, ivSplashBack, R.mipmap.splash_bg, false, 2000);
         }
     }
 
