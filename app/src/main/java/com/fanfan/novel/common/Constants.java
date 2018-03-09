@@ -67,7 +67,6 @@ public class Constants {
     public static int CONNECT_PORT = 0;
 
     //视频
-    public static boolean isCalling;
     public static final String ASSEST_PATH = "file:///android_asset/";
 
     public static final String[] NAVIGATIONS = {"image_navigation"};
@@ -78,5 +77,8 @@ public class Constants {
     public static String STOP_DANCE = "A50C80E2AA";
 
     public static boolean isTrain = true;
+
+    public static String TRAIN_CONTORL_NAME = "fanc105";
+
 
 }

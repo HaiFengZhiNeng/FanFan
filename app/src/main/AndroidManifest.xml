@@ -86,7 +86,7 @@
 
         <activity
             android:name=".activity.MainNewActivity"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name="com.fanfan.novel.map.activity.AMapActivity"
@@ -216,9 +216,6 @@
         <activity
             android:name=".train.PanoramicMapActivity"
             android:theme="@style/AppThemeAction" />
-        <activity
-            android:name=".activity.PanoramaDetailActivity"
-            android:theme="@style/AppThemeAction" />
 
         <service android:name="com.fanfan.novel.service.UdpService" />
 
@@ -229,6 +226,8 @@
         <service android:name=".service.CameraSerivice" />
 
         <service android:name=".service.ScreenService" />
+
+        <service android:name=".service.CallSerivice" />
 
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" />

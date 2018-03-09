@@ -85,18 +85,6 @@ public class PanoramicMapActivity extends BarBaseActivity implements ILocalSound
         vrImage.setName("andes");
         vrImage.setPath(R.drawable.andes);
         vrImages.add(vrImage);
-        VrImage vrImage1 = new VrImage();
-        vrImage1.setName("vr_dating");
-        vrImage1.setPath(R.drawable.vr_dating);
-        vrImages.add(vrImage1);
-        VrImage vrImage2 = new VrImage();
-        vrImage2.setName("vr_huiyishi");
-        vrImage2.setPath(R.drawable.vr_huiyishi);
-        vrImages.add(vrImage2);
-        VrImage vrImage3 = new VrImage();
-        vrImage3.setName("vr_yanfaqu");
-        vrImage3.setPath(R.drawable.vr_yanfaqu);
-        vrImages.add(vrImage3);
 
         vrImageAdapter.replaceData(vrImages);
 

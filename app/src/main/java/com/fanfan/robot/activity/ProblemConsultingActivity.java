@@ -252,7 +252,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         speakText = itemData.getVoiceAnswer();
         Print.e("本地语音 说话 .......");
         addSpeakAnswer(speakText);
-        if(!Constants.isTrain) {
+        if (!Constants.isTrain) {
             if (itemData.getActionData() != null) {
                 mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getActionData());
             }
@@ -344,7 +344,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     @Override
     public void artificial() {
         ArrayList<String> nums = new ArrayList<>();
-        nums.add("fanc105");
+        nums.add(Constants.TRAIN_CONTORL_NAME);
         SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
     }
 

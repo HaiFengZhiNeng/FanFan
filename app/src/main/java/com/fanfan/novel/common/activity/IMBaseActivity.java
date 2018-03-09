@@ -4,15 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.fanfan.robot.R;
 import com.fanfan.novel.activity.SimpleCallActivity;
 import com.fanfan.novel.activity.SplashActivity;
 import com.fanfan.novel.common.Constants;
@@ -22,16 +16,13 @@ import com.fanfan.novel.im.init.TlsBusiness;
 import com.fanfan.novel.model.UserInfo;
 import com.fanfan.novel.service.cache.UserInfoCache;
 import com.fanfan.novel.utils.DialogUtils;
+import com.fanfan.robot.R;
+import com.fanfan.robot.service.CallSerivice;
 import com.seabreeze.log.Print;
 import com.tencent.callsdk.ILVCallConfig;
-import com.tencent.callsdk.ILVCallListener;
 import com.tencent.callsdk.ILVCallManager;
-import com.tencent.callsdk.ILVCallNotification;
-import com.tencent.callsdk.ILVCallNotificationListener;
 import com.tencent.callsdk.ILVIncomingListener;
 import com.tencent.callsdk.ILVIncomingNotification;
-
-import java.io.IOException;
 
 /**
  * Created by android on 2017/12/26.
@@ -66,7 +57,15 @@ public abstract class IMBaseActivity extends BaseActivity implements ILVIncoming
     public void onNewIncomingCall(final int callId, final int callType, final ILVIncomingNotification notification) {
         Print.e("视频来电 新的来电 : " + notification);
         callStop();
-        SimpleCallActivity.newInstance(this, callId, callType, notification.getSender());
+        if (Constants.isTrain) {
+            Intent intent = new Intent(this, CallSerivice.class);
+            intent.putExtra(CallSerivice.CALL_ID, callId);
+            intent.putExtra(CallSerivice.CALL_TYPE, callType);
+            intent.putExtra(CallSerivice.SENDER, notification.getSender());
+            startService(intent);
+        } else {
+            SimpleCallActivity.newInstance(this, callId, callType, notification.getSender());
+        }
     }
 
     protected void callStop() {

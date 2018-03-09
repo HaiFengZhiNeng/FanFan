@@ -1,26 +1,18 @@
 package com.fanfan.novel.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.utils.music.DanceUtils;
-import com.fanfan.robot.R;
-import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseActivity;
 import com.fanfan.novel.ui.glowpadview.GlowPadView;
-import com.seabreeze.log.Print;
+import com.fanfan.novel.utils.music.DanceUtils;
+import com.fanfan.robot.R;
 import com.tencent.av.sdk.AVAudioCtrl;
 import com.tencent.callsdk.ILVBCallMemberListener;
 import com.tencent.callsdk.ILVCallConfig;
@@ -37,7 +29,6 @@ import com.tencent.ilivesdk.core.ILiveLoginManager;
 import com.tencent.ilivesdk.view.AVRootView;
 import com.tencent.ilivesdk.view.AVVideoView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,13 +82,14 @@ public class SimpleCallActivity extends BaseActivity implements
     @BindView(R.id.glow_pad_view)
     GlowPadView glowPadView;
 
-    private String mSender;
-    private int mCallId;
-    private int mCallType;
-
-    private int mCurCameraId = ILiveConstants.FRONT_CAMERA;
+    private String hostId;
+    private int callId;
+    private int callType;
+    private List<String> callNumbers;
 
     private ILVCallOption ilvCallOption;
+
+    private boolean isCalling;
 
     @Override
     protected int getLayoutId() {
@@ -107,31 +99,31 @@ public class SimpleCallActivity extends BaseActivity implements
     @Override
     protected void initView() {
 
-        mSender = getIntent().getStringExtra(SENDER);
-        mCallId = getIntent().getIntExtra(CALL_ID, 0);
-        mCallType = getIntent().getIntExtra(CALL_TYPE, ILVCallConstants.CALL_TYPE_VIDEO);
+        hostId = getIntent().getStringExtra(SENDER);
+        callId = getIntent().getIntExtra(CALL_ID, 0);
+        callType = getIntent().getIntExtra(CALL_TYPE, ILVCallConstants.CALL_TYPE_VIDEO);
 
         ILVCallManager.getInstance().init(new ILVCallConfig().setNotificationListener(this));
         ILVCallManager.getInstance().addCallListener(this);
 
-        ilvCallOption = new ILVCallOption(mSender)
+        ilvCallOption = new ILVCallOption(hostId)
                 .callTips("呼叫标题")
                 .setMemberListener(this)
-                .setCallType(mCallType);
+                .setCallType(callType);
 
-        if (0 == mCallId) { // 发起呼叫
+        if (0 == callId) { // 发起呼叫
             setPageHide(true);
-            tvSender.setText(mSender + " 呼叫");
-            List<String> nums = getIntent().getStringArrayListExtra(CALLNUMBERS);
-            if (nums.size() > 1) {
-                mCallId = ILVCallManager.getInstance().makeMutiCall(nums, ilvCallOption, this);
+            tvSender.setText(" 呼叫 " + hostId);
+            callNumbers = getIntent().getStringArrayListExtra(CALLNUMBERS);
+            if (callNumbers.size() > 1) {
+                callId = ILVCallManager.getInstance().makeMutiCall(callNumbers, ilvCallOption, this);
             } else {
-                mCallId = ILVCallManager.getInstance().makeCall(nums.get(0), ilvCallOption, this);
+                callId = ILVCallManager.getInstance().makeCall(callNumbers.get(0), ilvCallOption, this);
             }
         } else {
             playNewCall();
             setPageHide(false);
-            tvSender.setText(mSender + " 呼叫");
+            tvSender.setText(hostId + " 呼叫");
         }
 
 
@@ -177,14 +169,14 @@ public class SimpleCallActivity extends BaseActivity implements
                 switch (resId) {
                     case R.drawable.ic_lockscreen_answer:
                         mHandler.removeCallbacks(musicRunnable);
-                        Print.e("ic_lockscreen_answer");
-                        ILVCallManager.getInstance().acceptCall(mCallId, ilvCallOption);
+
+                        ILVCallManager.getInstance().acceptCall(callId, ilvCallOption);
                         break;
 
                     case R.drawable.ic_lockscreen_decline:
                         mHandler.removeCallbacks(musicRunnable);
-                        Print.e("ic_lockscreen_decline");
-                        ILVCallManager.getInstance().rejectCall(mCallId);
+
+                        ILVCallManager.getInstance().rejectCall(callId);
                         break;
                 }
             }
@@ -229,7 +221,7 @@ public class SimpleCallActivity extends BaseActivity implements
 
     @Override
     public void onBackPressed() {
-        ILVCallManager.getInstance().endCall(mCallId);
+        ILVCallManager.getInstance().endCall(callId);
     }
 
 
@@ -241,23 +233,11 @@ public class SimpleCallActivity extends BaseActivity implements
 
 
     private void initCallManager() {
-        //打开摄像头
-        ILVCallManager.getInstance().enableCamera(mCurCameraId, true);
-        //关闭摄像头
+        ILVCallManager.getInstance().enableCamera(ILiveConstants.FRONT_CAMERA, true);
 //        ILVCallManager.getInstance().enableCamera(mCurCameraId, false);
 //        avRootView.closeUserView(ILiveLoginManager.getInstance().getMyUserId(), AVView.VIDEO_SRC_TYPE_CAMERA, true);
-        //切换摄像头
-//        mCurCameraId = (ILiveConstants.FRONT_CAMERA==mCurCameraId) ? ILiveConstants.BACK_CAMERA : ILiveConstants.FRONT_CAMERA;
-        ILVCallManager.getInstance().switchCamera(mCurCameraId);
-        //打开麦克风
         ILVCallManager.getInstance().enableMic(true);
-        //关闭麦克风
-//        ILVCallManager.getInstance().enableMic(false);
-        //切换到听筒
-//        ILiveSDK.getInstance().getAvAudioCtrl().setAudioOutputMode(AVAudioCtrl.OUTPUT_MODE_HEADSET);
-        //切换到扬声器
         ILiveSDK.getInstance().getAvAudioCtrl().setAudioOutputMode(AVAudioCtrl.OUTPUT_MODE_SPEAKER);
-        //设置美艳
         ILiveSDK.getInstance().getAvVideoCtrl().inputBeautyParam(0.0f);
     }
 
@@ -266,16 +246,16 @@ public class SimpleCallActivity extends BaseActivity implements
         switch (view.getId()) {
             case R.id.btn_hang_up:
                 DanceUtils.getInstance().endCall(this);
-                ILVCallManager.getInstance().endCall(mCallId);
+                ILVCallManager.getInstance().endCall(callId);
                 break;
         }
     }
 
-    //设置电话回调（初始化设置）
     @Override
     public void onCallEstablish(int callId) {
-        Print.e("onCallEstablish");
-        Constants.isCalling = true;
+        isCalling = true;
+        mHandler.removeCallbacks(callRunnable);
+        mHandler.removeCallbacks(musicRunnable);
         setPageHide(true);
         initCallManager();
         avRootView.swapVideoView(0, 1);
@@ -299,45 +279,37 @@ public class SimpleCallActivity extends BaseActivity implements
 
     @Override
     public void onCallEnd(int callId, int endResult, String endInfo) {
-        Print.e("onCallEnd  endResult : " + endResult + " , endInfo :" + endInfo);
-        Constants.isCalling = false;
         finish();
     }
 
     @Override
     public void onException(int iExceptionId, int errCode, String errMsg) {
-        Print.e("onException");
     }
 
-    //设置成员事件回调(调用ILVCallManager中的摄像头及麦克风接口才会有事件)
     @Override
     public void onCameraEvent(String id, boolean bEnable) {
-        Print.e("onCameraEvent");
     }
 
     @Override
     public void onMicEvent(String id, boolean bEnable) {
-        Print.e("onMicEvent");
     }
 
-    //设置用户状态回调(每次登录前都需要重新设置)
     @Override
     public void onForceOffline(int error, String message) {
-        Print.e("onForceOffline  " + message);
         finish();
     }
 
     @Override
     public void onRecvNotification(int callid, ILVCallNotification ilv) {
-        Print.e("视频来电onRecvNotification : " + ilv);
-        //判断是否正在通话
-        if (!Constants.isCalling) {
-            //判断targets是否为空
-            if (ilv.getTargets().size() > 0) {//为0，有挂断电话
-                DanceUtils.getInstance().endCall(this);
-            } else {
-                playNewCall();
-            }
+        if (isCalling) {
+            mHandler.removeCallbacks(callRunnable);
+            mHandler.removeCallbacks(musicRunnable);
+            return;
+        }
+        if (ilv.getTargets().size() > 0) {//为0，有挂断电话
+            DanceUtils.getInstance().endCall(this);
+        } else {
+            playNewCall();
         }
     }
 
@@ -350,9 +322,11 @@ public class SimpleCallActivity extends BaseActivity implements
             DanceUtils.getInstance().newIncomingCall(SimpleCallActivity.this, new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
-                    if (isPlayFirst) {
-                        isPlayFirst = false;
-                        mHandler.post(musicRunnable);
+                    if (!isCalling) {
+                        if (isPlayFirst) {
+                            isPlayFirst = false;
+                            mHandler.post(musicRunnable);
+                        }
                     }
                 }
             });
@@ -366,7 +340,9 @@ public class SimpleCallActivity extends BaseActivity implements
             DanceUtils.getInstance().newIncomingCall(SimpleCallActivity.this, new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
-                    mHandler.post(callRunnable);
+                    if (!isCalling) {
+                        mHandler.post(callRunnable);
+                    }
                 }
             });
 
@@ -375,12 +351,11 @@ public class SimpleCallActivity extends BaseActivity implements
 
     @Override
     public void onSuccess(Object data) {
-        Print.e("拨打电话" + data);
         mHandler.post(callRunnable);
     }
 
     @Override
     public void onError(String module, int errCode, String errMsg) {
-        Print.e("拨打电话" + errMsg);
+        mHandler.removeCallbacks(callRunnable);
     }
 }
