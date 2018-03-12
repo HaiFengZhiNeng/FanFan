@@ -6,14 +6,21 @@ android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
     buildToolsVersion rootProject.ext.android.buildToolsVersion
 
+    dexOptions {
+        jumboMode true
+        incremental true
+         javaMaxHeapSize "4g"
+    }
+
     aaptOptions {
         cruncherEnabled = false
         useNewCruncher = false
     }
 
     lintOptions {
-        checkReleaseBuilds false
         abortOnError false
+        checkReleaseBuilds false
+        disable 'MissingTranslation'
     }
 
     defaultConfig {
@@ -35,7 +42,10 @@ android {
 
     buildTypes {
         release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
             minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -56,6 +66,12 @@ android {
             jni.srcDirs = []
             jniLibs.srcDirs = ['libs']
         }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'LICENSE'
+        exclude 'LICENSE.txt'
     }
 }
 
@@ -134,5 +150,6 @@ dependencies {
     compile rootProject.ext.dependencies["panowidget"]
 
     compile rootProject.ext.dependencies["dagger"]
-    compile rootProject.ext.dependencies["dagger-compiler"]
+    annotationProcessor rootProject.ext.dependencies["dagger-compiler"]
+
 }
