@@ -249,6 +249,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     private void refVoice(VoiceBean itemData, int position) {
         mCurrentPos = position;
         voiceAdapter.notifyClick(mCurrentPos);
+        recyclerVoice.scrollToPosition(mCurrentPos);
         speakText = itemData.getVoiceAnswer();
         Print.e("本地语音 说话 .......");
         addSpeakAnswer(speakText);
