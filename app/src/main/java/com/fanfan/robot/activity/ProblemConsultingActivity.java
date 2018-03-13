@@ -250,8 +250,9 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         mCurrentPos = position;
         voiceAdapter.notifyClick(mCurrentPos);
         speakText = itemData.getVoiceAnswer();
-        Print.e("本地语音 说话 .......");
         addSpeakAnswer(speakText);
+        Print.e("本地语音 说话 ......."+speakText);
+
         if (!Constants.isTrain) {
             if (itemData.getActionData() != null) {
                 mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getActionData());
@@ -395,7 +396,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
-        addSpeakAnswer("你好，这里是问题咨询页面，点击上方列表或说出列表中问题可得到答案");
+        addSpeakAnswer("您好");
     }
 
     @Override

@@ -8,7 +8,6 @@ android {
 
     dexOptions {
         jumboMode true
-        incremental true
          javaMaxHeapSize "4g"
     }
 
@@ -43,10 +42,10 @@ android {
     buildTypes {
         release {
             buildConfigField "boolean", "LOG_DEBUG", "false"
-            minifyEnabled true
+            minifyEnabled false
             zipAlignEnabled true
-            debuggable true
-            shrinkResources true
+//            debuggable true
+//            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
