@@ -111,7 +111,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
             navigationAdapter.replaceData(navigationBeanList);
             mCurrentPos = 0;
             navigationAdapter.notifyClick(mCurrentPos);
-            ImageLoader.loadImage(mContext, ivNavigationImage, navigationBeanList.get(0).getImgUrl(), R.mipmap.video_image);
+            ImageLoader.loadLargeImage(mContext, ivNavigationImage, navigationBeanList.get(0).getImgUrl(), R.mipmap.video_image);
         } else {
             mCurrentPos = -1;
             isEmpty();
@@ -279,7 +279,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         if (itemData.getNavigationData() != null) {
             mSerialPresenter.receiveMotion(SerialService.CRUISE_BAUDRATE, itemData.getNavigationData());
         }
-        ImageLoader.loadImage(mContext, ivNavigationImage, itemData.getImgUrl(), R.mipmap.video_image);
+        ImageLoader.loadLargeImage(mContext, ivNavigationImage, itemData.getImgUrl(), R.mipmap.video_image);
     }
 
     @Override
@@ -407,7 +407,8 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
-        addSpeakAnswer("你好，这里是导航页面，点击地图上地点可到达指定区域");
+//        addSpeakAnswer("你好，这里是导航页面，点击地图上地点可到达指定区域");
+        addSpeakAnswer("您好");
     }
 
     @Override

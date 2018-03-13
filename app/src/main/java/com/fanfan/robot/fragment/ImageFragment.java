@@ -10,7 +10,8 @@ import android.widget.TextView;
 import com.fanfan.novel.common.base.BaseDialogFragment;
 import com.fanfan.novel.ui.MyScrollView;
 import com.fanfan.novel.ui.PinchImageView;
-import com.fanfan.novel.utils.ImageLoader;
+import com.fanfan.novel.ui.subscaleview.ImageSource;
+import com.fanfan.novel.ui.subscaleview.SubsamplingScaleImageView;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.NavigationActivity;
 import com.fanfan.robot.activity.ProblemConsultingActivity;
@@ -36,6 +37,8 @@ public class ImageFragment extends BaseDialogFragment {
     RelativeLayout mRelativeLayout;
     @BindView(R.id.pinch_image_view)
     PinchImageView mPinchImageView;
+    @BindView(R.id.subsampling_scale_imageview)
+    SubsamplingScaleImageView mScaleImageView;
 
     public static final String IMAGE_ID = "image_id";
 
@@ -71,9 +74,24 @@ public class ImageFragment extends BaseDialogFragment {
         mTvInfo.setText(mBean.getBottom());
 
         if (mBean.getImgUrl() != null) {
-            ImageLoader.loadImage(mContext, mPinchImageView, mBean.getImgUrl(), R.mipmap.video_image);
+//            ImageLoader.loadLargeImage(mContext, mPinchImageView, mBean.getImgUrl(), R.mipmap.video_image);
+            mScaleImageView.setImage(ImageSource.uri(mBean.getImgUrl()));
         }
         mPinchImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isShow) {
+                    isShow = false;
+                    setView(mRlTop, false);
+                    setView(mScrollview, false);
+                } else {
+                    isShow = true;
+                    setView(mRlTop, true);
+                    setView(mScrollview, true);
+                }
+            }
+        });
+        mScaleImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isShow) {

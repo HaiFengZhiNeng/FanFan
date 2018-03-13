@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -16,6 +17,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.fanfan.novel.common.glide.GlideRoundTransform;
 
@@ -24,6 +26,43 @@ import com.fanfan.novel.common.glide.GlideRoundTransform;
  */
 
 public class ImageLoader {
+
+    public static void loadLargeImage(final Context context, final ImageView imageView, @Nullable final Object model, final int error) {
+        final RequestOptions requestOptions = new RequestOptions()
+                .placeholder(error)
+                .dontAnimate()
+                .centerCrop()
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+        Glide.with(context)
+                .asBitmap()
+                .load(model)
+                .apply(requestOptions)
+                .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                        int imageHeight = resource.getHeight();
+                        if (imageHeight > 4096) {
+                            imageHeight = 4096;
+                            ViewGroup.LayoutParams para = imageView.getLayoutParams();
+                            para.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                            para.height = imageHeight;
+                            imageView.setLayoutParams(para);
+
+                            Glide.with(context)
+                                    .load(model)
+                                    .apply(requestOptions)
+                                    .into(imageView);
+                        } else {
+                            ViewGroup.LayoutParams para = imageView.getLayoutParams();
+                            para.width = -1;
+                            para.height = -1;
+                            loadImage(context, imageView, model, error);
+                        }
+                    }
+                });
+
+    }
 
     public static void loadImageAsGif(Context context, ImageView imageView, @Nullable Object model) {
         Glide.with(context)

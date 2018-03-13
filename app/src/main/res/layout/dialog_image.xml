@@ -8,6 +8,12 @@
     <com.fanfan.novel.ui.PinchImageView
         android:id="@+id/pinch_image_view"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <com.fanfan.novel.ui.subscaleview.SubsamplingScaleImageView
+        android:id="@+id/subsampling_scale_imageview"
+        android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <RelativeLayout

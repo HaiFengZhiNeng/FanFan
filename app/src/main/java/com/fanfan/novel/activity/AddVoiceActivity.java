@@ -278,12 +278,12 @@ public class AddVoiceActivity extends BarBaseActivity {
 
     private void loadImgVoice(String path) {
         cardView.setVisibility(View.VISIBLE);
-        ImageLoader.loadImage(AddVoiceActivity.this, imgVoice, path, R.mipmap.video_image);
+        ImageLoader.loadLargeImage(AddVoiceActivity.this, imgVoice, path, R.mipmap.video_image);
     }
 
     private void loadImgVoice(Uri uri) {
         cardView.setVisibility(View.VISIBLE);
-        ImageLoader.loadImage(AddVoiceActivity.this, imgVoice, uri, R.mipmap.video_image);
+        ImageLoader.loadLargeImage(AddVoiceActivity.this, imgVoice, uri, R.mipmap.video_image);
     }
 
     private void selectFromAlbum() {

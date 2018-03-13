@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
@@ -138,6 +139,21 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
 
     @Override
     protected void initData() {
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            } else {
+                checkPermissions();
+            }
+        } else {
+            checkPermissions();
+        }
+    }
+
+    private void checkPermissions() {
         if (mChecker.lacksPermissions(PERMISSIONS)) {
 
             if (mChecker.lacksPermissions(PERMISSIONS)) {

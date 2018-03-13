@@ -110,7 +110,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
             voiceAdapter.replaceData(voiceBeanList);
             mCurrentPos = 0;
             voiceAdapter.notifyClick(mCurrentPos);
-            ImageLoader.loadImage(mContext, ivVoiceImage, voiceBeanList.get(0).getImgUrl(), R.mipmap.video_image);
+            ImageLoader.loadLargeImage(mContext, ivVoiceImage, voiceBeanList.get(0).getImgUrl(), R.mipmap.video_image);
         } else {
             mCurrentPos = -1;
             isEmpty();
@@ -260,7 +260,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
                 mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getExpressionData());
             }
         }
-        ImageLoader.loadImage(mContext, ivVoiceImage, itemData.getImgUrl(), R.mipmap.video_image);
+        ImageLoader.loadLargeImage(mContext, ivVoiceImage, itemData.getImgUrl(), R.mipmap.video_image);
     }
 
     @Override
@@ -395,7 +395,8 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
         mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopHandler();
-        addSpeakAnswer("你好，这里是问题咨询页面，点击上方列表或说出列表中问题可得到答案");
+//        addSpeakAnswer("你好，这里是问题咨询页面，点击上方列表或说出列表中问题可得到答案");
+        addSpeakAnswer("您好");
     }
 
     @Override

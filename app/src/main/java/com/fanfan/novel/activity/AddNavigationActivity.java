@@ -273,12 +273,12 @@ public class AddNavigationActivity extends BarBaseActivity {
 
     private void loadImgNavigation(String path) {
         cardView.setVisibility(View.VISIBLE);
-        ImageLoader.loadImage(AddNavigationActivity.this, imgNavigation, path, R.mipmap.video_image);
+        ImageLoader.loadLargeImage(AddNavigationActivity.this, imgNavigation, path, R.mipmap.video_image);
     }
 
     private void loadImgNavigation(Uri uri) {
         cardView.setVisibility(View.VISIBLE);
-        ImageLoader.loadImage(AddNavigationActivity.this, imgNavigation, uri, R.mipmap.video_image);
+        ImageLoader.loadLargeImage(AddNavigationActivity.this, imgNavigation, uri, R.mipmap.video_image);
     }
 
     private void selectFromAlbum() {
@@ -344,6 +344,10 @@ public class AddNavigationActivity extends BarBaseActivity {
             String imagePath = BitmapUtils.getPathByUri4kitkat(AddNavigationActivity.this, outputUri);
             Print.e(imagePath);
             bean.setImgUrl(imagePath);
+        } else {
+            if (noOutputPath != null) {
+                bean.setImgUrl(noOutputPath);
+            }
         }
     }
 
