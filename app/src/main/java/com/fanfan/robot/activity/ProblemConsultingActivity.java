@@ -110,7 +110,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
             voiceAdapter.replaceData(voiceBeanList);
             mCurrentPos = 0;
             voiceAdapter.notifyClick(mCurrentPos);
-            ImageLoader.loadImage(mContext, ivVoiceImage, voiceBeanList.get(0).getImgUrl(), R.mipmap.video_image);
+            ImageLoader.loadLargeImage(mContext, ivVoiceImage, voiceBeanList.get(0).getImgUrl(), R.mipmap.video_image);
         } else {
             mCurrentPos = -1;
             isEmpty();
@@ -261,7 +261,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
                 mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getExpressionData());
             }
         }
-        ImageLoader.loadImage(mContext, ivVoiceImage, itemData.getImgUrl(), R.mipmap.video_image);
+        ImageLoader.loadLargeImage(mContext, ivVoiceImage, itemData.getImgUrl(), R.mipmap.video_image);
     }
 
     @Override
