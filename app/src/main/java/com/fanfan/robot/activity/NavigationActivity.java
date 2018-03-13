@@ -111,7 +111,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
             navigationAdapter.replaceData(navigationBeanList);
             mCurrentPos = 0;
             navigationAdapter.notifyClick(mCurrentPos);
-            ImageLoader.loadLargeImage(mContext, ivNavigationImage, navigationBeanList.get(0).getImgUrl(), R.mipmap.video_image);
+            ImageLoader.loadImage(mContext, ivNavigationImage, navigationBeanList.get(0).getImgUrl(), R.mipmap.video_image);
         } else {
             mCurrentPos = -1;
             isEmpty();
@@ -279,7 +279,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         if (itemData.getNavigationData() != null) {
             mSerialPresenter.receiveMotion(SerialService.CRUISE_BAUDRATE, itemData.getNavigationData());
         }
-        ImageLoader.loadLargeImage(mContext, ivNavigationImage, itemData.getImgUrl(), R.mipmap.video_image);
+        ImageLoader.loadImage(mContext, ivNavigationImage, itemData.getImgUrl(), R.mipmap.video_image);
     }
 
     @Override
