@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Build;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,10 +18,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.FaceAuthDBManager;
@@ -67,20 +61,19 @@ import org.opencv.facedetect.DetectionBasedTracker;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.fanfan.novel.common.Constants.unusual;
 
 /**
  * Created by android on 2018/1/9.
@@ -460,7 +453,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements
 
         mCheckinPresenter.faceIdentifyFace(bitmap);
 
-        if (!CameraPresenter.unusual) {
+        if (!unusual) {
             opencvDraw(bitmap);
         }
     }

@@ -23,8 +23,6 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.fanfan.novel.presenter.CameraPresenter;
-import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.utils.CameraUtils;
 import com.fanfan.robot.service.event.FaceEvent;
 import com.fanfan.youtu.utils.UUIDGenerator;
@@ -36,6 +34,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
+import static com.fanfan.novel.common.Constants.unusual;
 
 /**
  * Created by android on 2018/2/26.
@@ -220,9 +220,9 @@ public class CameraSerivice extends Service implements SurfaceHolder.Callback, C
 
                 mCamera.setParameters(parameters);
 
-                if (CameraPresenter.unusual) {
+                if (unusual) {
                     // 设置显示的偏转角度，大部分机器是顺时针90度，某些机器需要按情况设置
-                    orientionOfCamera = CameraUtils.setCameraDisplayOrientation(this, mCameraId);
+                    orientionOfCamera = CameraUtils.getInstance().getCameraDisplayOrientation(this, mCameraId);
                 } else {
                     // TODO: 2017/12/21  robot
                     orientionOfCamera = 90;
@@ -268,7 +268,7 @@ public class CameraSerivice extends Service implements SurfaceHolder.Callback, C
 
         detector = new FaceDetector(previewBitmap.getWidth(), previewBitmap.getHeight(), 10);
         int oriention = orientionOfCamera;
-        if (CameraPresenter.unusual) {
+        if (unusual) {
             oriention = 360 - orientionOfCamera;
         }
         if (oriention == 360) {

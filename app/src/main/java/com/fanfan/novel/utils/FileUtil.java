@@ -37,7 +37,6 @@ import android.text.TextUtils;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.model.StorageBean;
 import com.fanfan.robot.model.Music;
-import com.fanfan.youtu.api.base.Constant;
 import com.seabreeze.log.Print;
 
 import java.io.BufferedReader;
@@ -53,7 +52,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -61,6 +59,16 @@ import java.util.zip.ZipFile;
 
 public class FileUtil {
     private FileUtil() {
+    }
+
+    //******************************camera recorder****************************//
+    public static boolean deleteFile(String url) {
+        boolean result = false;
+        File file = new File(url);
+        if (file.exists()) {
+            result = file.delete();
+        }
+        return result;
     }
 
 //****系统文件目录**********************************************************************************************

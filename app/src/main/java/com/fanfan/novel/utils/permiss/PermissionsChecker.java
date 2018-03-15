@@ -1,4 +1,4 @@
-package com.fanfan.novel.utils;
+package com.fanfan.novel.utils.permiss;
 
 import android.content.Context;
 import android.content.pm.PackageManager;

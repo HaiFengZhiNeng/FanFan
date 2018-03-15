@@ -26,6 +26,7 @@ import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.BitmapUtils;
+import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.MediaFile;
 import com.fanfan.robot.R;
@@ -44,6 +45,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
+import static com.fanfan.novel.common.Constants.unusual;
+
 /**
  * Created by android on 2018/1/6.
  */
@@ -54,12 +57,15 @@ public class AddVideoActivity extends BarBaseActivity {
     ImageView imgVideo;
     @BindView(R.id.et_video_shart)
     TextView etVideoShart;
+    @BindView(R.id.tv_video)
+    TextView tvVideo;
 
     public static final String VIDEO_ID = "videoId";
     public static final String RESULT_CODE = "video_title_result";
     public static final int ADD_VIDEO_REQUESTCODE = 223;
 
     public static final int CHOOSE_VIDEO = 4;//选择视频
+    public static final int RECORD_VIDEO = 5;//录制视频
 
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, AddVideoActivity.class);
@@ -102,8 +108,7 @@ public class AddVideoActivity extends BarBaseActivity {
             String savePath = videoBean.getVideoImage();
             if (savePath != null) {
                 if (new File(savePath).exists()) {
-                    imgVideo.setVisibility(View.VISIBLE);
-                    ImageLoader.loadImage(AddVideoActivity.this, imgVideo, savePath, R.mipmap.ic_logo);
+                    loadImgVideo(savePath);
                 }
             }
             etVideoShart.setText(videoBean.getShowTitle());
@@ -165,59 +170,112 @@ public class AddVideoActivity extends BarBaseActivity {
                 if (etVideoShart.getText().toString().trim().equals("")) {
                     showToast("输入不能为空！");
                 } else {
-                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(intent, CHOOSE_VIDEO);
+
+                    if (unusual) {
+                        DialogUtils.showBasicNoTitleDialog(this, "选择导入方法", "本地视频", "视频录制",
+                                new DialogUtils.OnNiftyDialogListener() {
+                                    @Override
+                                    public void onClickLeft() {
+                                        addLocalVideo();
+                                    }
+
+                                    @Override
+                                    public void onClickRight() {
+                                        videoRecording();
+                                    }
+                                });
+                    } else {
+                        addLocalVideo();
+                    }
                 }
                 break;
         }
     }
 
+    private void addLocalVideo() {
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, CHOOSE_VIDEO);
+    }
+
+    private void videoRecording() {
+        CameraRecoderActivity.newInstance(this, RECORD_VIDEO);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CHOOSE_VIDEO) {
-            if (resultCode == RESULT_OK) {
-                if (null != data) {
-                    Uri uri = data.getData();
-                    if (uri == null) {
-                        return;
-                    }
-                    Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-                    if (cursor != null) {
-                        if (cursor.moveToFirst()) {
-                            String videoPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));//// 视频路径
-                            Print.e("视频路径 ： " + videoPath);
+        switch (requestCode) {
+            case CHOOSE_VIDEO:
+                if (resultCode == RESULT_OK) {
+                    if (null != data) {
+                        Uri uri = data.getData();
+                        if (uri == null) {
+                            return;
+                        }
+                        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+                        if (cursor != null) {
+                            if (cursor.moveToFirst()) {
+                                String videoPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));//// 视频路径
+                                Print.e("视频路径 ： " + videoPath);
 
-                            if (MediaFile.isVideoFileType(videoPath)) {
-                                int videoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
-                                String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE));//// 视频名称
-                                long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));//// 视频大小
+                                if (MediaFile.isVideoFileType(videoPath)) {
+                                    int videoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
+                                    String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE));//// 视频名称
+                                    long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));//// 视频大小
 
-                                String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));//// 视频缩略图路径
-                                // 方法二 ThumbnailUtils 利用createVideoThumbnail 通过路径得到缩略图，保持为视频的默认比例
-                                // 第一个参数为 视频/缩略图的位置，第二个依旧是分辨率相关的kind
-                                Bitmap bitmap2 = ThumbnailUtils.createVideoThumbnail(imagePath, MediaStore.Video.Thumbnails.MINI_KIND);
-                                String savePath = Constants.PROJECT_PATH + "video" + File.separator + title + ".jpg";
-                                BitmapUtils.saveBitmapToFile(bitmap2, "video", title + ".jpg");
+                                    String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));//// 视频缩略图路径
+                                    // 方法二 ThumbnailUtils 利用createVideoThumbnail 通过路径得到缩略图，保持为视频的默认比例
+                                    // 第一个参数为 视频/缩略图的位置，第二个依旧是分辨率相关的kind
+                                    Bitmap bitmap2 = ThumbnailUtils.createVideoThumbnail(imagePath, MediaStore.Video.Thumbnails.MINI_KIND);
+                                    String savePath = Constants.PROJECT_PATH + "video" + File.separator + title + ".jpg";
+                                    BitmapUtils.saveBitmapToFile(bitmap2, "video", title + ".jpg");
 
-                                imgVideo.setVisibility(View.VISIBLE);
-                                imgVideo.setImageBitmap(bitmap2);
+                                    loadImgVideo(bitmap2);
 
-                                videoBean = new VideoBean();
-                                videoBean.setSize(size);
-                                videoBean.setVideoName(title);
-                                videoBean.setVideoUrl(videoPath);
-                                videoBean.setVideoImage(savePath);
-                            } else {
-                                showToast("请选择视频文件");
+                                    videoBean = new VideoBean();
+                                    videoBean.setSize(size);
+                                    videoBean.setVideoName(title);
+                                    videoBean.setVideoUrl(videoPath);
+                                    videoBean.setVideoImage(savePath);
+                                } else {
+                                    showToast("请选择视频文件");
+                                }
                             }
                         }
+                    } else {
+                        videoBean = null;
                     }
-                } else {
-                    videoBean = null;
                 }
-            }
+                break;
+            case RECORD_VIDEO:
+                if (resultCode == RESULT_OK) {
+                    if (null != data) {
+                        String imagePath = data.getStringExtra(CameraRecoderActivity.FIRST_FRAME);
+                        String videoPath = data.getStringExtra(CameraRecoderActivity.VIDEO_URL);
 
+                        loadImgVideo(imagePath);
+                        File videoFile = new File(videoPath);
+
+                        videoBean = new VideoBean();
+                        videoBean.setSize(videoFile.length());
+                        videoBean.setVideoName(videoFile.getName());
+                        videoBean.setVideoUrl(videoPath);
+                        videoBean.setVideoImage(imagePath);
+                    }
+                }
+                break;
         }
+    }
+
+    private void loadImgVideo(Bitmap bitmap) {
+        tvVideo.setText("更换视频");
+        imgVideo.setVisibility(View.VISIBLE);
+        imgVideo.setImageBitmap(bitmap);
+    }
+
+    private void loadImgVideo(String path) {
+        tvVideo.setText("更换视频");
+        imgVideo.setVisibility(View.VISIBLE);
+        ImageLoader.loadImage(AddVideoActivity.this, imgVideo, path, R.mipmap.ic_logo);
     }
 
     private void videoIsexit() {

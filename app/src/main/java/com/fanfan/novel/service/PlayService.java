@@ -16,7 +16,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.presenter.CameraPresenter;
 import com.fanfan.novel.service.cache.MusicCache;
 import com.fanfan.novel.service.mediascanner.SingleMediaScanner;
 import com.fanfan.novel.service.music.Actions;
@@ -29,7 +28,6 @@ import com.fanfan.novel.service.music.PlayModeEnum;
 import com.fanfan.novel.service.music.QuitTimer;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.novel.utils.music.MusicUtils;
-import com.fanfan.robot.activity.MainActivity;
 import com.fanfan.robot.db.MusicDBManager;
 import com.fanfan.robot.model.Music;
 import com.seabreeze.log.Print;
@@ -37,6 +35,8 @@ import com.seabreeze.log.Print;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+
+import static com.fanfan.novel.common.Constants.unusual;
 
 /**
  * Created by android on 2018/1/10.
@@ -127,7 +127,7 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
         if (PreferencesUtils.getBoolean(PlayService.this, Constants.MUSIC_UPDATE, false)) {
             scanMussicExecute(callback);
         } else {
-            if (CameraPresenter.unusual) {
+            if (unusual) {
 
             new SingleMediaScanner(this, Environment.getExternalStorageDirectory(),
                     new SingleMediaScanner.ScanListener() {

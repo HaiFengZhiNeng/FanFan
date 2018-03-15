@@ -37,7 +37,7 @@ import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.UdpService;
 import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.novel.utils.ImageLoader;
-import com.fanfan.novel.utils.PermissionsChecker;
+import com.fanfan.novel.utils.permiss.PermissionsChecker;
 import com.fanfan.novel.utils.PhoneUtil;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.MainActivity;

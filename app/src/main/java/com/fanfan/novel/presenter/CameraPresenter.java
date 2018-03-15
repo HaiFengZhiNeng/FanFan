@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.fanfan.novel.common.Constants.unusual;
+
 /**
  * Created by zhangyuanyuan on 2017/9/18.
  */
@@ -57,10 +59,6 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
     private boolean isFaceFirst;
 
     private boolean isCameraFaceDetection;
-
-    public static boolean unusual = false;
-
-    public static final String PICTURETAKEN = "pictureTaken";
 
     public CameraPresenter(ICameraView baseView, SurfaceHolder surfaceHolder) {
         super(baseView);
@@ -150,7 +148,7 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
 
                 if (unusual) {
                     // 设置显示的偏转角度，大部分机器是顺时针90度，某些机器需要按情况设置
-                    orientionOfCamera = CameraUtils.setCameraDisplayOrientation((Activity) mCameraView.getContext(), mCameraId);
+                    orientionOfCamera = CameraUtils.getInstance().getCameraDisplayOrientation((Activity) mCameraView.getContext(), mCameraId);
                 } else {
                     // TODO: 2017/12/21  robot
                     orientionOfCamera = 90;
@@ -342,9 +340,9 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
         }
         if (null != saveBitmap) {
             long saveTime = System.currentTimeMillis();
-            boolean save = BitmapUtils.saveBitmapToFile(saveBitmap, PICTURETAKEN, saveTime + ".jpg");
+            boolean save = BitmapUtils.saveBitmapToFile(saveBitmap, Constants.PICTURETAKEN, saveTime + ".jpg");
             if (save) {
-                mCameraView.pictureTakenSuccess(Constants.PROJECT_PATH + PICTURETAKEN + File.separator + saveTime + ".jpg");
+                mCameraView.pictureTakenSuccess(Constants.PROJECT_PATH + Constants.PICTURETAKEN + File.separator + saveTime + ".jpg");
             } else {
                 mCameraView.pictureTakenFail();
             }

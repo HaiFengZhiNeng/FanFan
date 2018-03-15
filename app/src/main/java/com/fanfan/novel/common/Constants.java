@@ -34,8 +34,11 @@ public class Constants {
     public static final String PRINT_LOG_PATH = M_SDROOT_CACHE_PATH + "print";
     public static final String PRINT_TIMLOG_PATH = M_SDROOT_CACHE_PATH + "log" + File.separator;
     public static final String CRASH_PATH = M_SDROOT_CACHE_PATH + "crash";
+    public static final String RECORDER_PATH = PROJECT_PATH + "Camera";
 
     public static final String GRM_PATH = PROJECT_PATH + "msc";
+
+    public static final String PICTURETAKEN = "pictureTaken";
 
     public static String RES_DIR_NAME = "robotResources";
 
@@ -76,7 +79,11 @@ public class Constants {
     public static String SPEAK_ACTION = "A50C8020AA";
     public static String STOP_DANCE = "A50C80E2AA";
 
-    public static boolean isTrain = true;
+    //true 是火车段的
+    public static boolean isTrain = false;
+
+    //true 是手机端的
+    public static boolean unusual = false;
 
     public static String TRAIN_CONTORL_NAME = "fanc105";
 

@@ -69,6 +69,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 
+import static com.fanfan.novel.common.Constants.unusual;
+
 /**
  * Created by android on 2018/1/10.
  */
@@ -396,7 +398,7 @@ public class AuthenticationActivity extends BarBaseActivity implements
             mFaceVerifPresenter.faceCompare(bitmap, bitmapB);
         }
 
-        if (!CameraPresenter.unusual) {
+        if (!unusual) {
             opencvDraw(bitmap);
         }
     }

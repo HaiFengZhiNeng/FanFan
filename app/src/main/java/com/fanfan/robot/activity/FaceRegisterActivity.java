@@ -33,13 +33,9 @@ import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.camera.DetectOpenFaceView;
 import com.fanfan.novel.ui.camera.DetectionFaceView;
-import com.fanfan.novel.utils.DialogUtils;
-import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.presenter.FaceRegisterPresenter;
 import com.fanfan.robot.presenter.ipersenter.IFaceRegisterPresenter;
-import com.fanfan.youtu.api.base.event.BaseEvent;
-import com.fanfan.youtu.api.face.bean.AddFace;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
@@ -47,7 +43,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
@@ -66,6 +61,7 @@ import java.net.DatagramPacket;
 import butterknife.BindView;
 import butterknife.OnClick;
 
+import static com.fanfan.novel.common.Constants.unusual;
 import static com.fanfan.robot.activity.FaceRegisterActivity.State.ADDFACE;
 import static com.fanfan.robot.activity.FaceRegisterActivity.State.NEWPERSON;
 
@@ -471,7 +467,7 @@ public class FaceRegisterActivity extends BarBaseActivity implements
 
         mFaceRegisterPresenter.detectFace(bitmap);
 
-        if (!CameraPresenter.unusual) {
+        if (!unusual) {
             opencvDraw(bitmap);
         }
     }

@@ -5,44 +5,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.presenter.CameraPresenter;
 import com.fanfan.novel.utils.PhoneUtil;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.LockActivity;
 import com.fanfan.robot.presenter.ScreenPresenter;
 import com.fanfan.robot.presenter.ipersenter.IScreenPresenter;
 import com.fanfan.robot.service.ScreenService;
-import com.fanfan.youtu.api.base.event.BaseEvent;
-import com.fanfan.youtu.utils.ErrorMsg;
-import com.seabreeze.log.Print;
-
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.ButterKnife;
+
+import static com.fanfan.novel.common.Constants.unusual;
 
 
 public abstract class BaseActivity extends AppCompatActivity implements IScreenPresenter.ISreenView {
@@ -71,7 +61,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IScreenP
         initData();
         setListener();
 
-        if (CameraPresenter.unusual) {
+        if (unusual) {
             Intent intent = new Intent(this, ScreenService.class);
             startService(intent);
         } else {

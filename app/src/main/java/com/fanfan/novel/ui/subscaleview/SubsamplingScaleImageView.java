@@ -446,6 +446,7 @@ public class SubsamplingScaleImageView extends View {
                 if (uri == null && previewSource.getResource() != null) {
                     uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getContext().getPackageName() + "/" + previewSource.getResource());
                 }
+                //？
                 BitmapLoadTask task = new BitmapLoadTask(this, getContext(), bitmapDecoderFactory, uri, true);
                 execute(task);
             }
@@ -1064,7 +1065,7 @@ public class SubsamplingScaleImageView extends View {
                                 setMatrixArray(dstArray, tile.vRect.right, tile.vRect.bottom, tile.vRect.left, tile.vRect.bottom, tile.vRect.left, tile.vRect.top, tile.vRect.right, tile.vRect.top);
                             } else if (getRequiredRotation() == ORIENTATION_270) {
                                 setMatrixArray(dstArray, tile.vRect.left, tile.vRect.bottom, tile.vRect.left, tile.vRect.top, tile.vRect.right, tile.vRect.top, tile.vRect.right, tile.vRect.bottom);
-                            }
+                            }//通过指定的0-4个点，原始坐标以及变化后的坐标，来得到一个变换矩阵。如果指定0个点则没有效果。
                             matrix.setPolyToPoly(srcArray, 0, dstArray, 0, 4);
                             canvas.drawBitmap(tile.bitmap, matrix, bitmapPaint);
                             if (debug) {
@@ -1226,9 +1227,9 @@ public class SubsamplingScaleImageView extends View {
     private void createPaints() {
         if (bitmapPaint == null) {
             bitmapPaint = new Paint();
-            bitmapPaint.setAntiAlias(true);
-            bitmapPaint.setFilterBitmap(true);
-            bitmapPaint.setDither(true);
+            bitmapPaint.setAntiAlias(true);//防止边缘的锯齿    (true时图像边缘相对清晰一点，锯齿痕迹不那么明显，false时，写上去的字不饱满，不美观，看地不太清楚)
+            bitmapPaint.setFilterBitmap(true);//用来对位图进行滤波处理
+            bitmapPaint.setDither(true);//防抖动
         }
         if ((debugTextPaint == null || debugLinePaint == null) && debug) {
             debugTextPaint = new Paint();
@@ -1857,7 +1858,10 @@ public class SubsamplingScaleImageView extends View {
             }
         } else if (sourceUri.startsWith(ImageSource.FILE_SCHEME) && !sourceUri.startsWith(ImageSource.ASSET_SCHEME)) {
             try {
+                //Exif是一种图像文件格式，它的数据存储与JPEG格式是完全相同的
                 ExifInterface exifInterface = new ExifInterface(sourceUri.substring(ImageSource.FILE_SCHEME.length() - 1));
+                //旋转角度，整形表示，在ExifInterface中有常量对应表示
+                //返回int值，传入默认值
                 int orientationAttr = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                 if (orientationAttr == ExifInterface.ORIENTATION_NORMAL || orientationAttr == ExifInterface.ORIENTATION_UNDEFINED) {
                     exifOrientation = ORIENTATION_0;

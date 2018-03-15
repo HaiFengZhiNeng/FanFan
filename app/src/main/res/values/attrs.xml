@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- camera -->
+    <attr name="iconSize" format="dimension" />
+    <attr name="iconMargin" format="dimension" />
+    <attr name="iconSrc" format="reference" />
+    <attr name="iconLeft" format="reference" />
+    <attr name="iconRight" format="reference" />
+    <attr name="duration_max" format="integer" />
+    <declare-styleable name="CameraView">
+        <attr name="iconSize" />
+        <attr name="iconMargin" />
+        <attr name="iconSrc" />
+        <attr name="iconLeft" />
+        <attr name="iconRight" />
+        <attr name="duration_max" />
+    </declare-styleable>
 
+    <!-- large image -->
     <declare-styleable name="SubsamplingScaleImageView">
         <attr name="src" format="reference" />
         <attr name="assetName" format="string" />
@@ -10,7 +26,7 @@
         <attr name="tileBackgroundColor" format="color" />
     </declare-styleable>
 
-
+    <!-- openvc -->
     <declare-styleable name="CameraBridgeViewBase">
         <attr name="show_fps" format="boolean" />
         <attr name="camera_id" format="integer">
@@ -20,6 +36,7 @@
         </attr>
     </declare-styleable>
 
+    <!-- call view -->
     <declare-styleable name="GlowPadView">
         <attr name="android:gravity" />
 

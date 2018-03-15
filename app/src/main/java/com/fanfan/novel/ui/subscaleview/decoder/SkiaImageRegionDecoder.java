@@ -91,12 +91,13 @@ public class SkiaImageRegionDecoder implements ImageRegionDecoder {
                 } catch (NumberFormatException ignored) {
                 }
             }
-
+            //创建从输入流BitmapRegionDecoder
             decoder = BitmapRegionDecoder.newInstance(context.getResources().openRawResource(id), false);
         } else if (uriString.startsWith(ASSET_PREFIX)) {
             String assetName = uriString.substring(ASSET_PREFIX.length());
             decoder = BitmapRegionDecoder.newInstance(context.getAssets().open(assetName, AssetManager.ACCESS_RANDOM), false);
         } else if (uriString.startsWith(FILE_PREFIX)) {
+            //初始化BitmapRegionDecode，并用它来显示图片，从文件
             decoder = BitmapRegionDecoder.newInstance(uriString.substring(FILE_PREFIX.length()), false);
         } else {
             InputStream inputStream = null;
@@ -110,6 +111,7 @@ public class SkiaImageRegionDecoder implements ImageRegionDecoder {
                 }
             }
         }
+        //返回原始图片的宽高
         return new Point(decoder.getWidth(), decoder.getHeight());
     }
 
@@ -122,6 +124,7 @@ public class SkiaImageRegionDecoder implements ImageRegionDecoder {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = sampleSize;
                 options.inPreferredConfig = bitmapConfig;
+                //显示图片
                 Bitmap bitmap = decoder.decodeRegion(sRect, options);
                 if (bitmap == null) {
                     throw new RuntimeException("Skia image decoder returned null bitmap - image format may not be supported");
@@ -137,13 +140,16 @@ public class SkiaImageRegionDecoder implements ImageRegionDecoder {
 
     @Override
     public synchronized boolean isReady() {
+        //isRecycled()  如果这个区域编码器已被收回返回true
         return decoder != null && !decoder.isRecycled();
     }
 
     @Override
     public synchronized void recycle() {
+        //读写锁
         decoderLock.writeLock().lock();
         try {
+            //释放了这个地区的解码器相关联的内存，并标记区域解码器已死
             decoder.recycle();
             decoder = null;
         } finally {

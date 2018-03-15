@@ -9,10 +9,11 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.fanfan.novel.presenter.CameraPresenter;
 import com.seabreeze.log.Print;
 
 import org.opencv.core.Rect;
+
+import static com.fanfan.novel.common.Constants.unusual;
 
 /**
  * Created by android on 2017/12/21.
@@ -77,7 +78,7 @@ public class DetectOpenFaceView extends View {
             float y;
             float width;
             float height;
-            if (CameraPresenter.unusual) {
+            if (unusual) {
                 x = getWidth() - face.x * wRatio;
             } else {
                 x = face.x * wRatio;
@@ -86,7 +87,7 @@ public class DetectOpenFaceView extends View {
             width = face.width * wRatio;
             height = face.height * hRatio;
 
-            if (CameraPresenter.unusual) {
+            if (unusual) {
                 mRectF.set(x - width, y, x, y + height);
             }else{
                 mRectF.set(x + width, y, x, y + height);
