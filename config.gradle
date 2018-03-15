@@ -52,6 +52,9 @@ ext {
             "rxlifecycle2"          :   "com.trello.rxlifecycle2:rxlifecycle:2.1.0",
             "rxlifecomponents"      :   "com.trello.rxlifecycle2:rxlifecycle-components:2.1.0",
 
+            "android-networking"    :   "com.amitshekhar.android:android-networking:1.0.1",
+            "rx2-android-networking":   "com.amitshekhar.android:rx2-android-networking:1.0.1",
+
             //dagger2
             "dagger"                :   "com.google.dagger:dagger:2.7",
             "dagger-compiler"       :   "com.google.dagger:dagger-compiler:2.7",

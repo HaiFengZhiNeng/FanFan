@@ -5,12 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +34,9 @@ import com.fanfan.robot.presenter.ScreenPresenter;
 import com.fanfan.robot.presenter.ipersenter.IScreenPresenter;
 import com.fanfan.robot.service.ScreenService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.ButterKnife;
 
 import static com.fanfan.novel.common.Constants.unusual;
@@ -45,11 +52,14 @@ public abstract class BaseActivity extends AppCompatActivity implements IScreenP
 
     private ScreenPresenter mScreenPresenter;
 
+    private static OnPermissionCallback callback;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ActivityCollector.addActivity(this);
         setRequestedOrientation(getOrientation());
         super.onCreate(savedInstanceState);
+        BaseApplication.addActivity(this);
         setBeforeLayout();
         mContext = this;
         if (getLayoutId() != 0) {
@@ -167,6 +177,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IScreenP
     protected void onDestroy() {
         super.onDestroy();
         this.unregisterReceiver(this.finishAppReceiver);
+        BaseApplication.removeActivity(this);
     }
 
     @Override
@@ -181,6 +192,50 @@ public abstract class BaseActivity extends AppCompatActivity implements IScreenP
     }
 
     protected abstract void setResult();
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0) {
+            List<String> deniedPermissions = new ArrayList<>();
+            for (int i = 0; i < grantResults.length; i++) {
+                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    deniedPermissions.add(permissions[i]);
+                }
+            }
+
+            if (deniedPermissions.isEmpty()) {
+                if (callback != null) {
+                    callback.onGranted();
+                }
+            } else {
+                if (callback != null) {
+                    callback.onDenied(deniedPermissions);
+                }
+            }
+
+        }
+    }
+
+    public static void requestPermission(String[] permissions, OnPermissionCallback onPermissionCallback) {
+        if (BaseApplication.getTopAcitivity() == null) {
+            return;
+        }
+        callback = onPermissionCallback;
+        List<String> permissionsList = new ArrayList<>();
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(BaseApplication.getTopAcitivity(), permission) != PackageManager.PERMISSION_GRANTED) {
+                permissionsList.add(permission);
+            }
+        }
+        if (!permissionsList.isEmpty()) {
+            ActivityCompat.requestPermissions(BaseApplication.getTopAcitivity(), permissionsList.toArray(new String[permissionsList.size()]), 1);
+        } else {
+            if (callback != null) {
+                callback.onGranted();
+            }
+        }
+    }
 
     /**
      * 关闭Activity的广播，放在自定义的基类中，让其他的Activity继承这个Activity就行
@@ -242,5 +297,11 @@ public abstract class BaseActivity extends AppCompatActivity implements IScreenP
     @Override
     public void showTipsView() {
         LockActivity.newInstance(this);
+    }
+
+    public interface OnPermissionCallback {
+        void onGranted();
+
+        void onDenied(List<String> deniedPermissions);
     }
 }

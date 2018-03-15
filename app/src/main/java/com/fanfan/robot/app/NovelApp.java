@@ -2,10 +2,10 @@ package com.fanfan.robot.app;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.multidex.MultiDexApplication;
 
 import com.facebook.stetho.Stetho;
 import com.fanfan.novel.common.Constants;
+import com.fanfan.novel.common.base.BaseApplication;
 import com.fanfan.novel.common.lifecycle.Foreground;
 import com.fanfan.novel.db.base.BaseManager;
 import com.fanfan.novel.service.cache.Config;
@@ -26,7 +26,7 @@ import com.youdao.sdk.app.YouDaoApplication;
  * Created by android on 2017/12/18.
  */
 
-public class NovelApp extends MultiDexApplication {
+public class NovelApp extends BaseApplication {
 
     private static NovelApp instance;
 

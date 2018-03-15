@@ -148,7 +148,7 @@ public class SerialPortManager extends SerialPort {
                         mFileOutputStream.write(sendBytes);
                         if (null != mOnSerialPortDataListener) {
                             mOnSerialPortDataListener.onDataSent(baudRate, sendBytes);
-                        }
+                    }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

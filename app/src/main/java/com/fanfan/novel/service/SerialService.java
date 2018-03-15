@@ -63,7 +63,7 @@ public class SerialService extends BaseService implements OnOpenSerialPortListen
     }
 
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onResultEvent(ActivityToServiceEvent event) {
         if (event.isOk()) {
             SerialBean serialBean = event.getBean();
