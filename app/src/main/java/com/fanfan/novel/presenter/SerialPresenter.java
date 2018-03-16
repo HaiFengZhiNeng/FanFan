@@ -1,6 +1,5 @@
 package com.fanfan.novel.presenter;
 
-import android.content.res.Resources;
 import android.os.Handler;
 
 import com.fanfan.novel.model.SerialBean;

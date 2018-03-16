@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -274,6 +275,25 @@ public class AddVoiceActivity extends BarBaseActivity {
                     break;
             }
         }
+    }
+
+    private int calculateSampleSize(BitmapFactory.Options options) {
+        int outHeight = options.outHeight;
+        int outWidth = options.outWidth;
+        int sampleSize = 1;
+        int destHeight = 1000;
+        int destWidth = 1000;
+        if (outHeight > destHeight || outWidth > destHeight) {
+            if (outHeight > outWidth) {
+                sampleSize = outHeight / destHeight;
+            } else {
+                sampleSize = outWidth / destWidth;
+            }
+        }
+        if (sampleSize < 1) {
+            sampleSize = 1;
+        }
+        return sampleSize;
     }
 
     private void loadImgVoice(String path) {

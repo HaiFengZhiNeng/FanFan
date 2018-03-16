@@ -11,6 +11,7 @@ import com.fanfan.novel.common.instance.SpeakTts;
 import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
 import com.fanfan.novel.service.listener.IatListener;
 import com.fanfan.novel.service.listener.TtsListener;
+import com.fanfan.novel.service.stragry.TranficCalculator;
 import com.fanfan.novel.service.stragry.local.ArtificialStrategy;
 import com.fanfan.novel.service.stragry.local.BackStrategy;
 import com.fanfan.novel.service.stragry.local.ControlStrategy;
@@ -18,10 +19,8 @@ import com.fanfan.novel.service.stragry.local.FaceStrategy;
 import com.fanfan.novel.service.stragry.local.LogoutStrategy;
 import com.fanfan.novel.service.stragry.local.MapStrategy;
 import com.fanfan.novel.service.stragry.local.MoveStrategy;
-import com.fanfan.novel.service.stragry.TranficCalculator;
 import com.fanfan.novel.service.stragry.local.StopStrategy;
 import com.fanfan.novel.utils.FucUtil;
-import com.fanfan.novel.utils.SpecialUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.RobotInfo;
@@ -156,6 +155,7 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
 
     @Override
     public void doAnswer(String answer) {
+
         mTts.startSpeaking(answer, mTtsListener);
     }
 
@@ -214,6 +214,7 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
 
     @Override
     public void onRecognResult(String result) {
+        stopRecognizerListener();
         Print.e(result);
 
         TranficCalculator calculator = new TranficCalculator();

@@ -209,4 +209,21 @@ public class SerialPortManager extends SerialPort {
         }
         return false;
     }
+
+//    public boolean sendBytes(byte[] sendBytes, int baudRate) {
+//        if (null != mFd && null != mFileInputStream && null != mFileOutputStream) {
+//
+//            if (null != mFileOutputStream && null != sendBytes && 0 < sendBytes.length) {
+//                try {
+//                    mFileOutputStream.write(sendBytes);
+//                    if (null != mOnSerialPortDataListener) {
+//                        mOnSerialPortDataListener.onDataSent(baudRate, sendBytes);
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        return false;
+//    }
 }
