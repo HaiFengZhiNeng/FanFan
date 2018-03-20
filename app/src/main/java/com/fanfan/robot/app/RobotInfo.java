@@ -4,11 +4,8 @@ import android.content.Context;
 
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.utils.PreferencesUtils;
-import com.fanfan.youtu.api.base.Constant;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
-
-import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * Created by android on 2018/1/5.
@@ -43,6 +40,8 @@ public class RobotInfo {
         setIatLineLanguage(PreferencesUtils.getString(context, Constants.IAT_LINE_LANGUAGE, "mandarin"));
         setQueryLanage(PreferencesUtils.getBoolean(context, Constants.QUERYLANAGE, false));
         setLineSpeed(PreferencesUtils.getInt(NovelApp.getInstance().getApplicationContext(), Constants.LINE_SPEED, 60));
+        setLineVolume(PreferencesUtils.getInt(NovelApp.getInstance().getApplicationContext(), Constants.LINE_VOLUME, 100));
+        setCityName(PreferencesUtils.getString(NovelApp.getInstance().getApplicationContext(), Constants.CITY_NAME, "北京"));
         isInitialization = PreferencesUtils.getBoolean(context, Constants.IS_INITIALIZATION, false);
         return getInstance();
     }
@@ -261,5 +260,27 @@ public class RobotInfo {
     public void setLineSpeed(int speed) {
         lineSpeed = speed;
         PreferencesUtils.putInt(NovelApp.getInstance().getApplicationContext(), Constants.LINE_SPEED, speed);
+    }
+
+    private int lineVolume;
+
+    public int getLineVolume() {
+        return lineVolume;
+    }
+
+    public void setLineVolume(int volume) {
+        lineVolume = volume;
+        PreferencesUtils.putInt(NovelApp.getInstance().getApplicationContext(), Constants.LINE_VOLUME, volume);
+    }
+
+    private String cityName;
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+        PreferencesUtils.putString(NovelApp.getInstance().getApplicationContext(), Constants.CITY_NAME, "北京");
+    }
+
+    public String getCityName() {
+        return cityName;
     }
 }

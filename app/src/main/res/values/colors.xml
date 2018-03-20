@@ -71,6 +71,13 @@
 
     <color name="while_most_color">#e4e4e4</color>
     <color name="color_nav_select_one">#9c9c9c</color>
+
+    <color name="city_bg">#fff0f0f0</color>
+    <color name="city_bar">#ff3ba4dc</color>
+    <color name="city_item_text_color">#ff5c5c5c</color>
+    <color name="box_endcolor">#ffcdced1</color>
+    <color name="box_startcolor">#ffbec0c3</color>
+
     //*************************************************************************//
     <color name="ivory">#fffff0</color>
     <!-- 象牙色 -->

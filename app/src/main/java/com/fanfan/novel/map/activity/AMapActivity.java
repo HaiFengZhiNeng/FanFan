@@ -64,6 +64,7 @@ import com.fanfan.novel.map.overlay.DrivingRouteOverlay;
 import com.fanfan.novel.map.overlay.PoiOverlay;
 import com.fanfan.novel.map.overlay.WalkRouteOverlay;
 import com.fanfan.robot.R;
+import com.fanfan.robot.app.RobotInfo;
 import com.seabreeze.log.Print;
 
 import java.lang.reflect.Field;
@@ -136,7 +137,6 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
     private LatLonPoint mStartPoint;
     private LatLonPoint mEndPoint;
 
-    private String mCurrentCityName = "北京";
     private final int ROUTE_TYPE_BUS = 1;
     private final int ROUTE_TYPE_DRIVE = 2;
     private final int ROUTE_TYPE_WALK = 3;
@@ -453,7 +453,7 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
                 double longitude = aMapLocation.getLongitude();//经    度
                 float accuracy = aMapLocation.getAccuracy();//精    度
                 String address = aMapLocation.getAddress();
-                mCurrentCityName = aMapLocation.getCity();
+                String cityName = aMapLocation.getCity();
                 String time = AMapUtil.formatUTC(aMapLocation.getTime(), "yyyy-MM-dd HH:mm:ss");
 
                 if (isFirstIn) {
@@ -579,7 +579,7 @@ public class AMapActivity extends BarBaseActivity implements SearchView.OnQueryT
         final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(mStartPoint, mEndPoint);
         if (routeType == ROUTE_TYPE_BUS) {
             // 第一个参数表示路径规划的起点和终点，第二个参数表示公交查询模式，第三个参数表示公交查询城市区号，第四个参数表示是否计算夜班车，0表示不计算
-            RouteSearch.BusRouteQuery query = new RouteSearch.BusRouteQuery(fromAndTo, mode, mCurrentCityName, 0);
+            RouteSearch.BusRouteQuery query = new RouteSearch.BusRouteQuery(fromAndTo, mode, RobotInfo.getInstance().getCityName(), 0);
             mRouteSearch.calculateBusRouteAsyn(query);
         } else if (routeType == ROUTE_TYPE_DRIVE) {// 驾车路径规划
             // 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路

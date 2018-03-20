@@ -91,6 +91,45 @@
                         android:textSize="@dimen/x8" />
                 </RelativeLayout>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/diy_white_bg"
+                    android:padding="@dimen/y8"
+                    android:text="离线问答设置"
+                    android:textSize="@dimen/x8"
+                    android:textStyle="bold" />
+
+
+                <RelativeLayout
+                    android:id="@+id/local_talker_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:padding="@dimen/y8">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="离线发言人"
+                        android:textSize="@dimen/x8" />
+
+                    <TextView
+                        android:id="@+id/tv_local_talker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:textSize="@dimen/x8" />
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/diy_white_bg"
+                    android:padding="@dimen/y8"
+                    android:text="其他设置"
+                    android:textSize="@dimen/x8"
+                    android:textStyle="bold" />
 
                 <RelativeLayout
                     android:id="@+id/line_speed_layout"
@@ -132,36 +171,46 @@
 
                 </RelativeLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/diy_white_bg"
-                    android:padding="@dimen/y8"
-                    android:text="离线问答设置"
-                    android:textSize="@dimen/x8"
-                    android:textStyle="bold" />
-
-
                 <RelativeLayout
-                    android:id="@+id/local_talker_layout"
+                    android:id="@+id/line_volume_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/y5"
                     android:background="@color/white"
                     android:padding="@dimen/y8">
 
                     <TextView
+                        android:id="@+id/tv_line_volume_tip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="离线发言人"
+                        android:text="语速"
                         android:textSize="@dimen/x8" />
 
+                    <SeekBar
+                        android:id="@+id/line_volume_bar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="6dp"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="@dimen/y15"
+                        android:layout_marginRight="@dimen/y15"
+                        android:layout_toLeftOf="@+id/tv_line_volume"
+                        android:layout_toRightOf="@+id/tv_line_volume_tip"
+                        android:max="100"
+                        android:min="0"
+                        android:progress="60"
+                        android:progressDrawable="@drawable/set_progress_bar_style" />
+
                     <TextView
-                        android:id="@+id/tv_local_talker"
+                        android:id="@+id/tv_line_volume"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
+                        android:text="100"
                         android:textSize="@dimen/x8" />
+
                 </RelativeLayout>
+
 
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>

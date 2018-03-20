@@ -1,10 +1,7 @@
 package com.fanfan.robot.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -15,14 +12,14 @@ import com.fanfan.novel.activity.DataSiteActivity;
 import com.fanfan.novel.activity.DataVideoActivity;
 import com.fanfan.novel.activity.DataVoiceActivity;
 import com.fanfan.novel.activity.FaceDataActivity;
+import com.fanfan.novel.activity.SelectCtiyActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.robot.R;
+import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.fragment.ImportFragment;
 import com.fanfan.robot.fragment.XfFragment;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -52,6 +49,11 @@ public class SettingActivity extends BarBaseActivity {
     TextView tvXf;
     @BindView(R.id.logout)
     TextView logout;
+    @BindView(R.id.rl_city)
+    RelativeLayout rlCity;
+    @BindView(R.id.tv_city)
+    TextView tvCity;
+
 
     private MaterialDialog materialDialog;
 
@@ -70,11 +72,12 @@ public class SettingActivity extends BarBaseActivity {
     @Override
     protected void initData() {
 
+        tvCity.setText(RobotInfo.getInstance().getCityName());
     }
 
 
     @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.add_site, R.id.import_layout,
-            R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout})
+            R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout, R.id.rl_city})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.add_video:
@@ -108,6 +111,9 @@ public class SettingActivity extends BarBaseActivity {
                 setResult(LOGOUT_TO_MAIN_RESULTCODE);
                 finish();
                 break;
+            case R.id.rl_city:
+                SelectCtiyActivity.newInstance(this);
+                break;
         }
     }
 
@@ -127,6 +133,18 @@ public class SettingActivity extends BarBaseActivity {
         if (materialDialog != null && materialDialog.isShowing()) {
             materialDialog.dismiss();
             materialDialog = null;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SelectCtiyActivity.CITY_REQUEST_CODE) {
+            if (resultCode == SelectCtiyActivity.CITY_RESULT_CODE) {
+                String city = data.getStringExtra(SelectCtiyActivity.RESULT_CODE);
+                tvCity.setText(city);
+                RobotInfo.getInstance().setCityName(city);
+            }
         }
     }
 }

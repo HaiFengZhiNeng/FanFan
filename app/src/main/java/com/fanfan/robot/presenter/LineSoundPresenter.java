@@ -116,6 +116,8 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (mAIUIAgent != null) {
             mAIUIAgent.destroy();
         }
+        stopRecognizerListener();
+        stopVoice();
         aiuiListener = null;
         mIatListener = null;
     }

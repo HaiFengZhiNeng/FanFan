@@ -1,33 +1,19 @@
 package com.fanfan.robot.fragment;
 
-import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fanfan.novel.common.base.BaseDialogFragment;
-import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.RobotInfo;
 
-import java.util.Arrays;
-
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 
 /**
  * Created by android on 2018/1/19.
@@ -51,6 +37,10 @@ public class XfFragment extends BaseDialogFragment implements SeekBar.OnSeekBarC
     SeekBar lineSpeedBar;
     @BindView(R.id.tv_line_speed)
     TextView tvLineSpeed;
+    @BindView(R.id.line_volume_bar)
+    SeekBar lineVolumeBar;
+    @BindView(R.id.tv_line_volume)
+    TextView tvLineVolume;
 
     public static XfFragment newInstance() {
         XfFragment xfFragment = new XfFragment();
@@ -82,11 +72,15 @@ public class XfFragment extends BaseDialogFragment implements SeekBar.OnSeekBarC
         tvLineSpeed.setText(String.valueOf(RobotInfo.getInstance().getLineSpeed()));
         lineSpeedBar.setProgress(RobotInfo.getInstance().getLineSpeed());
 
+        tvLineVolume.setText(String.valueOf(RobotInfo.getInstance().getLineVolume()));
+        lineVolumeBar.setProgress(RobotInfo.getInstance().getLineVolume());
+
     }
 
     @Override
     protected void setListener(View rootView) {
         lineSpeedBar.setOnSeekBarChangeListener(this);
+        lineVolumeBar.setOnSeekBarChangeListener(this);
     }
 
 
@@ -152,6 +146,9 @@ public class XfFragment extends BaseDialogFragment implements SeekBar.OnSeekBarC
         if (seekBar == lineSpeedBar) {
             RobotInfo.getInstance().setLineSpeed(progress);
             tvLineSpeed.setText(String.valueOf(RobotInfo.getInstance().getLineSpeed()));
+        } else if (seekBar == lineVolumeBar) {
+            RobotInfo.getInstance().setLineVolume(progress);
+            tvLineVolume.setText(String.valueOf(RobotInfo.getInstance().getLineVolume()));
         }
     }
 

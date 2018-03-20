@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.view.KeyEvent;
@@ -14,13 +13,11 @@ import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.fanfan.novel.activity.FaceDataActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.FaceAuthDBManager;
 import com.fanfan.novel.model.FaceAuth;
 import com.fanfan.novel.model.SerialBean;
-import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
 import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
@@ -29,7 +26,6 @@ import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.udp.SocketManager;
-import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.R;
 import com.github.florent37.viewanimator.AnimationListener;
 import com.github.florent37.viewanimator.ViewAnimator;
@@ -41,11 +37,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.opencv.android.OpenCVLoader;
 
 import java.net.DatagramPacket;
-import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -131,6 +124,16 @@ public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSo
     protected void onDestroy() {
         super.onDestroy();
         mSoundPresenter.finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == FaceCheckinActivity.CHECK_REQUESTCODE) {
+            if (resultCode == FaceCheckinActivity.CHECK_RESULTCODE) {
+                finish();
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

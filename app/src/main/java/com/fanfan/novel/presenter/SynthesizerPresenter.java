@@ -3,13 +3,11 @@ package com.fanfan.novel.presenter;
 import android.app.Activity;
 import android.os.Handler;
 
-import com.fanfan.robot.R;
 import com.fanfan.novel.common.Constants;
-import com.fanfan.robot.app.NovelApp;
 import com.fanfan.novel.common.instance.SpeakTts;
 import com.fanfan.novel.presenter.ipresenter.ISynthesizerPresenter;
 import com.fanfan.novel.service.listener.TtsListener;
-import com.fanfan.novel.utils.PreferencesUtils;
+import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.RobotInfo;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
@@ -45,6 +43,7 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
 
     @Override
     public void finish() {
+        stopTts();
         if (mTts != null) {
             mTts.destroy();
         }
@@ -79,7 +78,7 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
         mTts.setParameter(SpeechConstant.VOICE_NAME, RobotInfo.getInstance().getTtsLineTalker());
         mTts.setParameter(SpeechConstant.SPEED, String.valueOf(RobotInfo.getInstance().getLineSpeed()));
         mTts.setParameter(SpeechConstant.PITCH, "50");
-        mTts.setParameter(SpeechConstant.VOLUME, "100");
+        mTts.setParameter(SpeechConstant.VOLUME, String.valueOf(RobotInfo.getInstance().getLineVolume()));
         mTts.setParameter(SpeechConstant.STREAM_TYPE, "3");
         mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "true");
         mTts.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");

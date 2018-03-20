@@ -108,4 +108,9 @@
     <string name="calendar">Calendar</string>
     <string name="string_air_start">出发地</string>
     <string name="string_air_end">目的地</string>
+
+    <string name="biz_plugin_weather_search_city_hint">搜索全国城市(中文/拼音)</string>
+
+    <string name="speak_main">您有什么想了解的可以向我询问，问题咨询可以了解我公司的基本情况，导航系统可引导您到达指定位置，还有唱歌、跳舞娱乐功能，欢迎您体验</string>
+
 </resources>

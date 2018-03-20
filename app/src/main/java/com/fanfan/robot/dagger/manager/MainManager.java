@@ -97,6 +97,7 @@ public class MainManager {
     }
 
     public void doAnswer(String messageContent) {
+        mSoundPresenter.stopRecognizerListener();
         mTtsPresenter.doAnswer(messageContent);
     }
 

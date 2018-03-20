@@ -151,6 +151,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         super.onResume();
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
         mMainManager.onResume();
+        setChatContent(getResources().getString(R.string.speak_main));
+        addSpeakAnswer(getResources().getString(R.string.speak_main), true);
     }
 
     @Override
@@ -256,14 +258,14 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     private boolean isSuspendAction;
     private boolean isAutoAction;
 
-    private void sendOrder(int type, String motion){
+    private void sendOrder(int type, String motion) {
         mMainManager.receiveMotion(type, motion);
     }
 
     private void sendCustom(RobotBean localVoice) {
         mMainManager.sendCustomMessage(localVoice);
     }
-    
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
@@ -489,7 +491,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
         sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
-        mMainManager.startVoice();;
+        mMainManager.startVoice();
+        ;
     }
 
     private void loadImage(int load, int place) {

@@ -121,12 +121,13 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     @BindView(R.id.tv_checkin)
     TextView tvCheckIn;
 
+    public static final int CHECK_REQUESTCODE = 240;
+    public static final int CHECK_RESULTCODE = 241;
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, FaceCheckinActivity.class);
-        context.startActivity(intent);
+        context.startActivityForResult(intent, CHECK_REQUESTCODE);
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-
     }
 
     //opencv
@@ -200,6 +201,8 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     private CheckInDBManager mCheckInDBManager;
 
     private State state = State.CAMERA;
+
+    private boolean isBacking;
 
     @Override
     protected int getLayoutId() {
@@ -451,7 +454,10 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     @Override
     public void tranBitmap(Bitmap bitmap, int num) {
 
-        mCheckinPresenter.faceIdentifyFace(bitmap);
+        if (!isBacking) {
+
+            mCheckinPresenter.faceIdentifyFace(bitmap);
+        }
 
         if (!unusual) {
             opencvDraw(bitmap);
@@ -527,6 +533,9 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     public void confidenceLow(FaceIdentify.IdentifyItem identifyItem) {
 
         tvSignInfo.setText(String.format("识别度为 %s， 较低。请正对屏幕或您未注册个人信息", identifyItem.getConfidence()));
+        addSpeakAnswer("贵客您好，系统中未检测到您的身份信息，我是公司智能服务机器人，我将为您提供引导服务");
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038002AA");
+        isBacking = true;
     }
 
     @Override
@@ -557,7 +566,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements
         boolean insert = mCheckInDBManager.insert(checkIn);
         if (insert) {
             tvSignInfo.setText(String.format("%s 签到成功", authId));
-            addSpeakAnswer("签到成功");
+            addSpeakAnswer("欢迎您，" + checkIn.getName() + "。" + TimeUtils.getAPm());
             List<CheckIn> checkIns = mCheckInDBManager.queryByName(authId);
             List<CheckIn> screenIns = new ArrayList<>();
             for (CheckIn in : checkIns) {
@@ -684,6 +693,10 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     @Override
     public void onCompleted() {
 
+        if (isBacking) {
+            setResult(CHECK_RESULTCODE);
+            finish();
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.fanfan.novel.presenter;
 
 import android.app.Activity;
+import android.media.AudioManager;
 import android.os.Environment;
 import android.os.Handler;
 
@@ -101,13 +102,14 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
         mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
         mTts.setParameter(ResourceUtil.TTS_RES_PATH, FucUtil.getResTtsPath(mSoundView.getContext(), RobotInfo.getInstance().getTtsLocalTalker()));
         mTts.setParameter(SpeechConstant.VOICE_NAME, RobotInfo.getInstance().getTtsLocalTalker());
-        mTts.setParameter(SpeechConstant.SPEED, "60");
+        mTts.setParameter(SpeechConstant.SPEED, String.valueOf(RobotInfo.getInstance().getLineSpeed()));
         mTts.setParameter(SpeechConstant.PITCH, "50");
-        mTts.setParameter(SpeechConstant.VOLUME, "100");
-        mTts.setParameter(SpeechConstant.STREAM_TYPE, "3");
-        mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "true");
+        mTts.setParameter(SpeechConstant.VOLUME, String.valueOf(RobotInfo.getInstance().getLineVolume()));
+        mTts.setParameter(SpeechConstant.STREAM_TYPE, "" + AudioManager.STREAM_VOICE_CALL);
+        mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "3");
         mTts.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mTts.setParameter(SpeechConstant.TTS_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/tts.wav");
+
     }
 
     @Override
@@ -149,14 +151,16 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
     @Override
     public void stopTts() {
         if (mTts.isSpeaking()) {
+            Print.e("stopSpeaking");
             mTts.stopSpeaking();
         }
     }
 
     @Override
     public void doAnswer(String answer) {
-
-        mTts.startSpeaking(answer, mTtsListener);
+        stopTts();
+        int code = mTts.startSpeaking(answer, mTtsListener);
+        Print.e("ccc" + code);
     }
 
     @Override
@@ -196,6 +200,8 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
+            Print.e("启动监听");
+            buildIat();
             startRecognizerListener();
             mSoundView.onCompleted();
         }
@@ -215,6 +221,7 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
     @Override
     public void onRecognResult(String result) {
         stopRecognizerListener();
+        Print.e("停止监听");
         Print.e(result);
 
         TranficCalculator calculator = new TranficCalculator();

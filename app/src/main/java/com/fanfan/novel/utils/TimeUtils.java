@@ -2,7 +2,6 @@ package com.fanfan.novel.utils;
 
 import android.text.format.DateFormat;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -179,4 +178,20 @@ public class TimeUtils {
         return cal.getTimeInMillis() / 1000;
     }
 
+
+    public static String getAPm() {
+        long time = System.currentTimeMillis();
+        final Calendar mCalendar = Calendar.getInstance();
+        mCalendar.setTimeInMillis(time);
+
+        int hour = mCalendar.get(Calendar.HOUR);
+        int apm = mCalendar.get(Calendar.AM_PM);
+
+//        apm = 0 表示上午，apm = 1 表示下午。
+        if (apm == 0) {
+            return "上午好";
+        } else {
+            return "下午好";
+        }
+    }
 }
