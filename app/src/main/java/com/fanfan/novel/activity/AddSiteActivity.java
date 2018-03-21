@@ -2,7 +2,6 @@ package com.fanfan.novel.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -10,7 +9,6 @@ import android.widget.TextView;
 
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.common.instance.SpeakIat;
 import com.fanfan.novel.db.manager.NavigationDBManager;
 import com.fanfan.novel.db.manager.SiteDBManager;
 import com.fanfan.novel.db.manager.VideoDBManager;
@@ -23,6 +21,7 @@ import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.LexiconListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
@@ -33,7 +32,6 @@ import com.seabreeze.log.Print;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by android on 2018/2/23.
@@ -100,7 +98,7 @@ public class AddSiteActivity extends BarBaseActivity {
     @Override
     protected void onDestroy() {
         if (mIat != null) {
-            mIat.destroy();
+            mIat.cancel();
         }
         listener = null;
         super.onDestroy();
@@ -216,7 +214,15 @@ public class AddSiteActivity extends BarBaseActivity {
     }
 
     public void updateLocation(String lexiconContents) {
-        mIat = SpeakIat.getInstance().mIat();
+        mIat = SpeechRecognizer.createRecognizer(this, new InitListener() {
+            @Override
+            public void onInit(int code) {
+                if (code != ErrorCode.SUCCESS) {
+                    Print.e("初始化失败，错误码：" + code);
+                }
+                Print.e("local initIat success");
+            }
+        });
         mIat.setParameter(SpeechConstant.PARAMS, null);
         // 设置引擎类型
         mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);

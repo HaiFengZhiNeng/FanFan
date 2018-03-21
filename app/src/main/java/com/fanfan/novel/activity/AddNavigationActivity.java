@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.common.instance.SpeakIat;
 import com.fanfan.novel.db.manager.NavigationDBManager;
 import com.fanfan.novel.db.manager.SiteDBManager;
 import com.fanfan.novel.db.manager.VideoDBManager;
@@ -35,6 +34,7 @@ import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.LexiconListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
@@ -156,7 +156,7 @@ public class AddNavigationActivity extends BarBaseActivity {
     @Override
     protected void onDestroy() {
         if (mIat != null) {
-            mIat.destroy();
+            mIat.cancel();
         }
 //        if(aw.g != null) {
 //            aw.g = null;
@@ -403,7 +403,15 @@ public class AddNavigationActivity extends BarBaseActivity {
     }
 
     public void updateLocation(String lexiconContents) {
-        mIat = SpeakIat.getInstance().mIat();
+        mIat = SpeechRecognizer.createRecognizer(this, new InitListener() {
+            @Override
+            public void onInit(int code) {
+                if (code != ErrorCode.SUCCESS) {
+                    Print.e("初始化失败，错误码：" + code);
+                }
+                Print.e("local initIat success");
+            }
+        });
         mIat.setParameter(SpeechConstant.PARAMS, null);
         // 设置引擎类型
         mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);

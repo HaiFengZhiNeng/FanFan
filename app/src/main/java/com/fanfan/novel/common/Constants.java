@@ -19,7 +19,7 @@ public class Constants {
 
     public static int IMSDK_ACCOUNT_TYPE = 17967;
 
-    public static String controlId = "fanc105";
+    public static String controlId = "fanc104";
     public static final String roomAVId = "@TGS#2GOCMM6EN";
     // exit
     public static final String EXIT_APP = "EXIT_APP";
@@ -86,9 +86,9 @@ public class Constants {
     public static boolean isTrain = false;
 
     //true 是手机端的
-    public static boolean unusual = false;
+    public static boolean unusual = true;
 
-    public static String TRAIN_CONTORL_NAME = "fanc105";
+    public static String TRAIN_CONTORL_NAME = "fanc104";
 
 
 }

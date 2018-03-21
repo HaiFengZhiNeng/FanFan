@@ -359,6 +359,9 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     }
 
     private void addSpeakAnswer(String messageContent) {
+        mSoundPresenter.stopTts();
+        mSoundPresenter.stopRecognizerListener();
+        mSoundPresenter.stopHandler();
         mSoundPresenter.doAnswer(messageContent);
     }
 
@@ -526,20 +529,29 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     @Override
     public void identifyNoFace() {
         tvSignInfo.setText("请正对屏幕或您未注册个人信息");
-        addSpeakAnswer("请正对屏幕或您未注册个人信息");
+//        addSpeakAnswer("请正对屏幕或您未注册个人信息");
+        addSpeakAnswer("贵客您好，我是公司智能服务机器人，系统中未检测到您的身份信息，现在为您切换到服务系统并为您提供引导服务");
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8002AA");
+        isBacking = true;
     }
 
     @Override
     public void confidenceLow(FaceIdentify.IdentifyItem identifyItem) {
 
         tvSignInfo.setText(String.format("识别度为 %s， 较低。请正对屏幕或您未注册个人信息", identifyItem.getConfidence()));
-        addSpeakAnswer("贵客您好，系统中未检测到您的身份信息，我是公司智能服务机器人，我将为您提供引导服务");
-        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A5038002AA");
+        addSpeakAnswer("贵客您好，我是公司智能服务机器人，系统中未检测到您的身份信息，现在为您切换到服务系统并为您提供引导服务");
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8002AA");
         isBacking = true;
     }
 
     @Override
     public void showConfirm(Bitmap circleBitmap, FaceAuth faceAuth) {
+        CheckIn checkIn = new CheckIn();
+
+        checkIn.setName(faceAuth.getAuthId());
+        checkIn.setTime(System.currentTimeMillis());
+        addSpeakAnswer("欢迎您，" + checkIn.getName() + "。" + TimeUtils.getAPm());
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8002AA");
         changeConfirm();
         icHead.setImageBitmap(circleBitmap);
         tvName.setText(faceAuth.getAuthId());
@@ -566,7 +578,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements
         boolean insert = mCheckInDBManager.insert(checkIn);
         if (insert) {
             tvSignInfo.setText(String.format("%s 签到成功", authId));
-            addSpeakAnswer("欢迎您，" + checkIn.getName() + "。" + TimeUtils.getAPm());
+   //         addSpeakAnswer("欢迎您，" + checkIn.getName() + "。" + TimeUtils.getAPm());
             List<CheckIn> checkIns = mCheckInDBManager.queryByName(authId);
             List<CheckIn> screenIns = new ArrayList<>();
             for (CheckIn in : checkIns) {
@@ -614,6 +626,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     public void isToday() {
         tvSignInfo.setText("今日您已签到");
         mCheckinPresenter.setFaceIdentify();
+        addSpeakAnswer("今日您已签到");
     }
 
     @Override

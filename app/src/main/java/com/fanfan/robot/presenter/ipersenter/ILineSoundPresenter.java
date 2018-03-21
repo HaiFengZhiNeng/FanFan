@@ -43,6 +43,8 @@ public abstract class ILineSoundPresenter implements BasePresenter {
 
     public abstract void setSpeech(boolean speech);
 
+    public abstract void setOpening(boolean isOpen);
+
     public interface ILineSoundView extends BaseView {
 
 

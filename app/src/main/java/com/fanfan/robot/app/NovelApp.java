@@ -39,7 +39,7 @@ public class NovelApp extends BaseApplication {
         super.onCreate();
         instance = this;
 
-//        if (initLeak()) return;
+        if (initLeak()) return;
 //        RCrashHandler.getInstance(Constants.CRASH_PATH).init(this, null);
         Stetho.initializeWithDefaults(this);
         initLogger(this);

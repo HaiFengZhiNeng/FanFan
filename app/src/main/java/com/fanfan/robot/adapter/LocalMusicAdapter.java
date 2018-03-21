@@ -1,9 +1,12 @@
 package com.fanfan.robot.adapter;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.fanfan.novel.service.PlayService;
@@ -36,9 +39,12 @@ public class LocalMusicAdapter extends BaseQuickAdapter<Music, BaseViewHolder> {
             vPlaying.setVisibility(View.INVISIBLE);
         }
 
-        ImageLoader.loadImage(mContext, (ImageView) helper.getView(R.id.iv_cover),
-                item.getAlbumId() == -1 ? MusicUtils.getMediaDataAlbumPic(item.getPath()) : MusicUtils.getMediaStoreAlbumCoverUri(item.getAlbumId()),
-                R.mipmap.default_cover);
+//        ImageLoader.loadImage(mContext, (ImageView) helper.getView(R.id.iv_cover),
+//                item.getAlbumId() == -1 ? MusicUtils.getMediaDataAlbumPic(item.getPath()) : MusicUtils.getMediaStoreAlbumCoverUri(item.getAlbumId()),
+//                R.mipmap.default_cover);
+
+        ImageLoader.loadImage(mContext, (ImageView) helper.getView(R.id.iv_cover), item.getAlbumId() == -1 ? MusicUtils.getMediaDataAlbumPic(item.getPath()) : MusicUtils.getMediaStoreAlbumCoverUri(item.getAlbumId()),
+                R.mipmap.default_cover, R.mipmap.default_cover, false, DiskCacheStrategy.NONE);
 
 
         helper.setText(R.id.tv_title, item.getTitle());

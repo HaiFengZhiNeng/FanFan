@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.common.instance.SpeakTts;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
@@ -26,7 +25,6 @@ import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.utils.FucUtil;
 import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
-import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.service.CameraSerivice;
 import com.fanfan.robot.service.event.FaceEvent;
@@ -144,6 +142,9 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
         unbindService(connection); // 解绑服务
         mTtsListener = null;
 
+        if (mTts != null) {
+            mTts.destroy();
+        }
         super.onDestroy();
     }
 
@@ -198,16 +199,14 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
     }
 
     public void initTts() {
-        mTts = SpeakTts.getInstance().mTts();
         if (mTts == null) {
-            SpeakTts.getInstance().initTts(NovelApp.getInstance().getApplicationContext(), new InitListener() {
+            mTts = SpeechSynthesizer.createSynthesizer(this, new InitListener() {
                 @Override
                 public void onInit(int code) {
                     if (code != ErrorCode.SUCCESS) {
                         Print.e("初始化失败，错误码：" + code);
                     }
                     Print.e("local initTts success");
-                    mTts = SpeakTts.getInstance().mTts();
                 }
             });
         }

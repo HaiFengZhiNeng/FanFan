@@ -7,8 +7,6 @@ import android.os.Handler;
 
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.enums.SpecialType;
-import com.fanfan.novel.common.instance.SpeakIat;
-import com.fanfan.novel.common.instance.SpeakTts;
 import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
 import com.fanfan.novel.service.listener.IatListener;
 import com.fanfan.novel.service.listener.TtsListener;
@@ -23,7 +21,6 @@ import com.fanfan.novel.service.stragry.local.MoveStrategy;
 import com.fanfan.novel.service.stragry.local.StopStrategy;
 import com.fanfan.novel.utils.FucUtil;
 import com.fanfan.robot.R;
-import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.RobotInfo;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
@@ -72,22 +69,22 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
     @Override
     public void finish() {
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
+//        mIat.cancel();
+        mTts.destroy();
         mTtsListener = null;
         mIatListener = null;
     }
 
     @Override
     public void initTts() {
-        mTts = SpeakTts.getInstance().mTts();
         if (mTts == null) {
-            SpeakTts.getInstance().initTts(NovelApp.getInstance().getApplicationContext(), new InitListener() {
+            mTts = SpeechSynthesizer.createSynthesizer(mSoundView.getContext(), new InitListener() {
                 @Override
                 public void onInit(int code) {
                     if (code != ErrorCode.SUCCESS) {
                         Print.e("初始化失败，错误码：" + code);
                     }
                     Print.e("local initTts success");
-                    mTts = SpeakTts.getInstance().mTts();
                 }
             });
         }
@@ -114,16 +111,14 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
 
     @Override
     public void initIat() {
-        mIat = SpeakIat.getInstance().mIat();
         if (mIat == null) {
-            SpeakIat.getInstance().initIat(NovelApp.getInstance().getApplicationContext(), new InitListener() {
+            mIat = SpeechRecognizer.createRecognizer(mSoundView.getContext(), new InitListener() {
                 @Override
                 public void onInit(int code) {
                     if (code != ErrorCode.SUCCESS) {
                         Print.e("初始化失败，错误码：" + code);
                     }
                     Print.e("local initIat success");
-                    mIat = SpeakIat.getInstance().mIat();
                 }
             });
         }
@@ -146,12 +141,12 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
         mIat.setParameter(SpeechConstant.ASR_PTT, "1");
         mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Constants.GRM_PATH + File.separator + "iat.wav");
+        Print.e("initIat success ...");
     }
 
     @Override
     public void stopTts() {
         if (mTts.isSpeaking()) {
-            Print.e("stopSpeaking");
             mTts.stopSpeaking();
         }
     }
@@ -160,7 +155,6 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
     public void doAnswer(String answer) {
         stopTts();
         int code = mTts.startSpeaking(answer, mTtsListener);
-        Print.e("ccc" + code);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.fanfan.robot.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -81,7 +82,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
 
     private ImageFragment imageFragment;
     private boolean isShow;
-
+    private Handler handler = new Handler();
     @Override
     protected int getLayoutId() {
         return R.layout.activity_navigation;
@@ -416,7 +417,13 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
         if (mNavigationBean != null) {
             Print.e(mNavigationBean.getDatail());
             addSpeakAnswer(mNavigationBean.getDatail());
-            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.SPEAK_ACTION);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.SPEAK_ACTION);
+                }
+            }, 500);
+
         }
     }
 

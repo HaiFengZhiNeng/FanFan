@@ -151,13 +151,14 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         super.onResume();
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
         mMainManager.onResume();
-        setChatContent(getResources().getString(R.string.speak_main));
         addSpeakAnswer(getResources().getString(R.string.speak_main), true);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        setChatView(false);
+        loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
         mMainManager.onPause();
     }
 
@@ -492,7 +493,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
         sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
         mMainManager.startVoice();
-        ;
     }
 
     private void loadImage(int load, int place) {

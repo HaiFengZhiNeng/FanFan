@@ -16,7 +16,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.model.StorageBean;
 import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.ImageUtils;
 import com.fanfan.novel.utils.MediaFile;
@@ -25,17 +24,14 @@ import com.fanfan.novel.utils.SystemUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.model.Music;
-import com.seabreeze.log.Print;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * Created by android on 2018/1/10.

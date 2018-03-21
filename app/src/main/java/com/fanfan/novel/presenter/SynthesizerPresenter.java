@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.os.Handler;
 
 import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.common.instance.SpeakTts;
 import com.fanfan.novel.presenter.ipresenter.ISynthesizerPresenter;
 import com.fanfan.novel.service.listener.TtsListener;
-import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.RobotInfo;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
@@ -53,15 +51,13 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
     @Override
     public void initTts() {
 
-        mTts = SpeakTts.getInstance().mTts();
         if (mTts == null) {
-            SpeakTts.getInstance().initTts(NovelApp.getInstance().getApplicationContext(), new InitListener() {
+            mTts = SpeechSynthesizer.createSynthesizer(mTtsView.getContext(), new InitListener() {
                 @Override
                 public void onInit(int code) {
                     if (code != ErrorCode.SUCCESS) {
                         Print.e("初始化失败，错误码：" + code);
                     }
-                    mTts = SpeakTts.getInstance().mTts();
                 }
             });
         }

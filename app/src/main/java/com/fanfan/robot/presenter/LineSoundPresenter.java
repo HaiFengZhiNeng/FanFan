@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.enums.SpecialType;
-import com.fanfan.novel.common.instance.SpeakIat;
 import com.fanfan.novel.model.hotword.HotWord;
 import com.fanfan.novel.model.hotword.Userword;
 import com.fanfan.novel.model.xf.Telephone;
@@ -36,7 +35,6 @@ import com.fanfan.novel.utils.music.MediaPlayerUtil;
 import com.fanfan.novel.utils.tele.TelNumMatch;
 import com.fanfan.novel.utils.tele.TelePhoneUtils;
 import com.fanfan.novel.utils.youdao.TranslateData;
-import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 import com.fanfan.youtu.utils.GsonUtil;
@@ -96,6 +94,8 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     private String mOtherText;
 
+    private boolean isOpening;
+
     public LineSoundPresenter(ILineSoundView baseView) {
         super(baseView);
         mSoundView = baseView;
@@ -116,8 +116,9 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (mAIUIAgent != null) {
             mAIUIAgent.destroy();
         }
-        stopRecognizerListener();
-        stopVoice();
+        if (mIat != null) {
+            mIat.cancel();
+        }
         aiuiListener = null;
         mIatListener = null;
     }
@@ -125,17 +126,14 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     @Override
     public void initIat() {
 
-        mIat = SpeakIat.getInstance().mIat();
         if (mIat == null) {
-
-            SpeakIat.getInstance().initIat(NovelApp.getInstance().getApplicationContext(), new InitListener() {
+            mIat = SpeechRecognizer.createRecognizer(mSoundView.getContext(), new InitListener() {
                 @Override
                 public void onInit(int code) {
                     if (code != ErrorCode.SUCCESS) {
                         Print.e("初始化失败，错误码：" + code);
                     }
-                    Print.e("initIat success");
-                    mIat = SpeakIat.getInstance().mIat();
+                    Print.e("local initIat success");
                 }
             });
         }
@@ -213,8 +211,11 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void startRecognizerListener() {
-        setIatparameter();
-        mIat.startListening(mIatListener);
+        if (isOpening) {
+            setIatparameter();
+            mIat.startListening(mIatListener);
+            Print.e("startListening ...");
+        }
     }
 
     private void setIatparameter() {
@@ -258,6 +259,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
         mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Constants.GRM_PATH + File.separator + "iat.wav");
+        Print.e("initIat success ...");
     }
 
     @Override
@@ -334,6 +336,11 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         }
     }
 
+    @Override
+    public void setOpening(boolean isOpen) {
+        isOpening = isOpen;
+    }
+
     //**********************************************************************************************
     @Override
     public void onTranslate(String result) {
@@ -375,6 +382,9 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 mSoundView.showMsg("授权不足");
                 break;
             case 12404:
+                startRecognizerListener();
+                break;
+            case 10700:
                 startRecognizerListener();
                 break;
         }
@@ -540,7 +550,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 isTrans = false;
                 mSoundView.doAiuiAnwer(finalText);
                 mSoundView.refHomePage(question, finalText);
-                if(Constants.isTrain) {
+                if (Constants.isTrain) {
                     mSoundView.train(trains);
                 }
                 for (int i = 0; i < trains.size(); i++) {
@@ -555,7 +565,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         } else {
             mSoundView.doAiuiAnwer(finalText);
             mSoundView.refHomePage(question, finalText);
-            if(Constants.isTrain) {
+            if (Constants.isTrain) {
                 mSoundView.train(trains);
             }
             for (int i = 0; i < trains.size(); i++) {

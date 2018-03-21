@@ -40,11 +40,13 @@ public class MainManager {
     }
 
     public void onResume() {
+        mSoundPresenter.setOpening(true);
         mTtsPresenter.buildTts();
         mSoundPresenter.buildIat();
     }
 
     public void onPause() {
+        mSoundPresenter.setOpening(false);
         mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
         mTtsPresenter.stopTts();
         mTtsPresenter.stopHandler();
@@ -97,11 +99,15 @@ public class MainManager {
     }
 
     public void doAnswer(String messageContent) {
-        mSoundPresenter.stopRecognizerListener();
         mTtsPresenter.doAnswer(messageContent);
     }
 
     public void setSpeech(boolean isSpeech) {
         mSoundPresenter.setSpeech(isSpeech);
     }
+
+    public void stopHandler() {
+        mTtsPresenter.stopHandler();
+    }
+
 }

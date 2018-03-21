@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseDialogFragment;
-import com.fanfan.novel.common.instance.SpeakIat;
 import com.fanfan.novel.db.manager.NavigationDBManager;
 import com.fanfan.novel.db.manager.SiteDBManager;
 import com.fanfan.novel.db.manager.VideoDBManager;
@@ -31,6 +30,7 @@ import com.fanfan.robot.adapter.ImportAdapter;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.model.Channel;
 import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.LexiconListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
@@ -109,6 +109,8 @@ public class ImportFragment extends BaseDialogFragment {
     private ImportAdapter mAdapter;
     private List<Channel> mDatas = new ArrayList<>();
 
+    private SpeechRecognizer mIat;
+
     @Override
     protected int getLayoutId() {
         return R.layout.dialog_import;
@@ -171,6 +173,7 @@ public class ImportFragment extends BaseDialogFragment {
     @Override
     public void onPause() {
         super.onPause();
+        mIat.cancel();
         assert ((SettingActivity) getActivity()) != null;
         ((SettingActivity) getActivity()).dismissLoading();
     }
@@ -454,7 +457,15 @@ public class ImportFragment extends BaseDialogFragment {
     }
 
     public void updateLocation(String lexiconContents) {
-        SpeechRecognizer mIat = SpeakIat.getInstance().mIat();
+        mIat = SpeechRecognizer.createRecognizer(getActivity(), new InitListener() {
+            @Override
+            public void onInit(int code) {
+                if (code != ErrorCode.SUCCESS) {
+                    Print.e("初始化失败，错误码：" + code);
+                }
+                Print.e("local initIat success");
+            }
+        });
         mIat.setParameter(SpeechConstant.PARAMS, null);
         // 设置引擎类型
         mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);

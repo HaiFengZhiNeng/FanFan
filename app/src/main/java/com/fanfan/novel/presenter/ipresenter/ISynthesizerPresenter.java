@@ -32,5 +32,6 @@ public abstract class ISynthesizerPresenter implements BasePresenter {
         void onSpeakBegin();
 
         void onRunable();
+
     }
 }

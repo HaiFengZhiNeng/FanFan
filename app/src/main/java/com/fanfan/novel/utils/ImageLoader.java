@@ -98,7 +98,7 @@ public class ImageLoader {
         loadImage(context, imageView, model, error, error, false, DiskCacheStrategy.RESOURCE);
     }
 
-    private static void loadImage(Context context, ImageView imageView, @Nullable Object model,
+    public static void loadImage(Context context, ImageView imageView, @Nullable Object model,
                                   int placeholder, int error, boolean skip, @NonNull DiskCacheStrategy strategy) {
         loadImage(context, imageView, model, placeholder, error, Priority.NORMAL, skip, strategy, new GlideRoundTransform());
     }

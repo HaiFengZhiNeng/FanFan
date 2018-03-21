@@ -173,9 +173,12 @@ public class SerialPortManager extends SerialPort {
      * 开启接收消息的线程
      */
     private void startReadThread(int baudRate) {
+        Print.e("启动线程");
         mSerialPortReadThread = new SerialPortReadThread(baudRate, mFileInputStream) {
             @Override
             public void onDataReceived(int baudRate, byte[] bytes) {
+
+                Print.e("线程启动了");
                 if (null != mOnSerialPortDataListener) {
                     mOnSerialPortDataListener.onDataReceived(baudRate, bytes);
                 }
