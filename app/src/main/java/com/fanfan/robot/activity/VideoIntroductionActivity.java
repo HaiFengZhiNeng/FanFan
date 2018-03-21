@@ -3,16 +3,13 @@ package com.fanfan.robot.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.activity.VideoDetailActivity;
@@ -49,7 +46,6 @@ import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -137,7 +133,6 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     protected void onResume() {
         super.onResume();
         mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
 
         addSpeakAnswer("你好，这里是视频介绍页面，点击上下方列表或说出视屏名称可播放视频");
     }

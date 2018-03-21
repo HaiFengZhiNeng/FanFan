@@ -86,7 +86,7 @@ public class Constants {
     public static boolean isTrain = false;
 
     //true 是手机端的
-    public static boolean unusual = true;
+    public static boolean unusual = false;
 
     public static String TRAIN_CONTORL_NAME = "fanc104";
 

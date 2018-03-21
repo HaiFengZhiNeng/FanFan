@@ -151,7 +151,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         super.onResume();
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
         mMainManager.onResume();
-        addSpeakAnswer(getResources().getString(R.string.speak_main), true);
     }
 
     @Override

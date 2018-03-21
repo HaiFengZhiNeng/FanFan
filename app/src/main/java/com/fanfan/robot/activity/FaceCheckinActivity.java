@@ -250,7 +250,6 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     protected void onResume() {
         super.onResume();
         mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
         addSpeakAnswer("请对准摄像头");
     }
 

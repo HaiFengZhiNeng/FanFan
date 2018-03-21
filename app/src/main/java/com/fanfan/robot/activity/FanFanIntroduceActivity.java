@@ -76,7 +76,6 @@ public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSo
     protected void onResume() {
         super.onResume();
         mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
     }
 
     @Override

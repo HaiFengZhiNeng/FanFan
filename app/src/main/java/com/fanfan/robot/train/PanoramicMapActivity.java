@@ -108,7 +108,6 @@ public class PanoramicMapActivity extends BarBaseActivity implements ILocalSound
         mVrPanoramaView.resumeRendering();
 
         mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
 
         addSpeakAnswer("你好，这里是全景地图页面");
     }

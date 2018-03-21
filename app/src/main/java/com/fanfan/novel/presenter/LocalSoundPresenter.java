@@ -154,7 +154,7 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
     @Override
     public void doAnswer(String answer) {
         stopTts();
-        int code = mTts.startSpeaking(answer, mTtsListener);
+        mTts.startSpeaking(answer, mTtsListener);
     }
 
     @Override

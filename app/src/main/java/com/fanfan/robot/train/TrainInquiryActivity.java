@@ -429,7 +429,6 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
     protected void onResume() {
         super.onResume();
         mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
         addSpeakAnswer("你好，这里是列车查询页面");
     }
 

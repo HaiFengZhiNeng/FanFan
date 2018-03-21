@@ -9,11 +9,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
@@ -21,7 +17,6 @@ import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
 import com.fanfan.novel.presenter.SerialPresenter;
-import com.fanfan.novel.presenter.SynthesizerPresenter;
 import com.fanfan.novel.presenter.ipresenter.ILocalSoundPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
 import com.fanfan.novel.service.SerialService;
@@ -154,7 +149,6 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
     protected void onResume() {
         super.onResume();
         mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
 
         addSpeakAnswer("请点击要播放的ppt", false);
     }

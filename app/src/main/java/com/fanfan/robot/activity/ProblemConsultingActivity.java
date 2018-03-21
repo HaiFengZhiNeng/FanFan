@@ -128,7 +128,6 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     protected void onResume() {
         super.onResume();
         mSoundPresenter.buildTts();
-//        mSoundPresenter.buildIat();
 
         addSpeakAnswer("你好，这里是问题咨询页面，点击上方列表或说出列表中问题可得到答案");
 
