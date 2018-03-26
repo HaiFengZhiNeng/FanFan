@@ -305,6 +305,42 @@
                     android:textSize="@dimen/x8" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/set_test"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/y10"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/diy_white_bg"
+                    android:padding="@dimen/y8"
+                    android:text="测试"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_map"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:gravity="center"
+                    android:padding="@dimen/y8"
+                    android:text="地图"
+                    android:textSize="@dimen/x8" />
+
+                <TextView
+                    android:id="@+id/tv_vr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/y5"
+                    android:background="@color/white"
+                    android:gravity="center"
+                    android:padding="@dimen/y8"
+                    android:text="VR"
+                    android:textSize="@dimen/x8" />
+            </LinearLayout>
 
         </LinearLayout>
 

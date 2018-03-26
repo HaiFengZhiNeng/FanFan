@@ -2,7 +2,6 @@ package com.fanfan.novel.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -19,7 +18,6 @@ import com.fanfan.novel.db.manager.FaceAuthDBManager;
 import com.fanfan.novel.model.FaceAuth;
 import com.fanfan.novel.ui.manager.FullyLinearLayoutManager;
 import com.fanfan.novel.utils.DialogUtils;
-import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.robot.R;
 import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.face.bean.DelFace;
@@ -54,7 +52,7 @@ public class PersonInfoDetailActivity extends BarBaseActivity {
     @BindView(R.id.face_recycler)
     RecyclerView faceRecycler;
 
-    public static final int PERSONINFO_DETAIL = 228;
+    public static final int PERSONINFO_DETAIL = 227;
 
     public static void navToPersonInfoDetail(Activity context, String userInfoId, int requestCode) {
         Intent intent = new Intent(context, PersonInfoDetailActivity.class);

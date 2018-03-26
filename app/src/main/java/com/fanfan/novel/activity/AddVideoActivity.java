@@ -62,7 +62,7 @@ public class AddVideoActivity extends BarBaseActivity {
 
     public static final String VIDEO_ID = "videoId";
     public static final String RESULT_CODE = "video_title_result";
-    public static final int ADD_VIDEO_REQUESTCODE = 223;
+    public static final int ADD_VIDEO_REQUESTCODE = 224;
 
     public static final int CHOOSE_VIDEO = 4;//选择视频
     public static final int RECORD_VIDEO = 5;//录制视频

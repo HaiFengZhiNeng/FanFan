@@ -1,20 +1,16 @@
 package com.fanfan.robot.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.support.v4.app.Fragment;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.fanfan.novel.activity.AddNavigationActivity;
-import com.fanfan.novel.activity.FaceDataActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
-import com.fanfan.novel.model.NavigationBean;
 import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.db.DanceDBManager;
@@ -38,8 +34,8 @@ public class DanceAddActivity extends BarBaseActivity {
     TextView tvDance;
 
     public static final String DANCE_ID = "dance_id";
-    public static final int ADD_DANCE_REQUESTCODE = 225;
-    public static final int ADD_DANCE_RESULTCODE = 225;
+    public static final int ADD_DANCE_REQUESTCODE = 230;
+    public static final int ADD_DANCE_RESULTCODE = 231;
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, DanceAddActivity.class);

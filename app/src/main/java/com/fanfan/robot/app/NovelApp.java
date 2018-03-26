@@ -3,7 +3,6 @@ package com.fanfan.robot.app;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.facebook.stetho.Stetho;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseApplication;
 import com.fanfan.novel.common.lifecycle.Foreground;
@@ -41,7 +40,7 @@ public class NovelApp extends BaseApplication {
 
 //        if (initLeak()) return;
 //        RCrashHandler.getInstance(Constants.CRASH_PATH).init(this, null);
-        Stetho.initializeWithDefaults(this);
+//        Stetho.initializeWithDefaults(this);
         initLogger(this);
         Foreground.init(this);
         //初始化数据库

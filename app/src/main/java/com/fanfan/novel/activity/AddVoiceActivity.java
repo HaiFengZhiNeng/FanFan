@@ -73,7 +73,7 @@ public class AddVoiceActivity extends BarBaseActivity {
 
     public static final String VOICE_ID = "voiceId";
     public static final String RESULT_CODE = "voice_title_result";
-    public static final int ADD_VOICE_REQUESTCODE = 224;
+    public static final int ADD_VOICE_REQUESTCODE = 225;
 
     private static final int REQCODE_SELALBUM = 101;
 

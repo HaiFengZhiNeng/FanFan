@@ -3,6 +3,7 @@ package com.fanfan.robot.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -13,11 +14,14 @@ import com.fanfan.novel.activity.DataVideoActivity;
 import com.fanfan.novel.activity.DataVoiceActivity;
 import com.fanfan.novel.activity.FaceDataActivity;
 import com.fanfan.novel.activity.SelectCtiyActivity;
+import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.map.activity.AMapActivity;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.fragment.ImportFragment;
 import com.fanfan.robot.fragment.XfFragment;
+import com.fanfan.robot.train.PanoramicMapActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -53,6 +57,12 @@ public class SettingActivity extends BarBaseActivity {
     RelativeLayout rlCity;
     @BindView(R.id.tv_city)
     TextView tvCity;
+    @BindView(R.id.set_test)
+    LinearLayout setTest;
+    @BindView(R.id.tv_map)
+    TextView tvMap;
+    @BindView(R.id.tv_vr)
+    TextView tvVr;
 
 
     private MaterialDialog materialDialog;
@@ -73,11 +83,17 @@ public class SettingActivity extends BarBaseActivity {
     protected void initData() {
 
         tvCity.setText(RobotInfo.getInstance().getCityName());
+
+        if (Constants.unusual) {
+            setTest.setVisibility(View.VISIBLE);
+        } else {
+            setTest.setVisibility(View.GONE);
+        }
     }
 
 
     @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.add_site, R.id.import_layout,
-            R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout, R.id.rl_city})
+            R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout, R.id.rl_city, R.id.tv_vr, R.id.tv_map})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.add_video:
@@ -113,6 +129,12 @@ public class SettingActivity extends BarBaseActivity {
                 break;
             case R.id.rl_city:
                 SelectCtiyActivity.newInstance(this);
+                break;
+            case R.id.tv_vr:
+                PanoramicMapActivity.newInstance(this);
+                break;
+            case R.id.tv_map:
+                AMapActivity.newInstance(this);
                 break;
         }
     }

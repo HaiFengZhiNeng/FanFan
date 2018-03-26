@@ -47,7 +47,7 @@ public class AddSiteActivity extends BarBaseActivity {
     @BindView(R.id.et_site_url)
     EditText etSiteUrl;
 
-    public static final int ADD_SITE_REQUESTCODE = 225;
+    public static final int ADD_SITE_REQUESTCODE = 223;
 
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, AddSiteActivity.class);

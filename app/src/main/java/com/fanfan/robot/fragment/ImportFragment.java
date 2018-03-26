@@ -173,7 +173,9 @@ public class ImportFragment extends BaseDialogFragment {
     @Override
     public void onPause() {
         super.onPause();
-        mIat.cancel();
+        if (mIat != null) {
+            mIat.cancel();
+        }
         assert ((SettingActivity) getActivity()) != null;
         ((SettingActivity) getActivity()).dismissLoading();
     }

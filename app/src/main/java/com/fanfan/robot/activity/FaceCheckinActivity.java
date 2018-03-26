@@ -121,8 +121,8 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     @BindView(R.id.tv_checkin)
     TextView tvCheckIn;
 
-    public static final int CHECK_REQUESTCODE = 240;
-    public static final int CHECK_RESULTCODE = 241;
+    public static final int CHECK_REQUESTCODE = 232;
+    public static final int CHECK_RESULTCODE = 234;
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, FaceCheckinActivity.class);

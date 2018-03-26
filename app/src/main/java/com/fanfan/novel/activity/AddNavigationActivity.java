@@ -83,7 +83,7 @@ public class AddNavigationActivity extends BarBaseActivity {
 
     public static final String NAVIGATION_TITLE = "navigation_title";
     public static final String NAVIGATION_ID = "navigation_id";
-    public static final int ADD_NAVIGATION_REQUESTCODE = 223;
+    public static final int ADD_NAVIGATION_REQUESTCODE = 222;
     public static final String RESULT_CODE = "navigation_title_result";
 
     public static void newInstance(Activity context, String title, int requestCode) {

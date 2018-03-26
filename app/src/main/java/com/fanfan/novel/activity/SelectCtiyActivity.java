@@ -90,8 +90,8 @@ public class SelectCtiyActivity extends BarBaseActivity implements SearchView.On
     @BindView(R.id.citys_bladeview)
     BladeView mLetter;
 
-    public static final int CITY_REQUEST_CODE = 230;
-    public static final int CITY_RESULT_CODE = 231;
+    public static final int CITY_REQUEST_CODE = 228;
+    public static final int CITY_RESULT_CODE = 229;
     public static final String RESULT_CODE = "city_result";
 
     public static void newInstance(Activity context) {

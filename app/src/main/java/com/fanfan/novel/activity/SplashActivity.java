@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
@@ -72,6 +73,8 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
     //权限
     private static final int PERMISSION_REQUEST_CODE = 0; // 系统权限管理页面的参数
     private static final String PACKAGE_URL_SCHEME = "package:"; // 方案
+
+    private static final int OVERLAY_PERMISSION_REQ_CODE = 600;
 
     //登陆
     public static final int LOGIN_RESULT_CODE = 570;
@@ -142,9 +145,10 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
 
         if (Build.VERSION.SDK_INT >= 23) {
             if (!Settings.canDrawOverlays(this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                showToast("当前需开启悬浮框权限，请授权！");
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
             } else {
                 checkPermissions();
             }
@@ -246,6 +250,7 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
         startActivity(intent);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -258,6 +263,13 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
                 }
             } else if (resultCode == BACK_RESULTCODE) {
                 handler.sendEmptyMessageDelayed(REFRESH_COMPLETE, 1000);
+            }
+        } else if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
+            if (!Settings.canDrawOverlays(this)) {
+                showToast("授权后请重启应用，否则无法开启悬浮窗");
+            } else {
+                showToast("权限授予成功！");
+                checkPermissions();
             }
         }
     }

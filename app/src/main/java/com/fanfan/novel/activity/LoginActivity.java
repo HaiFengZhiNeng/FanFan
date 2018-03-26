@@ -30,8 +30,8 @@ import butterknife.OnClick;
 
 public class LoginActivity extends BarBaseActivity implements ILoginPresenter.ILoginView {
 
-    public static final int LOGIN_TO_REGISTER_REQUESTCODE = 99;
-    public static final int LOGIN_TO_REGISTER_RESULTCODE = 199;
+    public static final int LOGIN_TO_REGISTER_REQUESTCODE = 220;
+    public static final int LOGIN_TO_REGISTER_RESULTCODE = 221;
 
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, LoginActivity.class);

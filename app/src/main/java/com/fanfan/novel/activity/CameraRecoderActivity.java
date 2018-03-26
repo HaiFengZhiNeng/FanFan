@@ -28,7 +28,7 @@ public class CameraRecoderActivity extends BarBaseActivity {
     public static final String FIRST_FRAME = "FIRST_FRAME";
     public static final String VIDEO_URL = "VIDEO_URL";
 
-    public static final int REAODER_RESULTCODE = 303;
+    public static final int REAODER_RESULTCODE = 226;
 
     public static void newInstance(Activity context, int requestCode) {
         Intent intent = new Intent(context, CameraRecoderActivity.class);
