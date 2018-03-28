@@ -102,6 +102,8 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
         mIatListener = new IatListener(this);
         aiuiListener = new AiuiListener((Activity) mSoundView.getContext(), this);
+
+
     }
 
     @Override
@@ -900,6 +902,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     public void onNoAnswer(String question) {
         Print.e("noAnswer : " + question);
         onCompleted();
+        mSoundView.noAnswer(question);
     }
 
     private void onCompleted() {

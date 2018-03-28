@@ -35,6 +35,7 @@ public class Constants {
     public static final String PRINT_TIMLOG_PATH = M_SDROOT_CACHE_PATH + "log" + File.separator;
     public static final String CRASH_PATH = M_SDROOT_CACHE_PATH + "crash";
     public static final String RECORDER_PATH = PROJECT_PATH + "Camera";
+    public static final String DOWNLOAD_PATH = PROJECT_PATH + "download";
 
     public static final String GRM_PATH = PROJECT_PATH + "msc";
 
@@ -86,7 +87,7 @@ public class Constants {
     public static boolean isTrain = false;
 
     //true 是手机端的
-    public static boolean unusual = false;
+    public static boolean unusual = true;
 
     public static String TRAIN_CONTORL_NAME = "fanc104";
 

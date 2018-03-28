@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 
 import com.fanfan.youtu.api.face.api.FaceAPI;
 import com.fanfan.youtu.api.face.api.FaceImpl;
+import com.fanfan.youtu.api.hfrobot.api.RobotAPI;
+import com.fanfan.youtu.api.hfrobot.api.RobotImpl;
 import com.fanfan.youtu.api.uploadfile.api.FilezooAPI;
 import com.fanfan.youtu.api.uploadfile.api.FilezooImpl;
 
@@ -16,10 +18,11 @@ import java.util.List;
  * Created by android on 2018/1/4.
  */
 
-public class Youtucode implements FilezooAPI, FaceAPI {
+public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
 
     private static FilezooImpl sFilezooImplement;
     private static FaceImpl sFaceImplement;
+    private static RobotImpl sRobotImplement;
 
     private volatile static Youtucode mYoutucode;
 
@@ -48,6 +51,7 @@ public class Youtucode implements FilezooAPI, FaceAPI {
         try {
             sFilezooImplement = new FilezooImpl(context);
             sFaceImplement = new FaceImpl(context);
+            sRobotImplement = new RobotImpl(context);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -142,5 +146,25 @@ public class Youtucode implements FilezooAPI, FaceAPI {
     @Override
     public String getInfo(String personId) {
         return sFaceImplement.getInfo(personId);
+    }
+
+    @Override
+    public String updateProgram() {
+        return sRobotImplement.updateProgram();
+    }
+
+    @Override
+    public String downloadFileWithFixedUrl() {
+        return sRobotImplement.downloadFileWithFixedUrl();
+    }
+
+    @Override
+    public String downloadFileWithDynamicUrlSync(String fileUrl) {
+        return sRobotImplement.downloadFileWithDynamicUrlSync(fileUrl);
+    }
+
+    @Override
+    public String uploadProblem(String identifier, String problem) {
+        return sRobotImplement.uploadProblem(identifier, problem);
     }
 }

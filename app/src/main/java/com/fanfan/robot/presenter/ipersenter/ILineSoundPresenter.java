@@ -85,6 +85,8 @@ public abstract class ILineSoundPresenter implements BasePresenter {
         void spakeLogout();
 
         void onCompleted();
+
+        void noAnswer(String question);
     }
 
 

@@ -27,7 +27,7 @@ import com.fanfan.novel.utils.CameraUtils;
 import com.fanfan.novel.utils.DeviceUtil;
 import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.ScreenUtil;
-import com.fanfan.novel.utils.permiss.CheckPermission;
+import com.fanfan.novel.permiss.CheckPermission;
 import com.seabreeze.log.Print;
 import com.uuzuche.lib_zxing.camera.AutoFocusCallback;
 

@@ -906,6 +906,11 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
         mMainManager.onCompleted();
     }
 
+    @Override
+    public void noAnswer(String question) {
+
+    }
+
     private class PlayServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {

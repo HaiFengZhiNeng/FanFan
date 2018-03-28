@@ -292,6 +292,40 @@
                         android:src="@mipmap/icon_arrow" />
                 </RelativeLayout>
 
+
+                <RelativeLayout
+                    android:id="@+id/rl_update"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/y5"
+                    android:background="@color/white"
+                    android:padding="@dimen/y8">
+
+                    <TextView
+                        android:id="@+id/tv_cur_code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="当前版本 V1.0.0"
+                        android:textSize="@dimen/x8" />
+
+                    <TextView
+                        android:id="@+id/tv_update"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/y10"
+                        android:layout_toLeftOf="@+id/iv_update"
+                        android:text="新版更新"
+                        android:textSize="@dimen/x8" />
+
+                    <ImageView
+                        android:id="@+id/iv_update"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/icon_arrow" />
+                </RelativeLayout>
+
                 <TextView
                     android:id="@+id/logout"
                     android:layout_width="match_parent"

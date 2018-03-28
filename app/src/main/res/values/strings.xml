@@ -113,4 +113,26 @@
 
     <string name="speak_main">您有什么想了解的可以向我询问，问题咨询中我可以回答您更多问题，导航系统可引导您到达指定位置，还有唱歌、跳舞娱乐功能，欢迎您体验</string>
 
+    <string name="download_fail_retry">下载失败是否重试？</string>
+    <string name="download_finish">下载完成，点击安装</string>
+    <string name="downloading">正在下载中...</string>
+    <string name="check_new_version">检测到新版本</string>
+    <string name="download_progress">下载进度:%d%%/100%%</string>
+    <string name="download_fail">下载失败，点击重试</string>
+    <string name="progress">%d/100</string>
+    <string name="write_permission_deny">下载安装包需要读写文件权限。</string>
+    <string name="download_apkname">%s.apk</string>
+    <string name="download_backstage">后台下载</string>
+
+    <string name="permission_dialog_title">开启%s</string>
+    <string name="permission_dialog_msg">为了您能正常使用%s，需要以下权限</string>
+    <string name="permission_title">请允许获取%s</string>
+    <string name="permission_denied">我们需要获取%1$s, 否则您将无法正常使用%2$s</string>
+    <string name="permission_denied_with_naac">"由于%1$s无法获取%2$s, 不能正常运行, 请开启权限后再使用。\n\n设置路径: 应用管理->%3$s->权限"</string>
+    <string name="permission_cancel">取消</string>
+    <string name="permission_ensure">确定</string>
+    <string name="permission_reject">拒绝</string>
+    <string name="permission_btn_next">下一步</string>
+    <string name="permission_go_to_setting">去设置</string>
+
 </resources>

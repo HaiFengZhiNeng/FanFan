@@ -24,6 +24,7 @@ import com.fanfan.novel.im.init.LoginBusiness;
 import com.fanfan.novel.map.activity.AMapActivity;
 import com.fanfan.novel.model.RobotBean;
 import com.fanfan.novel.model.SerialBean;
+import com.fanfan.novel.model.UserInfo;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.model.xf.service.Cookbook;
 import com.fanfan.novel.model.xf.service.News;
@@ -55,6 +56,9 @@ import com.fanfan.robot.db.DanceDBManager;
 import com.fanfan.robot.model.Dance;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 import com.fanfan.robot.train.PanoramicMapActivity;
+import com.fanfan.youtu.Youtucode;
+import com.fanfan.youtu.api.hfrobot.bean.RobotMsg;
+import com.fanfan.youtu.api.hfrobot.event.UploadProblemEvent;
 import com.fanfan.youtu.utils.GsonUtil;
 import com.github.florent37.viewanimator.ViewAnimator;
 import com.iflytek.cloud.SpeechConstant;
@@ -114,6 +118,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private boolean isPlay;
 
+    private Youtucode youtucode;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main1;
@@ -126,6 +132,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         DaggerMainComponet.builder().mainModule(new MainModule(this)).build().inject(this);
 
         mMainManager.onCreate();
+
+        youtucode = Youtucode.getSingleInstance();
     }
 
     @Override
@@ -842,6 +850,26 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     @Override
     public void onCompleted() {
         mMainManager.onCompleted();
+    }
+
+    @Override
+    public void noAnswer(String question) {
+        String identifier = UserInfo.getInstance().getIdentifier();
+        youtucode.uploadProblem(identifier, question);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(UploadProblemEvent event) {
+        if (event.isOk()) {
+            RobotMsg robotMsg = event.getBean();
+            if (robotMsg.getCode() == 0) {
+                Print.e(robotMsg.getMsg());
+            } else {
+                onError(robotMsg.getCode(), robotMsg.getMsg());
+            }
+        } else {
+            onError(event);
+        }
     }
 
     private class PlayServiceConnection implements ServiceConnection {

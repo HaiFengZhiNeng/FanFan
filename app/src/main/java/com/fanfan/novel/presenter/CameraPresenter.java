@@ -367,7 +367,7 @@ public class CameraPresenter extends ICameraPresenter implements Camera.PreviewC
 
     @Override
     public void onFaceDetection(Camera.Face[] faces, Camera camera) {
-        if (unusual) {
+        if (!unusual) {
             mCameraView.setCameraFaces(faces);
         }
     }

@@ -6,15 +6,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -38,8 +35,9 @@ import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.UdpService;
 import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.novel.utils.ImageLoader;
-import com.fanfan.novel.utils.permiss.PermissionsChecker;
 import com.fanfan.novel.utils.PhoneUtil;
+import com.fanfan.novel.permiss.HiPermission;
+import com.fanfan.novel.permiss.PermissionCallback;
 import com.fanfan.robot.R;
 import com.fanfan.robot.activity.MainActivity;
 import com.fanfan.robot.activity.MainNewActivity;
@@ -50,7 +48,6 @@ import com.tencent.ilivesdk.ILiveSDK;
 import com.tencent.ilivesdk.core.ILiveLoginManager;
 
 /**
- * http://m.blog.csdn.net/guolin_blog/article/details/78582548
  * Created by android on 2017/12/25.
  */
 
@@ -58,7 +55,6 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
 
 
     private SplashPresenter presenter;
-    private PermissionsChecker mChecker;
 
     static final String[] PERMISSIONS = new String[]{
             Manifest.permission.READ_PHONE_STATE,
@@ -98,7 +94,6 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
 
         ImageView ivSplash = (ImageView) findViewById(R.id.iv_splash);
 
-        mChecker = new PermissionsChecker(this);
         presenter = new SplashPresenter(this);
 
         if (Constants.isTrain) {
@@ -124,19 +119,6 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
         Print.e("屏幕密度 density : " + density);
         Print.e("屏幕密度DPI densityDpi : " + densityDpi);
 
-//        MediaScannerConnection.scanFile(this,
-//                new String[]{Environment.getExternalStorageDirectory().getAbsolutePath()},
-//                null, new MediaScannerConnection.MediaScannerConnectionClient() {
-//                    @Override
-//                    public void onMediaScannerConnected() {
-//                        Print.e("onMediaScannerConnected");
-//                    }
-//
-//                    @Override
-//                    public void onScanCompleted(String s, Uri uri) {
-//                        Print.e("onScanCompleted : " + s);
-//                    }
-//                });
     }
 
 
@@ -158,18 +140,29 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
     }
 
     private void checkPermissions() {
-        if (mChecker.lacksPermissions(PERMISSIONS)) {
+        HiPermission.create(this)
+                .checkMutiPermission(PERMISSIONS, new PermissionCallback() {
+                    @Override
+                    public void onClose() {
+                        showMissingPermissionDialog();
+                    }
 
-            if (mChecker.lacksPermissions(PERMISSIONS)) {
-                //请求权限
-                ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_REQUEST_CODE);
+                    @Override
+                    public void onFinish() {
+                        initIM();
+                    }
 
-            } else {
-                initIM(); // 全部权限都已获取
-            }
-        } else {
-            initIM();
-        }
+                    @Override
+                    public void onDeny(String permission, int position) {
+                        Print.e("onDeny");
+                    }
+
+                    @Override
+                    public void onGuarantee(String permission, int position) {
+                        Print.e("onGuarantee");
+                    }
+                });
+
     }
 
     @Override
@@ -197,27 +190,6 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
         isSDKInit = true;
     }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_CODE && hasAllPermissionsGranted(grantResults)) {
-            initIM();
-        } else {
-
-            showMissingPermissionDialog();
-        }
-    }
-
-    //含有全部的权限
-
-    private boolean hasAllPermissionsGranted(@NonNull int[] grantResults) {
-        for (int grantResult : grantResults) {
-            if (grantResult == PackageManager.PERMISSION_DENIED) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     // 显示缺失权限提示
     private void showMissingPermissionDialog() {

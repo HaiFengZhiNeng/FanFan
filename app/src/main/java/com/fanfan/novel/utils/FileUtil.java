@@ -672,4 +672,5 @@ public class FileUtil {
         return pictureBytes;
 
     }
+
 }

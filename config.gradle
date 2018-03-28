@@ -61,7 +61,7 @@ ext {
 
             //ui
             "constraint-layout"     :   "com.android.support.constraint:constraint-layout:1.0.2",
-            "PhotoView"             : "com.github.chrisbanes:PhotoView:2.1.2",
+            "PhotoView"             :   "com.github.chrisbanes:PhotoView:2.1.2",
             "BaseAdapterHelper"     :   "com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30",
             "kenburnsview"          :   "com.flaviofaria:kenburnsview:1.0.7",
             "materialtabstrip"      :   "com.jpardogo.materialtabstrip:library:1.1.0",

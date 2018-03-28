@@ -6,14 +6,13 @@ import android.support.annotation.NonNull;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.youtu.api.base.Constant;
+import com.fanfan.youtu.api.hfrobot.api.RobotService;
 import com.fanfan.youtu.token.YoutuSign;
 import com.seabreeze.log.Print;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
-import java.net.URLDecoder;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Authenticator;
@@ -24,9 +23,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
-//import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+//import retrofit2.GsonConverterFactory;
 
 /**
  * Created by android on 2017/12/21.
@@ -37,10 +37,14 @@ public class BaseImpl<Service> {
     private static Retrofit mRetrofit;
     protected Service mService;
 
+    private static Retrofit robotRetrofit;
+    protected RobotService robotService;
+
     public BaseImpl(@NonNull Context context) {
 
         initRetrofit();
         this.mService = mRetrofit.create(getServiceClass());
+        robotService = robotRetrofit.create(RobotService.class);
     }
 
 
@@ -113,10 +117,27 @@ public class BaseImpl<Service> {
                 .client(client)                                     // 设置 client
                 .addConverterFactory(GsonConverterFactory.create()) // 设置 Json 转换工具
                 .build();
+
+        robotRetrofit = new Retrofit.Builder()
+                .baseUrl(Constant.API_ROBOT_BASE)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
+
     }
 
     private Class<Service> getServiceClass() {
         return (Class<Service>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
+    private <T> T getApiService(String baseUrl, OkHttpClient client, Class<T> clz) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
+        return retrofit.create(clz);
+    }
 }

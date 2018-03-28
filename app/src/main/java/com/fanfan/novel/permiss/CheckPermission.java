@@ -1,4 +1,4 @@
-package com.fanfan.novel.utils.permiss;
+package com.fanfan.novel.permiss;
 
 import android.hardware.Camera;
 import android.media.AudioFormat;

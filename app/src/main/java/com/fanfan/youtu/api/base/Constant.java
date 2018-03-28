@@ -10,4 +10,5 @@ public class Constant {
 
     public static final String OR_CODE = "https://filezoo.cloudbeing.cn/WisdomPlayFSServer/upfilesZoo";
 
+    public final static String API_ROBOT_BASE = "http://47.104.142.138/";
 }

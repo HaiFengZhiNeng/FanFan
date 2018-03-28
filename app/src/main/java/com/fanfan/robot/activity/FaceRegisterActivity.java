@@ -470,6 +470,7 @@ public class FaceRegisterActivity extends BarBaseActivity implements
         if (!unusual) {
             opencvDraw(bitmap);
         }
+        opencvDraw(bitmap);
     }
 
     private void opencvDraw(Bitmap bitmap) {
