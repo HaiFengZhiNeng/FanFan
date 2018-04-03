@@ -3,16 +3,37 @@ package com.fanfan.youtu;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.fanfan.novel.common.Constants;
+import com.fanfan.youtu.api.base.Constant;
+import com.fanfan.youtu.api.base.OkhttpManager;
 import com.fanfan.youtu.api.face.api.FaceAPI;
 import com.fanfan.youtu.api.face.api.FaceImpl;
 import com.fanfan.youtu.api.hfrobot.api.RobotAPI;
 import com.fanfan.youtu.api.hfrobot.api.RobotImpl;
 import com.fanfan.youtu.api.uploadfile.api.FilezooAPI;
 import com.fanfan.youtu.api.uploadfile.api.FilezooImpl;
+import com.fanfan.youtu.token.YoutuSign;
+import com.seabreeze.log.Print;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Authenticator;
+import okhttp3.Cache;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * Created by android on 2018/1/4.
@@ -24,11 +45,12 @@ public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
     private static FaceImpl sFaceImplement;
     private static RobotImpl sRobotImplement;
 
+    private static OkHttpClient httpClient;
+
     private volatile static Youtucode mYoutucode;
 
     private Youtucode() {
     }
-
 
     public static Youtucode getSingleInstance() {
         if (null == mYoutucode) {
@@ -43,9 +65,11 @@ public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
 
     public static Youtucode init(@NonNull Context context) {
 
+        OkhttpManager.getInstance().init();
         initImplement(context);
         return getSingleInstance();
     }
+
 
     private static void initImplement(Context context) {
         try {
@@ -56,7 +80,6 @@ public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public String upfilesZoo(String zooPath) {
@@ -149,13 +172,8 @@ public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
     }
 
     @Override
-    public String updateProgram() {
-        return sRobotImplement.updateProgram();
-    }
-
-    @Override
-    public String downloadFileWithFixedUrl() {
-        return sRobotImplement.downloadFileWithFixedUrl();
+    public String updateProgram(int type) {
+        return sRobotImplement.updateProgram(type);
     }
 
     @Override

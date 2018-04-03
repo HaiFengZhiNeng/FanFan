@@ -1,5 +1,6 @@
 package com.fanfan.robot.activity;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -32,18 +33,25 @@ import com.fanfan.novel.model.xf.service.Poetry;
 import com.fanfan.novel.model.xf.service.englishEveryday.EnglishEveryday;
 import com.fanfan.novel.model.xf.service.radio.Radio;
 import com.fanfan.novel.model.xf.service.train.Train;
+import com.fanfan.novel.pointdown.db.DownloadDBDao;
+import com.fanfan.novel.pointdown.model.Progress;
 import com.fanfan.novel.presenter.ipresenter.IChatPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISynthesizerPresenter;
+import com.fanfan.novel.service.LoadFileService;
 import com.fanfan.novel.service.PlayService;
 import com.fanfan.novel.service.SerialService;
 import com.fanfan.novel.service.UdpService;
+import com.fanfan.novel.service.cache.LoadFileCache;
 import com.fanfan.novel.service.cache.MusicCache;
 import com.fanfan.novel.service.event.ReceiveEvent;
 import com.fanfan.novel.service.event.ServiceToActivityEvent;
 import com.fanfan.novel.service.music.EventCallback;
 import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.ui.ChatTextView;
+import com.fanfan.novel.utils.AppUtil;
+import com.fanfan.novel.utils.DialogUtils;
+import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.novel.utils.PreferencesUtils;
 import com.fanfan.novel.utils.customtabs.IntentUtil;
@@ -57,7 +65,10 @@ import com.fanfan.robot.model.Dance;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 import com.fanfan.robot.train.PanoramicMapActivity;
 import com.fanfan.youtu.Youtucode;
-import com.fanfan.youtu.api.hfrobot.bean.RobotMsg;
+import com.fanfan.youtu.api.base.Constant;
+import com.fanfan.youtu.api.hfrobot.bean.UpdateProgram;
+import com.fanfan.youtu.api.hfrobot.bean.UploadProblem;
+import com.fanfan.youtu.api.hfrobot.event.UpdateProgramEvent;
 import com.fanfan.youtu.api.hfrobot.event.UploadProblemEvent;
 import com.fanfan.youtu.utils.GsonUtil;
 import com.github.florent37.viewanimator.ViewAnimator;
@@ -71,6 +82,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.List;
@@ -134,6 +146,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         mMainManager.onCreate();
 
         youtucode = Youtucode.getSingleInstance();
+
+        youtucode.updateProgram(1);
     }
 
     @Override
@@ -447,6 +461,58 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             mMainManager.onDataReceiverd(serialBean);
         } else {
             Print.e("ReceiveEvent error");
+        }
+    }
+
+    @SuppressLint("NewApi")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(UpdateProgramEvent event) {
+        if (event.isOk()) {
+            UpdateProgram updateProgram = event.getBean();
+            Print.e(updateProgram);
+            if (updateProgram.getCode() == 0) {
+                UpdateProgram.UpdateProgramBean appVerBean = updateProgram.getUpdateProgram();
+                int curVersion = AppUtil.getVersionCode(this);
+                int newversioncode = appVerBean.getVersionCode();
+
+                if (curVersion < newversioncode) {
+
+                    Progress progress = DownloadDBDao.getInstance().get(Constant.APK_URL);
+                    if (progress == null) {
+                        return;
+                    }
+                    if (progress.status != Progress.FINISH) {
+                        return;
+                    }
+                    final File file = new File(progress.folder, progress.fileName);
+                    if (!file.exists()) {
+                        return;
+                    }
+                    long fileSize = FileUtil.getFileSize(file);
+                    if (progress.totalSize != fileSize) {
+                        return;
+                    }
+                    DialogUtils.showBasicNoTitleDialog(this, getString(R.string.download_check_finish), "取消", "安装",
+                            new DialogUtils.OnNiftyDialogListener() {
+                                @Override
+                                public void onClickLeft() {
+
+                                }
+
+                                @Override
+                                public void onClickRight() {
+                                    stopService(new Intent(MainActivity.this, LoadFileService.class));
+                                    AppUtil.installNormal(MainActivity.this, file);
+                                }
+                            });
+                } else {
+                    Print.e("暂时没有检测到新版本");
+                }
+            } else {
+                onError(updateProgram.getCode(), updateProgram.getMsg());
+            }
+        } else {
+            onError(event);
         }
     }
 
@@ -860,15 +926,32 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onResultEvent(UploadProblemEvent event) {
-        if (event.isOk()) {
-            RobotMsg robotMsg = event.getBean();
-            if (robotMsg.getCode() == 0) {
-                Print.e(robotMsg.getMsg());
+        if (!event.isOk()) {
+            onError(event);
+            onCompleted();
+            return;
+        }
+        UploadProblem uploadProblem = event.getBean();
+        if (uploadProblem.getCode() == 0) {
+            Print.e(uploadProblem.getMsg());
+            onCompleted();
+        } else if (uploadProblem.getCode() == 2) {
+            UploadProblem.UploadProblemBean uploadProblemBean = uploadProblem.getUploadProblem();
+            if (uploadProblemBean == null) {
+                onCompleted();
+                return;
+            }
+            Print.e(uploadProblemBean);
+            String anwer = uploadProblemBean.getAnswer();
+            if (anwer == null) {
+                onCompleted();
             } else {
-                onError(robotMsg.getCode(), robotMsg.getMsg());
+                setChatContent(anwer);
+                addSpeakAnswer(anwer, true);
             }
         } else {
-            onError(event);
+            onError(uploadProblem.getCode(), uploadProblem.getMsg());
+            onCompleted();
         }
     }
 

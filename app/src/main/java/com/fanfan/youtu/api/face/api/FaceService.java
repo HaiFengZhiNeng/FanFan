@@ -34,7 +34,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/getgroupids")
+    @POST("youtu/api/getgroupids")
     Call<GroupIds> getGroupids(@Body RequestBody body);
 
     /**
@@ -45,7 +45,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/getpersonids")
+    @POST("youtu/api/getpersonids")
     Call<FacePersonid> getPersonids(@Body RequestBody body);
 
     /**
@@ -56,7 +56,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/getfaceids")
+    @POST("youtu/api/getfaceids")
     Call<FaceIds> getFaceids(@Body RequestBody body);
 
     /**
@@ -67,7 +67,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/getfaceinfo")
+    @POST("youtu/api/getfaceinfo")
     Call<FaceInfo> getFaceinfo(@Body RequestBody body);
 
     /**
@@ -80,7 +80,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/faceverify")
+    @POST("youtu/api/faceverify")
     Call<Faceverify> faceVerify(@Body RequestBody body);
 
     /**
@@ -93,7 +93,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/faceidentify")
+    @POST("youtu/api/faceidentify")
     Call<FaceIdentify> faceIdentify(@Body RequestBody body);
 
     /**
@@ -109,7 +109,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/newperson")
+    @POST("youtu/api/newperson")
     Call<Newperson> newPerson(@Body RequestBody body);
 
     /**
@@ -123,7 +123,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/facecompare")
+    @POST("youtu/api/facecompare")
     Call<FaceCompare> faceCompare(@Body RequestBody body);
 
     /**
@@ -136,7 +136,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/setinfo")
+    @POST("youtu/api/setinfo")
     Call<PersonModify> modifyPersonName(@Body RequestBody body);
 
     /**
@@ -147,7 +147,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/delperson")
+    @POST("youtu/api/delperson")
     Call<Delperson> delPerson(@Body RequestBody body);
 
     /**
@@ -158,7 +158,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/addface")
+    @POST("youtu/api/addface")
     Call<AddFace> addFaces(@Body RequestBody body);
 
     /**
@@ -172,7 +172,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/detectface")
+    @POST("youtu/api/detectface")
     Call<DetectFace> detectFace(@Body RequestBody body);
 
     /**
@@ -186,7 +186,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/faceshape")
+    @POST("youtu/api/faceshape")
     Call<FaceShape> faceShape(@Body RequestBody body);
 
     /**
@@ -199,7 +199,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/delface")
+    @POST("youtu/api/delface")
     Call<DelFace> delFace(@Body RequestBody body);
 
     /**
@@ -210,7 +210,7 @@ public interface FaceService {
      * @param body
      * @return
      */
-    @POST("api/getinfo")
+    @POST("youtu/api/getinfo")
     Call<GetInfo> getInfo(@Body RequestBody body);
 
     /**
@@ -232,6 +232,6 @@ public interface FaceService {
      *
      * @return
      */
-    @POST("api/multifaceidentify")
+    @POST("youtu/api/multifaceidentify")
     Call<Object> multiFaceIdentify();
 }

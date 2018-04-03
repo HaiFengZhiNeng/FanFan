@@ -6,13 +6,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,9 +33,18 @@ import com.fanfan.novel.activity.SelectCtiyActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.map.activity.AMapActivity;
+import com.fanfan.novel.pointdown.DownloadManager;
+import com.fanfan.novel.pointdown.DownloadRunnable;
+import com.fanfan.novel.pointdown.db.DownloadDBDao;
+import com.fanfan.novel.pointdown.event.ProgressEvent;
+import com.fanfan.novel.pointdown.model.Progress;
+import com.fanfan.novel.service.LoadFileService;
+import com.fanfan.novel.service.cache.LoadFileCache;
+import com.fanfan.novel.service.event.LoadStartEvent;
+import com.fanfan.novel.service.load.ProgressListener;
+import com.fanfan.novel.service.music.Actions;
 import com.fanfan.novel.utils.AppUtil;
 import com.fanfan.novel.utils.DialogUtils;
-import com.fanfan.novel.utils.UpdateUtil;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.fragment.ImportFragment;
@@ -42,7 +53,6 @@ import com.fanfan.robot.train.PanoramicMapActivity;
 import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.base.Constant;
 import com.fanfan.youtu.api.hfrobot.bean.UpdateProgram;
-import com.fanfan.youtu.api.hfrobot.event.DownLoadEvent;
 import com.fanfan.youtu.api.hfrobot.event.UpdateProgramEvent;
 import com.seabreeze.log.Print;
 
@@ -51,23 +61,19 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.text.NumberFormat;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import okhttp3.ResponseBody;
-
-import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
 /**
  * Created by android on 2018/1/6.
  */
 
-public class SettingActivity extends BarBaseActivity implements UpdateUtil.OnDownloadListener {
+public class SettingActivity extends BarBaseActivity implements ProgressListener<File> {
 
     public static final int LOGOUT_TO_MAIN_REQUESTCODE = 102;
     public static final int LOGOUT_TO_MAIN_RESULTCODE = 202;
-
-    public static final int ChannelId = 22;
 
     @BindView(R.id.add_video)
     RelativeLayout addVideo;
@@ -104,16 +110,14 @@ public class SettingActivity extends BarBaseActivity implements UpdateUtil.OnDow
 
     private UpdateProgram.UpdateProgramBean appVerBean;
 
-    private NotificationManager mManager;
-    private NotificationCompat.Builder mBuilder;
-
     private Dialog loadingDialog;
     private View loadingView;
-    private boolean loadShowing;
     private ProgressBar pb;
     private TextView tvProgress;
     private TextView tvBackstage;
 
+    private int curPos = 0;
+    private boolean isPosShow;
 
     private MaterialDialog materialDialog;
 
@@ -143,6 +147,11 @@ public class SettingActivity extends BarBaseActivity implements UpdateUtil.OnDow
         }
 
         tvCurCode.setText(String.format("当前版本 v %s", AppUtil.getVersionName(this)));
+
+        LoadFileService loadFileService = LoadFileCache.get().getFileService();
+        if (loadFileService != null) {
+            loadFileService.setOnLoadEventListener(this);
+        }
     }
 
 
@@ -204,7 +213,7 @@ public class SettingActivity extends BarBaseActivity implements UpdateUtil.OnDow
                 AMapActivity.newInstance(this);
                 break;
             case R.id.rl_update:
-                youtucode.updateProgram();
+                youtucode.updateProgram(1);
                 break;
         }
     }
@@ -261,7 +270,7 @@ public class SettingActivity extends BarBaseActivity implements UpdateUtil.OnDow
 
                                 @Override
                                 public void onClickRight() {
-                                    youtucode.downloadFileWithDynamicUrlSync(Constant.API_ROBOT_BASE + "files/robot.apk");
+                                    startLoad();
                                 }
                             });
                 } else {
@@ -275,92 +284,69 @@ public class SettingActivity extends BarBaseActivity implements UpdateUtil.OnDow
         }
     }
 
+    private void startLoad() {
+        if (LoadFileCache.get().getFileService() == null) {
+            Intent intent = new Intent();
+            intent.setClass(this, LoadFileService.class);
+//            intent.setAction(Actions.ACTION_LOAD_DOWNLOAD);
+            startService(intent);
+            showLoading();
+        } else {
+            LoadFileCache.get().getFileService().restart();
+        }
+//        youtucode.downloadFileWithDynamicUrlSync(Constant.API_ROBOT_BASE + Constants.DOWNLOAD_FILENAME);
+    }
+
     @SuppressLint("NewApi")
-    @Subscribe(threadMode = ThreadMode.BACKGROUND)
-    public void onResultEvent(DownLoadEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(LoadStartEvent event) {
         if (event.isOk()) {
-            ResponseBody body = event.getBean();
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                    mBuilder = createNotification(SettingActivity.this);
-                    mManager.notify(ChannelId, mBuilder.build());
-
-                    loadShowing = true;
-                    showLoadingDialog(0);
-                }
-            });
-
-            UpdateUtil.writeResponseBodyToDisk(this, body, appVerBean.getAppName(), this);
-
+            LoadFileService loadFileService = LoadFileCache.get().getFileService();
+            if (loadFileService != null) {
+                isPosShow = true;
+                loadFileService.setOnLoadEventListener(SettingActivity.this);
+                loadFileService.download();
+            } else {
+                onError(0, "没有启动下载服务");
+            }
         } else {
             onError(event);
         }
     }
 
-    /**
-     * 通知创建
-     *
-     * @param context
-     * @return
-     */
-    private static NotificationCompat.Builder createNotification(Context context) {
-        final String CHANNEL_ID = "0", CHANNEL_NAME = "ALLEN_NOTIFICATION";
-        NotificationCompat.Builder builder = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.RED);
-            notificationChannel.enableVibration(true);
-            NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-            assert manager != null;
-            manager.createNotificationChannel(notificationChannel);
+    @Override
+    public void onStart(Progress progress) {
+        showToast("开始下载啦");
+        showLoading();
+    }
+
+    @Override
+    public void onProgress(Progress progress) {
+        if (progress.status == Progress.PAUSE || progress.status == Progress.WAITING) {
+            showLoading();
+        } else {
+            dismissLoading();
+            if ((int) (progress.fraction * 100) > curPos) {
+                curPos = (int) (progress.fraction * 100);
+                showLoadingDialog((int) (progress.fraction * 100));
+            }
         }
-        builder = new NotificationCompat.Builder(context, CHANNEL_ID);
-
-        builder.setAutoCancel(true);
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-        builder.setContentTitle(context.getString(R.string.app_name));
-        builder.setTicker(context.getString(R.string.downloading));
-        builder.setContentText(String.format(context.getString(R.string.download_progress), 0));
-
-        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        Ringtone r = RingtoneManager.getRingtone(context, notification);
-        r.play();
-        return builder;
     }
 
     @Override
-    public void onDownloadFailed() {
-        dismissAllDialog();
+    public void onError(Progress progress) {
         showFailDialog();
-        Intent intent = new Intent(this, SettingActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(pendingIntent);
-        mBuilder.setContentText(getString(R.string.download_fail));
-        mBuilder.setProgress(100, 0, false);
-        mManager.notify(ChannelId, mBuilder.build());
     }
 
     @Override
-    public void onDownloadSuccess(File downFile) {
-        dismissAllDialog();
-        mManager.cancel(ChannelId);
-
-        AppUtil.installNormal(this, downFile);
+    public void onFinish(File file, Progress progress) {
+        if(progress.status == Progress.FINISH) {
+            showSuccessDialog(file);
+        }
     }
 
     @Override
-    public void onDownloading(int progress) {
-        mBuilder.setContentIntent(null);
-        mBuilder.setContentText(String.format(getString(R.string.download_progress), progress));
-        mBuilder.setProgress(100, progress, false);
-        mBuilder.setDefaults(0);
-        mManager.notify(ChannelId, mBuilder.build());
-
-        showLoadingDialog(progress);
+    public void onRemove(Progress progress) {
     }
 
     /**
@@ -369,7 +355,7 @@ public class SettingActivity extends BarBaseActivity implements UpdateUtil.OnDow
      * @param currentProgress
      */
     private void showLoadingDialog(int currentProgress) {
-        if (!loadShowing) {
+        if(!isPosShow){
             return;
         }
         Print.e(currentProgress);
@@ -384,19 +370,20 @@ public class SettingActivity extends BarBaseActivity implements UpdateUtil.OnDow
             tvBackstage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    isPosShow = false;
                     dismissAllDialog();
                 }
             });
         }
 
         tvProgress.setText(String.format(getString(R.string.progress), currentProgress));
+        pb.setMax(100);
         pb.setProgress(currentProgress);
 
         loadingDialog.show();
     }
 
     private void dismissAllDialog() {
-        loadShowing = false;
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
             loadingDialog = null;
@@ -416,7 +403,23 @@ public class SettingActivity extends BarBaseActivity implements UpdateUtil.OnDow
 
                     @Override
                     public void onClickRight() {
-                        youtucode.downloadFileWithDynamicUrlSync(Constant.API_ROBOT_BASE + "files/robot.apk");
+                        LoadFileCache.get().getFileService().restart();
+                    }
+                });
+    }
+
+    private void showSuccessDialog(final File file) {
+        DialogUtils.showBasicNoTitleDialog(this, getString(R.string.download_finish), "重新下载", "安装",
+                new DialogUtils.OnNiftyDialogListener() {
+                    @Override
+                    public void onClickLeft() {
+                        LoadFileCache.get().getFileService().restart();
+                    }
+
+                    @Override
+                    public void onClickRight() {
+                        stopService(new Intent(SettingActivity.this, LoadFileService.class));
+                        AppUtil.installNormal(SettingActivity.this, file);
                     }
                 });
     }

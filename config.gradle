@@ -38,8 +38,11 @@ ext {
             "gson"                  :   "com.google.code.gson:gson:2.8.1",
 
             //okhttp
-            "okhttp"                :   "com.squareup.okhttp3:okhttp:3.6.0",
-            "logging-interceptor"   :   "com.squareup.okhttp3:logging-interceptor:3.6.0",
+            "okhttp"                :   "com.squareup.okhttp3:okhttp:3.10.0",
+            "logging-interceptor"   :   "com.squareup.okhttp3:logging-interceptor:3.10.0",
+
+            "okgo"                  :   "com.lzy.net:okgo:3.0.4",
+            "okserver"              :   "com.lzy.net:okserver:2.0.5",
 
             //httpcache
             "rxCache"               :   "com.github.VictorAlbertos.RxCache:runtime:1.8.0-2.x",

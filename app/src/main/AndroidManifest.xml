@@ -244,6 +244,7 @@
 
         <service android:name=".service.CallSerivice" />
 
+        <service android:name="com.fanfan.novel.service.LoadFileService" />
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" />
 

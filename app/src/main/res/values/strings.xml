@@ -114,8 +114,10 @@
     <string name="speak_main">您有什么想了解的可以向我询问，问题咨询中我可以回答您更多问题，导航系统可引导您到达指定位置，还有唱歌、跳舞娱乐功能，欢迎您体验</string>
 
     <string name="download_fail_retry">下载失败是否重试？</string>
+    <string name="download_check_finish">检测到新版本apk下载完成，是否点击安装</string>
     <string name="download_finish">下载完成，点击安装</string>
     <string name="downloading">正在下载中...</string>
+    <string name="pause_downloading">暂停下载</string>
     <string name="check_new_version">检测到新版本</string>
     <string name="download_progress">下载进度:%d%%/100%%</string>
     <string name="download_fail">下载失败，点击重试</string>

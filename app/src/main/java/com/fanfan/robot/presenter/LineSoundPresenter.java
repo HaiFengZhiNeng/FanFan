@@ -901,7 +901,6 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     @Override
     public void onNoAnswer(String question) {
         Print.e("noAnswer : " + question);
-        onCompleted();
         mSoundView.noAnswer(question);
     }
 

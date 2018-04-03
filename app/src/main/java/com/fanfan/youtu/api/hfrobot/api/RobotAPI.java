@@ -9,9 +9,7 @@ import retrofit2.http.Url;
 
 public interface RobotAPI {
 
-    String updateProgram();
-
-    String downloadFileWithFixedUrl();
+    String updateProgram(int type);
 
     String downloadFileWithDynamicUrlSync(@Url String fileUrl);
 

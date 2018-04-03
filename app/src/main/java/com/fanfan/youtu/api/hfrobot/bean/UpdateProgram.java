@@ -4,7 +4,7 @@ package com.fanfan.youtu.api.hfrobot.bean;
  * Created by Administrator on 2018/3/27/027.
  */
 
-public class UpdateProgram {
+public class UpdateProgram extends RobotMsg {
 
 
     /**
@@ -14,8 +14,6 @@ public class UpdateProgram {
      */
 
     private UpdateProgramBean UpdateProgram;
-    private int code;
-    private String msg;
 
     public UpdateProgramBean getUpdateProgram() {
         return UpdateProgram;
@@ -23,22 +21,6 @@ public class UpdateProgram {
 
     public void setUpdateProgram(UpdateProgramBean UpdateProgram) {
         this.UpdateProgram = UpdateProgram;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
     }
 
     public static class UpdateProgramBean {

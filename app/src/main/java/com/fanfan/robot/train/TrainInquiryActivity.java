@@ -24,7 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fanfan.novel.adapter.AirAdapter;
-import com.fanfan.novel.animator.RegisterAnimation;
+import com.fanfan.novel.adapter.animator.RegisterAnimation;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;

@@ -91,5 +91,6 @@ public class Constants {
 
     public static String TRAIN_CONTORL_NAME = "fanc104";
 
+    public static String DOWNLOAD_FILENAME = "files/robot.apk";
 
 }

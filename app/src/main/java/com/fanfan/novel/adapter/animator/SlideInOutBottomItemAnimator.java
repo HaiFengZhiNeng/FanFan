@@ -1,4 +1,4 @@
-package com.fanfan.novel.animator;
+package com.fanfan.novel.adapter.animator;
 
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;

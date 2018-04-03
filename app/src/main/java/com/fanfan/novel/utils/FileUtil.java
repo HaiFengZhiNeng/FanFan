@@ -40,6 +40,7 @@ import com.fanfan.robot.model.Music;
 import com.seabreeze.log.Print;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,6 +49,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -671,6 +674,98 @@ public class FileUtil {
         }
         return pictureBytes;
 
+    }
+
+    public static boolean createFolder(String folderPath) {
+        if (!TextUtils.isEmpty(folderPath)) {
+            File folder = new File(folderPath);
+            return createFolder(folder);
+        }
+        return false;
+    }
+
+    public static boolean createFolder(File targetFolder) {
+        if (targetFolder.exists()) {
+            if (targetFolder.isDirectory()) return true;
+            //noinspection ResultOfMethodCallIgnored
+            targetFolder.delete();
+        }
+        return targetFolder.mkdirs();
+    }
+
+    public static boolean delFileOrFolder(File file) {
+        if (file == null || !file.exists()) {
+            // do nothing
+        } else if (file.isFile()) {
+            file.delete();
+        } else if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File sonFile : files) {
+                    delFileOrFolder(sonFile);
+                }
+            }
+            file.delete();
+        }
+        return true;
+    }
+
+    public static Object toObject(byte[] input) {
+        if (input == null) return null;
+        ByteArrayInputStream bais = null;
+        ObjectInputStream ois = null;
+        try {
+            bais = new ByteArrayInputStream(input);
+            ois = new ObjectInputStream(bais);
+            return ois.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bais != null) {
+                try {
+                    bais.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    public static byte[] toByteArray(Object input) {
+        ByteArrayOutputStream baos = null;
+        ObjectOutputStream oos = null;
+        try {
+            baos = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(baos);
+            oos.writeObject(input);
+            oos.flush();
+            return baos.toByteArray();
+        } catch (IOException e) {
+        } finally {
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (baos != null) {
+                try {
+                    baos.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
     }
 
 }

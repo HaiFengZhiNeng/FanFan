@@ -1,4 +1,4 @@
-package com.fanfan.novel.animator;
+package com.fanfan.novel.adapter.animator;
 
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
