@@ -922,6 +922,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     public void noAnswer(String question) {
         String identifier = UserInfo.getInstance().getIdentifier();
         youtucode.uploadProblem(identifier, question);
+        mMainManager.sendMessage(identifier, question);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

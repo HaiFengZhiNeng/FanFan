@@ -110,4 +110,7 @@ public class MainManager {
         mTtsPresenter.stopHandler();
     }
 
+    public void sendMessage(String identifier, String question) {
+        mChatPresenter.sendTextMessage(question);
+    }
 }
