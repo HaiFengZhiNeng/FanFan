@@ -599,6 +599,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     @Override
     public void parseMsgcomplete(String str) {
         addSpeakAnswer(str, true);
+        setChatContent(str);
     }
 
     @Override
@@ -680,6 +681,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     @Override
     public void parseServerMsgcomplete(String txt) {
         addSpeakAnswer(txt, true);
+        setChatContent(txt);
     }
 
     //**********************************************************************************************
