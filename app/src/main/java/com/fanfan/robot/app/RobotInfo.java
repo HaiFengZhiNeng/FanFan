@@ -32,6 +32,7 @@ public class RobotInfo {
     public RobotInfo init(Context context) {
         setEngineType(SpeechConstant.TYPE_CLOUD);
         setControlId(Constants.controlId);
+        setServerId(Constants.serverId);
         setRoomId(Constants.roomAVId);
         setTtsLineTalker(PreferencesUtils.getString(context, Constants.IAT_LINE_LANGUAGE_TALKER, "xiaoyan"));
         setTtsLocalTalker(PreferencesUtils.getString(context, Constants.IAT_LOCAL_LANGUAGE_TALKER, "xiaoyan"));
@@ -126,6 +127,17 @@ public class RobotInfo {
 
     public void setControlId(String controlId) {
         this.controlId = controlId;
+    }
+
+    //需要设置可以连接的服务端id
+    private String serverId;
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
     }
 
     //需要设置进入的群，以便控制端一对多

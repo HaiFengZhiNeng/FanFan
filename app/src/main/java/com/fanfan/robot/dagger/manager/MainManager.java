@@ -111,6 +111,6 @@ public class MainManager {
     }
 
     public void sendMessage(String identifier, String question) {
-        mChatPresenter.sendTextMessage(question);
+        mChatPresenter.sendServerMessage(question);
     }
 }

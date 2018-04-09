@@ -704,6 +704,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         }
     }
 
+    @Override
+    public void parseServerMsgcomplete(String txt) {
+        addSpeakAnswer(txt, true);
+    }
+
     //**********************************************************************************************
     @Override
     public void stopAll() {
@@ -920,6 +925,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void noAnswer(String question) {
+        Print.e("noAnswer : " + question);
         String identifier = UserInfo.getInstance().getIdentifier();
         youtucode.uploadProblem(identifier, question);
         mMainManager.sendMessage(identifier, question);

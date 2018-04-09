@@ -84,6 +84,8 @@ public abstract class IChatPresenter implements BasePresenter {
 
     public abstract void analysisFileMessage(final TIMFileElem fileElem);
 
+    public abstract void sendServerMessage(String question);
+
     /**
      * 聊天界面的接口
      */
@@ -108,6 +110,8 @@ public abstract class IChatPresenter implements BasePresenter {
         void parseMsgcomplete(String str);
 
         void parseCustomMsgcomplete(String customMsg);
+
+        void parseServerMsgcomplete(String txt);
     }
 
 }

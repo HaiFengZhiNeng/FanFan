@@ -20,6 +20,7 @@ public class Constants {
     public static int IMSDK_ACCOUNT_TYPE = 17967;
 
     public static String controlId = "hotel002";
+    public static String serverId = "hotel003";
     public static final String roomAVId = "@TGS#2GOCMM6EN";
     // exit
     public static final String EXIT_APP = "EXIT_APP";
@@ -89,7 +90,7 @@ public class Constants {
     //true 是手机端的
     public static boolean unusual = true;
 
-    public static String TRAIN_CONTORL_NAME = "fanc104";
+    public static String TRAIN_CONTORL_NAME = "hotel002";
 
     public static String DOWNLOAD_FILENAME = "files/robot.apk";
 

@@ -50,6 +50,7 @@ public class ChatPresenter extends IChatPresenter implements Observer {
     private IChatView mChatView;
 
     private TIMConversation conversation;
+    private TIMConversation conversationServer;
     private RobotInfo robotInfo;
 
     @Inject
@@ -63,6 +64,7 @@ public class ChatPresenter extends IChatPresenter implements Observer {
     @Override
     public void start() {
         conversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, robotInfo.getControlId());
+        conversationServer = TIMManager.getInstance().getConversation(TIMConversationType.C2C, robotInfo.getServerId());
         //注册消息监听
         MessageEvent.getInstance().addObserver(this);
         RefreshEvent.getInstance().addObserver(this);
@@ -348,6 +350,36 @@ public class ChatPresenter extends IChatPresenter implements Observer {
         });
     }
 
+    @Override
+    public void sendServerMessage(String question) {
+        final TIMMessage msg = new TIMMessage();
+
+        //添加文本内容
+        TIMTextElem elem = new TIMTextElem();
+        elem.setText(question);
+
+        //将elem添加到消息
+        if (msg.addElement(elem) != 0) {
+            Print.d("addElement failed");
+            return;
+        }
+        conversationServer.sendMessage(msg, new TIMValueCallBack<TIMMessage>() {
+            @Override
+            public void onError(int code, String desc) {//发送消息失败
+                //错误码code和错误描述desc，可用于定位请求失败原因
+                //错误码code含义请参见错误码表
+                mChatView.onSendMessageFail(code, desc, msg);
+            }
+
+            @Override
+            public void onSuccess(TIMMessage msg) {
+                //发送消息成功,消息状态已在sdk中修改，此时只需更新界面
+                MessageEvent.getInstance().onNewMessage(null);
+                mChatView.onSendMessageSuccess(msg);
+            }
+        });
+    }
+
 
     /**
      * This method is called if the specified {@code Observable} object's
@@ -388,6 +420,20 @@ public class ChatPresenter extends IChatPresenter implements Observer {
                         analysisFileMessage(timFileElem);
                     }
 
+                } else if (msg == null || msg.getConversation().getPeer().equals(conversationServer.getPeer())
+                        && msg.getConversation().getType() == conversationServer.getType()) {
+                    if (msg == null || msg.getConversation().getPeer().equals(conversation.getPeer())
+                            && msg.getConversation().getType() == conversation.getType()) {
+                        if (msg == null) {
+                            return;
+                        }
+                        TIMElem elem = msg.getElement(0);
+                        if (elem.getType() == TIMElemType.Text) {
+                            TIMTextElem timTextElem = (TIMTextElem) elem;
+                            String txt = timTextElem.getText();
+                            mChatView.parseServerMsgcomplete(txt);
+                        }
+                    }
                 } else if (msg == null || msg.getConversation().getPeer().equals(robotInfo.getRoomId())
                         && msg.getConversation().getType() == TIMConversationType.Group) {
                     if (msg == null) {

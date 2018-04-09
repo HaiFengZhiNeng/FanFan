@@ -677,6 +677,11 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
         }
     }
 
+    @Override
+    public void parseServerMsgcomplete(String txt) {
+        addSpeakAnswer(txt, true);
+    }
+
     //**********************************************************************************************
     @Override
     public void stopAll() {
