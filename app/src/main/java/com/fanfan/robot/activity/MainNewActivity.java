@@ -233,7 +233,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
                 break;
             case R.id.iv_qzdj:
                 ArrayList<String> nums = new ArrayList<>();
-                nums.add(Constants.TRAIN_CONTORL_NAME);
+                nums.add(RobotInfo.getInstance().getControlId());
                 SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
                 break;
             case R.id.iv_ztfw:
@@ -836,7 +836,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
                 break;
             case TalkBack:
                 ArrayList<String> nums = new ArrayList<>();
-                nums.add(Constants.TRAIN_CONTORL_NAME);
+                nums.add(RobotInfo.getInstance().getControlId());
                 SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
                 break;
             case StationService:

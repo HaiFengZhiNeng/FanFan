@@ -90,8 +90,6 @@ public class Constants {
     //true 是手机端的
     public static boolean unusual = true;
 
-    public static String TRAIN_CONTORL_NAME = "hotel002";
-
     public static String DOWNLOAD_FILENAME = "files/robot.apk";
 
 }

@@ -28,6 +28,7 @@ import com.fanfan.novel.service.udp.SocketManager;
 import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.adapter.VoiceAdapter;
+import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.fragment.ImageFragment;
 import com.fanfan.robot.model.ImageBean;
 import com.seabreeze.log.Print;
@@ -346,7 +347,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     @Override
     public void artificial() {
         ArrayList<String> nums = new ArrayList<>();
-        nums.add(Constants.TRAIN_CONTORL_NAME);
+        nums.add(RobotInfo.getInstance().getControlId());
         SimpleCallActivity.newInstance(this, ILVCallConstants.CALL_TYPE_VIDEO, nums);
     }
 
