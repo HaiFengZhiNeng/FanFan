@@ -90,16 +90,12 @@ dependencies {
     compile files('libs/poi-3.15.jar')
     compile files('libs/poi-scratchpad-3.15.jar')
     compile fileTree(include: ['*.jar'], dir: 'libs')
-
     compile project(':print')
     compile project(':lib_zxing')
-
     testImplementation 'junit:junit:4.12'
     compile rootProject.ext.dependencies["multidex"]
-
     compile rootProject.ext.dependencies["callsdk"]
     compile rootProject.ext.dependencies["ilivesdk"]
-
     compile rootProject.ext.dependencies["support-v4"]
     compile rootProject.ext.dependencies["appcompat-v7"]
     compile rootProject.ext.dependencies["design"]
@@ -109,13 +105,11 @@ dependencies {
     compile rootProject.ext.dependencies["support-annotations"]
     androidTestImplementation rootProject.ext.dependencies["runner"]
     androidTestImplementation rootProject.ext.dependencies["espresso-core"]
-
     debugCompile rootProject.ext.dependencies["leakcanary"]
     releaseCompile rootProject.ext.dependencies["leakcanary-no-op"]
     testCompile rootProject.ext.dependencies["leakcanary-no-op"]
     compile rootProject.ext.dependencies["stetho"]
     compile rootProject.ext.dependencies["stetho-okhttp3"]
-
     compile rootProject.ext.dependencies["greendao"]
     compile rootProject.ext.dependencies["eventbus"]
     compile rootProject.ext.dependencies["glide"]
@@ -123,12 +117,10 @@ dependencies {
     compile rootProject.ext.dependencies["gson"]
     compile rootProject.ext.dependencies["butterknife"]
     annotationProcessor rootProject.ext.dependencies["butterknife-compiler"]
-
     compile rootProject.ext.dependencies["retrofit2"]
     compile rootProject.ext.dependencies["converter-gson"]
     compile rootProject.ext.dependencies["okhttp"]
     compile rootProject.ext.dependencies["logging-interceptor"]
-
     compile rootProject.ext.dependencies["constraint-layout"]
     compile rootProject.ext.dependencies["BaseAdapterHelper"]
     compile rootProject.ext.dependencies["material-core"]
@@ -139,19 +131,14 @@ dependencies {
     compile rootProject.ext.dependencies["materialtabstrip"]
     compile rootProject.ext.dependencies["swipebacklayout"]
     compile rootProject.ext.dependencies["flowlayout"]
-
     compile rootProject.ext.dependencies["viewanimator"]
     compile rootProject.ext.dependencies["nineoldandroids"]
-
     compile rootProject.ext.dependencies["gms"]
-
     compile rootProject.ext.dependencies["3dmap"]
     compile rootProject.ext.dependencies["location"]
     compile rootProject.ext.dependencies["search"]
-
     compile rootProject.ext.dependencies["panowidget"]
-
     compile rootProject.ext.dependencies["dagger"]
     annotationProcessor rootProject.ext.dependencies["dagger-compiler"]
-
+    implementation files('libs/hanlp-portable-1.6.2.jar')
 }

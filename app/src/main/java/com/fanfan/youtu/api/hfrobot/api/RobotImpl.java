@@ -6,8 +6,8 @@ import android.support.annotation.NonNull;
 import com.fanfan.youtu.api.base.callback.BaseCallback;
 import com.fanfan.youtu.api.base.event.BaseEvent;
 import com.fanfan.youtu.api.base.impl.BaseImpl;
-import com.fanfan.youtu.api.hfrobot.event.UpdateProgramEvent;
-import com.fanfan.youtu.api.hfrobot.event.UploadProblemEvent;
+import com.fanfan.youtu.api.hfrobot.event.CheckEvent;
+import com.fanfan.youtu.api.hfrobot.event.RequestProblemEvent;
 import com.fanfan.youtu.utils.UUIDGenerator;
 
 import okhttp3.ResponseBody;
@@ -25,7 +25,7 @@ public class RobotImpl extends BaseImpl<RobotService> implements RobotAPI {
     public String updateProgram(int type) {
         String uuid = UUIDGenerator.getUUID();
         mService.updateProgram(type)
-                .enqueue(new BaseCallback<>(new UpdateProgramEvent(uuid)));
+                .enqueue(new BaseCallback<>(new CheckEvent(uuid)));
         return uuid;
     }
 
@@ -38,10 +38,10 @@ public class RobotImpl extends BaseImpl<RobotService> implements RobotAPI {
     }
 
     @Override
-    public String uploadProblem(String identifier, String problem) {
+    public String requestProblem(String identifier, String problem) {
         String uuid = UUIDGenerator.getUUID();
-        mService.uploadProblem(identifier, problem)
-                .enqueue(new BaseCallback<>(new UploadProblemEvent(uuid)));
+        mService.requestProblem(identifier, problem)
+                .enqueue(new BaseCallback<>(new RequestProblemEvent(uuid)));
         return uuid;
     }
 }

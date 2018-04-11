@@ -422,8 +422,8 @@ public class ChatPresenter extends IChatPresenter implements Observer {
 
                 } else if (msg == null || msg.getConversation().getPeer().equals(conversationServer.getPeer())
                         && msg.getConversation().getType() == conversationServer.getType()) {
-                    if (msg == null || msg.getConversation().getPeer().equals(conversation.getPeer())
-                            && msg.getConversation().getType() == conversation.getType()) {
+                    if (msg == null || msg.getConversation().getPeer().equals(conversationServer.getPeer())
+                            && msg.getConversation().getType() == conversationServer.getType()) {
                         if (msg == null) {
                             return;
                         }
