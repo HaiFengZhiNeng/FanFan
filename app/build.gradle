@@ -140,5 +140,4 @@ dependencies {
     compile rootProject.ext.dependencies["panowidget"]
     compile rootProject.ext.dependencies["dagger"]
     annotationProcessor rootProject.ext.dependencies["dagger-compiler"]
-    implementation files('libs/hanlp-portable-1.6.2.jar')
 }
