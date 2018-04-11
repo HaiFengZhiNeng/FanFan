@@ -72,7 +72,6 @@ import com.fanfan.youtu.api.hfrobot.event.CheckEvent;
 import com.fanfan.youtu.api.hfrobot.event.RequestProblemEvent;
 import com.fanfan.youtu.utils.GsonUtil;
 import com.github.florent37.viewanimator.ViewAnimator;
-import com.hankcs.hanlp.HanLP;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
 import com.tencent.TIMCallBack;
@@ -957,7 +956,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             }
             Print.e(requestProblem);
             String anwer = answerBean.getAnswer();
-            if (anwer == null) {
+            if (anwer == null && anwer.length() < 1) {
                 mMainManager.sendMessage(identifier, requestProblem.getQuestion());
                 onCompleted();
             } else {
