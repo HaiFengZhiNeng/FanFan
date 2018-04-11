@@ -66,12 +66,13 @@ import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 import com.fanfan.robot.train.PanoramicMapActivity;
 import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.base.Constant;
-import com.fanfan.youtu.api.hfrobot.bean.UpdateProgram;
-import com.fanfan.youtu.api.hfrobot.bean.UploadProblem;
-import com.fanfan.youtu.api.hfrobot.event.UpdateProgramEvent;
-import com.fanfan.youtu.api.hfrobot.event.UploadProblemEvent;
+import com.fanfan.youtu.api.hfrobot.bean.Check;
+import com.fanfan.youtu.api.hfrobot.bean.RequestProblem;
+import com.fanfan.youtu.api.hfrobot.event.CheckEvent;
+import com.fanfan.youtu.api.hfrobot.event.RequestProblemEvent;
 import com.fanfan.youtu.utils.GsonUtil;
 import com.github.florent37.viewanimator.ViewAnimator;
+import com.hankcs.hanlp.HanLP;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
 import com.tencent.TIMCallBack;
@@ -155,6 +156,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         mVoiceDBManager = new VoiceDBManager();
 
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
+
     }
 
     @Override
@@ -466,12 +468,12 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @SuppressLint("NewApi")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onResultEvent(UpdateProgramEvent event) {
+    public void onResultEvent(CheckEvent event) {
         if (event.isOk()) {
-            UpdateProgram updateProgram = event.getBean();
-            Print.e(updateProgram);
-            if (updateProgram.getCode() == 0) {
-                UpdateProgram.UpdateProgramBean appVerBean = updateProgram.getUpdateProgram();
+            Check check = event.getBean();
+            Print.e(check);
+            if (check.getCode() == 0) {
+                Check.CheckBean appVerBean = check.getCheck();
                 int curVersion = AppUtil.getVersionCode(this);
                 int newversioncode = appVerBean.getVersionCode();
 
@@ -509,7 +511,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                     Print.e("暂时没有检测到新版本");
                 }
             } else {
-                onError(updateProgram.getCode(), updateProgram.getMsg());
+                onError(check.getCode(), check.getMsg());
             }
         } else {
             onError(event);
@@ -929,37 +931,42 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     public void noAnswer(String question) {
         Print.e("noAnswer : " + question);
         String identifier = UserInfo.getInstance().getIdentifier();
-        youtucode.uploadProblem(identifier, question);
-        mMainManager.sendMessage(identifier, question);
+        youtucode.requestProblem(identifier, question);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onResultEvent(UploadProblemEvent event) {
+    public void onResultEvent(RequestProblemEvent event) {
         if (!event.isOk()) {
             onError(event);
             onCompleted();
             return;
         }
-        UploadProblem uploadProblem = event.getBean();
-        if (uploadProblem.getCode() == 0) {
-            Print.e(uploadProblem.getMsg());
+        String identifier = UserInfo.getInstance().getIdentifier();
+        RequestProblem requestProblem = event.getBean();
+        if (requestProblem.getCode() == 0) {//添加成功
+            Print.e(requestProblem.getMsg());
+
+            mMainManager.sendMessage(identifier, requestProblem.getQuestion());
             onCompleted();
-        } else if (uploadProblem.getCode() == 2) {
-            UploadProblem.UploadProblemBean uploadProblemBean = uploadProblem.getUploadProblem();
-            if (uploadProblemBean == null) {
+        } else if (requestProblem.getCode() == 2) {//已经添加过，有答案
+            RequestProblem.AnswerBean answerBean = requestProblem.getAnswerBean();
+            if (answerBean == null) {
+                mMainManager.sendMessage(identifier, requestProblem.getQuestion());
                 onCompleted();
                 return;
             }
-            Print.e(uploadProblemBean);
-            String anwer = uploadProblemBean.getAnswer();
+            Print.e(requestProblem);
+            String anwer = answerBean.getAnswer();
             if (anwer == null) {
+                mMainManager.sendMessage(identifier, requestProblem.getQuestion());
                 onCompleted();
             } else {
                 setChatContent(anwer);
                 addSpeakAnswer(anwer, true);
             }
         } else {
-            onError(uploadProblem.getCode(), uploadProblem.getMsg());
+            mMainManager.sendMessage(identifier, requestProblem.getQuestion());
+            onError(requestProblem.getCode(), requestProblem.getMsg());
             onCompleted();
         }
     }

@@ -52,8 +52,8 @@ import com.fanfan.robot.fragment.XfFragment;
 import com.fanfan.robot.train.PanoramicMapActivity;
 import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.base.Constant;
-import com.fanfan.youtu.api.hfrobot.bean.UpdateProgram;
-import com.fanfan.youtu.api.hfrobot.event.UpdateProgramEvent;
+import com.fanfan.youtu.api.hfrobot.bean.Check;
+import com.fanfan.youtu.api.hfrobot.event.CheckEvent;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
@@ -108,7 +108,7 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
 
     private Youtucode youtucode;
 
-    private UpdateProgram.UpdateProgramBean appVerBean;
+    private Check.CheckBean appVerBean;
 
     private Dialog loadingDialog;
     private View loadingView;
@@ -251,12 +251,12 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
 
     @SuppressLint("NewApi")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onResultEvent(UpdateProgramEvent event) {
+    public void onResultEvent(CheckEvent event) {
         if (event.isOk()) {
-            UpdateProgram updateProgram = event.getBean();
-            Print.e(updateProgram);
-            if (updateProgram.getCode() == 0) {
-                appVerBean = updateProgram.getUpdateProgram();
+            Check check = event.getBean();
+            Print.e(check);
+            if (check.getCode() == 0) {
+                Check.CheckBean appVerBean = check.getCheck();
                 int curVersion = AppUtil.getVersionCode(this);
                 int newversioncode = appVerBean.getVersionCode();
 
@@ -277,7 +277,7 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
                     showToast("暂时没有检测到新版本");
                 }
             } else {
-                onError(updateProgram.getCode(), updateProgram.getMsg());
+                onError(check.getCode(), check.getMsg());
             }
         } else {
             onError(event);
@@ -340,7 +340,7 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
 
     @Override
     public void onFinish(File file, Progress progress) {
-        if(progress.status == Progress.FINISH) {
+        if (progress.status == Progress.FINISH) {
             showSuccessDialog(file);
         }
     }
@@ -355,7 +355,7 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
      * @param currentProgress
      */
     private void showLoadingDialog(int currentProgress) {
-        if(!isPosShow){
+        if (!isPosShow) {
             return;
         }
         Print.e(currentProgress);

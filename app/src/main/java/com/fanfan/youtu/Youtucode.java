@@ -182,7 +182,7 @@ public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
     }
 
     @Override
-    public String uploadProblem(String identifier, String problem) {
-        return sRobotImplement.uploadProblem(identifier, problem);
+    public String requestProblem(String identifier, String problem) {
+        return sRobotImplement.requestProblem(identifier, problem);
     }
 }

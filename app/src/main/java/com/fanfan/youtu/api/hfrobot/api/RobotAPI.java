@@ -13,5 +13,5 @@ public interface RobotAPI {
 
     String downloadFileWithDynamicUrlSync(@Url String fileUrl);
 
-    String uploadProblem(@Query("identifier") String identifier, @Query("problem") String problem);
+    String requestProblem(@Query("identifier") String identifier, @Query("problem") String problem);
 }
