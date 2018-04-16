@@ -45,8 +45,6 @@ public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
     private static FaceImpl sFaceImplement;
     private static RobotImpl sRobotImplement;
 
-    private static OkHttpClient httpClient;
-
     private volatile static Youtucode mYoutucode;
 
     private Youtucode() {

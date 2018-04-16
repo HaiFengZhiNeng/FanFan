@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -616,12 +617,12 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
     @Override
     public void onSendMessageSuccess(TIMMessage message) {
-        showToast("发送消息成功");
+        Print.e("发送消息成功");
     }
 
     @Override
     public void onSendMessageFail(int code, String desc, TIMMessage message) {
-        showToast("发送消息失败");
+        Print.e("发送消息失败");
     }
 
     @Override
@@ -942,12 +943,12 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         }
         String identifier = UserInfo.getInstance().getIdentifier();
         RequestProblem requestProblem = event.getBean();
-        if (requestProblem.getCode() == 0) {//添加成功
+        if (requestProblem.getCode() == 2) {//添加成功
             Print.e(requestProblem.getMsg());
 
             mMainManager.sendMessage(identifier, requestProblem.getQuestion());
             onCompleted();
-        } else if (requestProblem.getCode() == 2) {//已经添加过，有答案
+        } else if (requestProblem.getCode() == 0) {//已经添加过，有答案
             RequestProblem.AnswerBean answerBean = requestProblem.getAnswerBean();
             if (answerBean == null) {
                 mMainManager.sendMessage(identifier, requestProblem.getQuestion());
@@ -956,7 +957,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             }
             Print.e(requestProblem);
             String anwer = answerBean.getAnswer();
-            if (anwer == null && anwer.length() < 1) {
+            if (anwer == null || anwer.length() < 1) {
                 mMainManager.sendMessage(identifier, requestProblem.getQuestion());
                 onCompleted();
             } else {
