@@ -627,6 +627,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void parseMsgcomplete(String str) {
+        mMainManager.stopVoice();
+        mMainManager.stopHandler();
         addSpeakAnswer(str, true);
         setChatContent(str);
     }
@@ -709,6 +711,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void parseServerMsgcomplete(String txt) {
+        mMainManager.stopVoice();
+        mMainManager.stopHandler();
         addSpeakAnswer(txt, true);
         setChatContent(txt);
     }

@@ -73,7 +73,7 @@ public class NovelApp extends BaseApplication {
     private void initLogger(@NonNull Context context) {
         if (BuildConfig.DEBUG) {
             Print.getLogConfig().configAllowLog(true).configShowBorders(false);
-            Print.plant(new FileTree(this, Constants.PRINT_LOG_PATH));
+            Print.plant(new FileTree(context, Constants.PRINT_LOG_PATH));
             Print.plant(new ConsoleTree());
             Print.plant(new LogcatTree());
         }

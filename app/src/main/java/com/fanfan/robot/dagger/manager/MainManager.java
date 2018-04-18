@@ -33,7 +33,7 @@ public class MainManager {
     }
 
     public void onCreate() {
-        mChatPresenter.start();
+
         mSerialPresenter.start();
         mTtsPresenter.start();
         mSoundPresenter.start();
@@ -43,6 +43,8 @@ public class MainManager {
         mSoundPresenter.setOpening(true);
         mTtsPresenter.buildTts();
         mSoundPresenter.buildIat();
+
+        mChatPresenter.start();
     }
 
     public void onPause() {
@@ -51,11 +53,13 @@ public class MainManager {
         mTtsPresenter.stopTts();
         mTtsPresenter.stopHandler();
         stopVoice();
+
+        mChatPresenter.finish();
     }
 
     public void onDestroy() {
         mTtsPresenter.finish();
-        mChatPresenter.finish();
+
         mSoundPresenter.finish();
     }
 

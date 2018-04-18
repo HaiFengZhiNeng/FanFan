@@ -85,7 +85,7 @@ public class Constants {
     public static String STOP_DANCE = "A50C80E2AA";
 
     //true 是火车段的
-    public static boolean isTrain = false;
+    public static boolean isTrain = true;
 
     //true 是手机端的
     public static boolean unusual = true;

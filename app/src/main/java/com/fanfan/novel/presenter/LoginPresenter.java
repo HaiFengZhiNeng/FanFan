@@ -5,6 +5,7 @@ import com.fanfan.novel.model.UserInfo;
 import com.fanfan.novel.presenter.ipresenter.ILoginPresenter;
 import com.fanfan.novel.service.cache.UserInfoCache;
 import com.seabreeze.log.Print;
+import com.tencent.ilivesdk.core.ILiveLoginManager;
 
 import tencent.tls.platform.TLSErrInfo;
 import tencent.tls.platform.TLSPwdLoginListener;

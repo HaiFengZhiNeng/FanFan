@@ -96,6 +96,7 @@ dependencies {
     compile rootProject.ext.dependencies["multidex"]
     compile rootProject.ext.dependencies["callsdk"]
     compile rootProject.ext.dependencies["ilivesdk"]
+    compile rootProject.ext.dependencies["livesdk"]
     compile rootProject.ext.dependencies["support-v4"]
     compile rootProject.ext.dependencies["appcompat-v7"]
     compile rootProject.ext.dependencies["design"]
