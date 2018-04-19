@@ -107,10 +107,25 @@ public abstract class IChatPresenter implements BasePresenter {
          */
         void onSendMessageFail(int code, String desc, TIMMessage message);
 
+        /**
+         * 来自群聊或手机控制端的text消息
+         *
+         * @param str
+         */
         void parseMsgcomplete(String str);
 
+        /**
+         * 手机端定义消息
+         *
+         * @param customMsg
+         */
         void parseCustomMsgcomplete(String customMsg);
 
+        /**
+         * web IM
+         *
+         * @param txt
+         */
         void parseServerMsgcomplete(String txt);
     }
 

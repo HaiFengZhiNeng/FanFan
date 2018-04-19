@@ -716,6 +716,30 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void parseServerMsgcomplete(String txt) {
+        if (txt.equals("1") || txt.equals("2") || txt.equals("3") || txt.equals("4") || txt.equals("5")
+                || txt.equals("6") || txt.equals("7") || txt.equals("8") || txt.equals("9")) {
+            int i = Integer.valueOf(txt);
+            switch (i) {
+                case 1:
+                    txt = "这个问题有点难，你能告诉我答案么，我会努力学习的";
+                case 2:
+                    txt = "这个知识我还没有学到啊，您能教我么";
+                case 3:
+                    txt = "哎呀，我没有听清，您能再说一遍么";
+                case 4:
+                    txt = "您好，很高兴见到您";
+                case 5:
+                    txt = "这个问题好难啊，我还没学过这个，您能教我么";
+                case 6:
+                    txt = "刚才的问题您能再说一遍么 我需要思考一下";
+                case 7:
+                    txt = "我是服务机器人芳芳";
+                case 8:
+                    txt = "您在我前面站了这么久  要和我说点什么么";
+                case 9:
+                    txt = "您好，您可以和我对话聊天，提问解答，我很乐意为您服务";
+            }
+        }
         addSpeakAnswer(txt, true);
         setChatContent(txt);
     }
