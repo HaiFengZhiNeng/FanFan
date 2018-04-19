@@ -91,6 +91,7 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
 
     @Override
     public void doAnswer(String answer) {
+        mTtsView.stopSound();
         mTts.startSpeaking(answer, mTtsListener);
     }
 

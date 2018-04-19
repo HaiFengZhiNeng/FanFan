@@ -33,5 +33,6 @@ public abstract class ISynthesizerPresenter implements BasePresenter {
 
         void onRunable();
 
+        void stopSound();
     }
 }
