@@ -225,6 +225,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     }
 
     private void addSpeakAnswer(String messageContent) {
+        mSoundPresenter.stopTts();
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.doAnswer(messageContent);
     }

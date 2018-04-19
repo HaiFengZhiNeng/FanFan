@@ -541,6 +541,12 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
         mMainManager.startVoice();
     }
 
+    @Override
+    public void stopSound() {
+        mMainManager.stopVoice();
+        mMainManager.stopHandler();
+    }
+
     private void loadImage(int load, int place) {
 //        ImageLoader.loadImage(this, ivFanfan, load, false, place, 1000);
     }
