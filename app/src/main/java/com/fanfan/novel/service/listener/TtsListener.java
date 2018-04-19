@@ -18,7 +18,7 @@ public class TtsListener implements SynthesizerListener {
     @Override
     public void onSpeakBegin() {
         if (synListener != null) {
-            synListener.onSpeakBegin();
+//            synListener.onSpeakBegin();
         }
     }
 

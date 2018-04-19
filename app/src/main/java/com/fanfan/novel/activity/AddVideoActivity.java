@@ -123,6 +123,7 @@ public class AddVideoActivity extends BarBaseActivity {
         }
         listener = null;
         super.onDestroy();
+        System.gc();
     }
 
     @Override

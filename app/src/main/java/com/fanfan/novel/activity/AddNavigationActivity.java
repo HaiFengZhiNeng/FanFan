@@ -33,7 +33,6 @@ import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.novel.utils.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
-import com.hankcs.hanlp.HanLP;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.LexiconListener;
@@ -164,6 +163,7 @@ public class AddNavigationActivity extends BarBaseActivity {
 //        }
         listener = null;
         super.onDestroy();
+        System.gc();
     }
 
     @OnClick({R.id.tv_img, R.id.tv_navigation})

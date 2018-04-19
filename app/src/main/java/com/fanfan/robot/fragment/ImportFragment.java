@@ -501,6 +501,7 @@ public class ImportFragment extends BaseDialogFragment {
 
     public void onLexiconSuccess() {
         ((SettingActivity) getActivity()).showToast("一键导入完成");
+        System.gc();
         dismiss();
     }
 

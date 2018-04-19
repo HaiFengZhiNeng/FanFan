@@ -93,6 +93,7 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
     public void doAnswer(String answer) {
         mTtsView.stopSound();
         mTts.startSpeaking(answer, mTtsListener);
+        mTtsView.onSpeakBegin();
     }
 
     @Override

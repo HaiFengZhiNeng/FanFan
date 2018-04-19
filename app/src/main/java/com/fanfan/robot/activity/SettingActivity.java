@@ -328,6 +328,7 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
             dismissLoading();
             if ((int) (progress.fraction * 100) > curPos) {
                 curPos = (int) (progress.fraction * 100);
+                Print.e("curPos : " + curPos);
                 showLoadingDialog((int) (progress.fraction * 100));
             }
         }
@@ -355,10 +356,10 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
      * @param currentProgress
      */
     private void showLoadingDialog(int currentProgress) {
+        Print.e(currentProgress);
         if (!isPosShow) {
             return;
         }
-        Print.e(currentProgress);
         if (loadingDialog == null) {
             loadingView = LayoutInflater.from(this).inflate(R.layout.downloading_layout, null);
             loadingDialog = new AlertDialog.Builder(this).setTitle("").setView(loadingView).create();
@@ -413,6 +414,7 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
                 new DialogUtils.OnNiftyDialogListener() {
                     @Override
                     public void onClickLeft() {
+                        curPos = 0;
                         LoadFileCache.get().getFileService().restart();
                     }
 

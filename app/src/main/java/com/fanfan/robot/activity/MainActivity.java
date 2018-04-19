@@ -399,6 +399,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
 
     private void addSpeakAnswer(String messageContent, boolean isAction) {
+        mMainManager.stopVoice();
+        mMainManager.stopHandler();
         mMainManager.doAnswer(messageContent);
         if (isAction) {
             speakingAddAction(messageContent.length());
@@ -633,8 +635,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void parseMsgcomplete(String str) {
-        mMainManager.stopVoice();
-        mMainManager.stopHandler();
         addSpeakAnswer(str, true);
         setChatContent(str);
     }
@@ -654,7 +654,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 mMainManager.setSpeech(isSpeech);
                 break;
             case Text:
-                mMainManager.stopVoice();
                 addSpeakAnswer(bean.getOrder(), true);
                 break;
             case SmartChat:
@@ -717,8 +716,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void parseServerMsgcomplete(String txt) {
-        mMainManager.stopVoice();
-        mMainManager.stopHandler();
         addSpeakAnswer(txt, true);
         setChatContent(txt);
     }

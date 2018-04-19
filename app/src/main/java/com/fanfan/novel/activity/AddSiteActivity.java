@@ -102,6 +102,7 @@ public class AddSiteActivity extends BarBaseActivity {
         }
         listener = null;
         super.onDestroy();
+        System.gc();
     }
 
     @Override

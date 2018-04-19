@@ -160,6 +160,7 @@ public class AddVoiceActivity extends BarBaseActivity {
         }
         listener = null;
         super.onDestroy();
+        System.gc();
     }
 
     @OnClick({R.id.tv_img, R.id.tv_expression, R.id.tv_action})
