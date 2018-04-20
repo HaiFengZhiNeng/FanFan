@@ -43,7 +43,6 @@ public class ChatTextView extends EditText {
     private Handler handler; // 用于处理从子线程TextView传来的消息
     private String myText; // 存储textView应该显示的文本
 
-
     public ChatTextView(Context context) {
         super(context);
         setFocusableInTouchMode(false);
@@ -185,5 +184,11 @@ public class ChatTextView extends EditText {
             }
         }
     }
+
+    public String getMyText() {
+        return myText;
+    }
+
+
 
 }

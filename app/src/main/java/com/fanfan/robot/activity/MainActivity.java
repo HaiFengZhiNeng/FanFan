@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -563,9 +564,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     public void onSpeakBegin() {
         setChatView(true);
         loadImage(R.mipmap.fanfan_lift_hand, R.mipmap.fanfan_hand);
+
         long current = System.currentTimeMillis() - curTime;
-        Date date = new Date();
-        showMsg(current+"");
+        showMsg(current + "");
     }
 
     @Override
@@ -588,42 +589,67 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
 
     private void setChatView(final boolean isShow) {
-        AlphaAnimation alphaAnimation;
+//        if(chatContent.getMyText() != null) {
+//            if (chatContent.getMyText().equals("")){
+//                showMsg("chat null");
+//            }
+//        }else{
+//            showMsg("getMyText null");
+//        }
         if (isShow) {
-            alphaAnimation = new AlphaAnimation(0, 1);
+            AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
             alphaAnimation.setDuration(300);
-        } else {
-            alphaAnimation = new AlphaAnimation(1, 0);
-            alphaAnimation.setDuration(1000);
-        }
-        alphaAnimation.setFillAfter(true);
-        chatContent.bringToFront();
-        chatContent.startAnimation(alphaAnimation);
-        alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
+            alphaAnimation.setFillAfter(true);
+            chatContent.bringToFront();
+            chatContent.startAnimation(alphaAnimation);
+            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
 
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                if (isShow) {
-                    if (chatContent.getText().equals("")) {
-                        chatContent.setVisibility(View.GONE);
-                    } else {
-                        chatContent.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    chatContent.setText("");
-                    chatContent.setVisibility(View.GONE);
                 }
-            }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    chatContent.setVisibility(View.VISIBLE);
+                }
 
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        } else {
+            if (TextUtils.isEmpty(chatContent.getMyText())) {
+                chatContent.setVisibility(View.GONE);
+                return;
             }
-        });
+            AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
+            alphaAnimation.setDuration(1000);
+            alphaAnimation.setFillAfter(true);
+            chatContent.bringToFront();
+            chatContent.startAnimation(alphaAnimation);
+            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    chatContent.setVisibility(View.GONE);
+                    if (!TextUtils.isEmpty(chatContent.getMyText())) {
+                        setChatContent("");
+                    }
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
+
+
     }
 
     //**********************************************************************************************
@@ -970,6 +996,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     private long curTime;
+
     @Override
     public void testTime() {
         curTime = System.currentTimeMillis();
