@@ -87,6 +87,8 @@ public abstract class ILineSoundPresenter implements BasePresenter {
         void onCompleted();
 
         void noAnswer(String question);
+
+        void testTime();
     }
 
 

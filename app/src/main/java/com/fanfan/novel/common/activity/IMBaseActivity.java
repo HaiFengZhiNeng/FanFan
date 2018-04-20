@@ -12,6 +12,7 @@ import com.fanfan.novel.activity.SplashActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.base.BaseActivity;
 import com.fanfan.novel.im.event.MessageEvent;
+import com.fanfan.novel.im.init.StatusObservable;
 import com.fanfan.novel.im.init.TlsBusiness;
 import com.fanfan.novel.model.UserInfo;
 import com.fanfan.novel.service.cache.UserInfoCache;
@@ -19,6 +20,7 @@ import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.service.CallSerivice;
 import com.seabreeze.log.Print;
+import com.tencent.TIMUserStatusListener;
 import com.tencent.callsdk.ILVCallConfig;
 import com.tencent.callsdk.ILVCallManager;
 import com.tencent.callsdk.ILVIncomingListener;
@@ -28,18 +30,12 @@ import com.tencent.callsdk.ILVIncomingNotification;
  * Created by android on 2017/12/26.
  */
 
-public abstract class IMBaseActivity extends BaseActivity implements ILVIncomingListener {
-
-    //被踢下线广播监听
-    private LocalBroadcastManager mLocalBroadcatManager;
-    private BroadcastReceiver mExitBroadcastReceiver;
+public abstract class IMBaseActivity extends BaseActivity implements ILVIncomingListener, TIMUserStatusListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLocalBroadcatManager = LocalBroadcastManager.getInstance(this);
-        mExitBroadcastReceiver = new ExitBroadcastRecevier();
-        mLocalBroadcatManager.registerReceiver(mExitBroadcastReceiver, new IntentFilter(Constants.EXIT_APP));
+        StatusObservable.getInstance().addObserver(this);
 
         ILVCallManager.getInstance().init(new ILVCallConfig()
                 .setAutoBusy(true));
@@ -48,9 +44,9 @@ public abstract class IMBaseActivity extends BaseActivity implements ILVIncoming
 
     @Override
     protected void onDestroy() {
-        ILVCallManager.getInstance().removeIncomingListener(this);
         super.onDestroy();
-        mLocalBroadcatManager.unregisterReceiver(mExitBroadcastReceiver);
+        ILVCallManager.getInstance().removeIncomingListener(this);
+        StatusObservable.getInstance().deleteObserver(this);
     }
 
     @Override
@@ -72,15 +68,14 @@ public abstract class IMBaseActivity extends BaseActivity implements ILVIncoming
 
     }
 
-    public class ExitBroadcastRecevier extends BroadcastReceiver {
+    @Override
+    public void onForceOffline() {
+        onReceiveExitMsg();
+    }
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Constants.EXIT_APP)) {
-                //在被踢下线的情况下，执行退出前的处理操作：停止推流、关闭群组
-                onReceiveExitMsg();
-            }
-        }
+    @Override
+    public void onUserSigExpired() {
+
     }
 
     private void onReceiveExitMsg() {

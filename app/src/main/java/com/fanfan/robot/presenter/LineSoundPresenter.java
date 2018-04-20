@@ -353,6 +353,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void onRecognResult(String result) {
+        mSoundView.testTime();
         Print.e("!!!!---- " + result);
         stopRecognizerListener();
         mSoundView.aiuiForLocal(result);

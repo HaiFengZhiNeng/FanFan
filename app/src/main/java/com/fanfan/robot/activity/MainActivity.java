@@ -86,6 +86,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
@@ -562,6 +563,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     public void onSpeakBegin() {
         setChatView(true);
         loadImage(R.mipmap.fanfan_lift_hand, R.mipmap.fanfan_hand);
+        long current = System.currentTimeMillis() - curTime;
+        Date date = new Date();
+        showMsg(current+"");
     }
 
     @Override
@@ -963,6 +967,12 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         Print.e("noAnswer : " + question);
         String identifier = UserInfo.getInstance().getIdentifier();
         youtucode.requestProblem(identifier, question);
+    }
+
+    private long curTime;
+    @Override
+    public void testTime() {
+        curTime = System.currentTimeMillis();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

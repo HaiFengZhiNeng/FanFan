@@ -85,29 +85,8 @@ public class InitBusiness {
             }
         });
         //设置用户状态变更监听器，在回调中进行相应的处理
-        TIMManager.getInstance().setUserStatusListener(new TIMUserStatusListener() {
-            @Override
-            public void onForceOffline() {
-                //被踢下线
-                LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(new Intent(Constants.EXIT_APP));
-            }
-
-            @Override
-            public void onUserSigExpired() {
-                //票据过期，需要换票后重新登录
-//                SweetAlertDialog pDialog = new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE);
-//                pDialog.setTitleText("用户签名过期了，需要刷新userSig重新登录SDK");
-//                pDialog.setCancelable(false);
-//                pDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-//                    @Override
-//                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-//
-//                    }
-//                });
-//                pDialog.show();
-            }
-        });
-
+        TIMManager.getInstance().setUserStatusListener(StatusObservable.getInstance());
+//        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(new Intent(Constants.EXIT_APP));
 
         TIMManager timManager = TIMManager.getInstance();
         timManager.init(context);

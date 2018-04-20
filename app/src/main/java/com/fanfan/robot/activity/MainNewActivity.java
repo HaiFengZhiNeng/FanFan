@@ -924,6 +924,11 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
 
     }
 
+    @Override
+    public void testTime() {
+
+    }
+
     private class PlayServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {

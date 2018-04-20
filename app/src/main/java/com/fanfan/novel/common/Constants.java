@@ -22,8 +22,6 @@ public class Constants {
     public static String controlId = "hotel002";
     public static String serverId = "hotel003";
     public static final String roomAVId = "@TGS#2GOCMM6EN";
-    // exit
-    public static final String EXIT_APP = "EXIT_APP";
 
     public static final String NET_LOONGGG_EXITAPP = "net.loonggg.exitapp";
 
