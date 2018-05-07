@@ -27,9 +27,11 @@ public abstract class ISynthesizerPresenter implements BasePresenter {
 
     public abstract void stopAll(String wakeUp);
 
+    public abstract boolean isSpeaking();
+
     public interface ITtsView extends BaseView {
 
-        void onSpeakBegin();
+        void onSpeakBegin(String s);
 
         void onRunable();
 

@@ -69,11 +69,11 @@ public class MainManager {
         stopVoice();
     }
 
-    public void startVoice(){
+    public void startVoice() {
         mSoundPresenter.startRecognizerListener();
     }
 
-    public void stopVoice(){
+    public void stopVoice() {
         mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.stopVoice();
     }
@@ -103,6 +103,9 @@ public class MainManager {
     }
 
     public void doAnswer(String messageContent) {
+        if (mTtsPresenter.isSpeaking()) {
+            return;
+        }
         mTtsPresenter.doAnswer(messageContent);
     }
 

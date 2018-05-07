@@ -128,6 +128,10 @@ public class DanceUtils {
         }
     }
 
+    public void startDanceName(Context context, String filename,MediaPlayer.OnCompletionListener listener ){
+        startPlay(context, null, filename, listener);
+    }
+
     public void startDance(Context context, String path){
         startPlay(context, path, null, null);
     }

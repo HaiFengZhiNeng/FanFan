@@ -527,8 +527,9 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     }
 
     //**********************************************************************************************
+
     @Override
-    public void onSpeakBegin() {
+    public void onSpeakBegin(String s) {
         setChatView(true);
         loadImage(R.mipmap.fanfan_lift_hand, R.mipmap.fanfan_hand);
     }
@@ -605,7 +606,6 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     @Override
     public void parseMsgcomplete(String str) {
         addSpeakAnswer(str, true);
-        setChatContent(str);
     }
 
     @Override
@@ -687,7 +687,6 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     @Override
     public void parseServerMsgcomplete(String txt) {
         addSpeakAnswer(txt, true);
-        setChatContent(txt);
     }
 
     //**********************************************************************************************
@@ -696,7 +695,6 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
         sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
         mMainManager.stopVoice();
         String wakeUp = resFoFinal(R.array.wake_up);
-        setChatContent(wakeUp);
         mMainManager.stopAll(wakeUp);
     }
 
@@ -741,44 +739,36 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
         if (voiceBean.getExpressionData() != null)
             sendOrder(SerialService.DEV_BAUDRATE, voiceBean.getExpressionData());
 
-        setChatContent(voiceBean.getVoiceAnswer());
         addSpeakAnswer(voiceBean.getVoiceAnswer(), true);
     }
 
 
     @Override
     public void refHomePage(String question, String finalText) {
-        setChatContent(finalText);
     }
 
     @Override
     public void refHomePage(String question, String finalText, String url) {
-        setChatContent(finalText);
     }
 
     @Override
     public void refHomePage(String question, News news) {
-        setChatContent(news.getContent());
     }
 
     @Override
     public void refHomePage(String question, Radio radio) {
-        setChatContent(radio.getDescription());
     }
 
     @Override
     public void refHomePage(String question, Poetry poetry) {
-        setChatContent(poetry.getContent());
     }
 
     @Override
     public void refHomePage(String question, Cookbook cookbook) {
-        setChatContent(cookbook.getSteps());
     }
 
     @Override
     public void refHomePage(String question, EnglishEveryday englishEveryday) {
-        setChatContent(englishEveryday.getContent());
     }
 
     @Override
@@ -798,7 +788,6 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
                     Dance dance = dances.get(new Random().nextInt(dances.size()));
                     DanceActivity.newInstance(this, dance.getId());
                 } else {
-                    setChatContent("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈");
                     addSpeakAnswer("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈", true);
                 }
                 break;
@@ -921,11 +910,6 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
 
     @Override
     public void noAnswer(String question) {
-
-    }
-
-    @Override
-    public void testTime() {
 
     }
 

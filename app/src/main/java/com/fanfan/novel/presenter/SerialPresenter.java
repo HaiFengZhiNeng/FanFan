@@ -72,6 +72,7 @@ public class SerialPresenter extends ISerialPresenter {
 
                     String str = motion.toString().substring(motion.toString().indexOf("angle:") + 6, motion.toString().indexOf("##### IFLYTEK"));
                     int angle = Integer.parseInt(str.trim());
+
                     Print.e("解析到应该旋转的角度 : " + angle);
                     if (0 <= angle && angle < 30) {
                         receiveMotion(SerialService.DEV_BAUDRATE, "A521821EAA");
@@ -82,6 +83,9 @@ public class SerialPresenter extends ISerialPresenter {
                     } else if (150 < angle && angle <= 180) {
                         receiveMotion(SerialService.DEV_BAUDRATE, "A5218296AA");
                     }
+
+                    receiveMotion(SerialService.VOICE_BAUDRATE, "BEAM 0\n\r");//0
+
                 }
             }
 

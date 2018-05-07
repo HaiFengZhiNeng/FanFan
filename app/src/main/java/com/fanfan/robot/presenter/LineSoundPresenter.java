@@ -32,6 +32,7 @@ import com.fanfan.novel.utils.FileUtil;
 import com.fanfan.novel.utils.FucUtil;
 import com.fanfan.novel.utils.SpecialUtils;
 import com.fanfan.novel.utils.music.MediaPlayerUtil;
+import com.fanfan.novel.utils.music.MediaPlayerUtil2;
 import com.fanfan.novel.utils.tele.TelNumMatch;
 import com.fanfan.novel.utils.tele.TelePhoneUtils;
 import com.fanfan.novel.utils.youdao.TranslateData;
@@ -226,6 +227,11 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         }
         mIat.setParameter(SpeechConstant.PARAMS, null);
         mIat.setParameter(SpeechConstant.ENGINE_TYPE, RobotInfo.getInstance().getEngineType());
+
+        //麦克风阵列开启远场识别
+        mIat.setParameter("domain", "fariat");
+        mIat.setParameter("aue", "speex-wb;10");
+
         if (!RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_CLOUD)) {
             if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_LOCAL)) {
                 mIat.setParameter(ResourceUtil.ASR_RES_PATH, FucUtil.getResAsrPath(mSoundView.getContext()));
@@ -253,11 +259,11 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         }
 
         // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
-        mIat.setParameter(SpeechConstant.VAD_BOS, "99000");
+        mIat.setParameter(SpeechConstant.VAD_BOS, "9000");
         // 设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入， 自动停止录音
         mIat.setParameter(SpeechConstant.VAD_EOS, "1000");
         // 设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
-        mIat.setParameter(SpeechConstant.ASR_PTT, "1");
+        mIat.setParameter(SpeechConstant.ASR_PTT, "0");
         // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
         mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Constants.GRM_PATH + File.separator + "iat.wav");
@@ -325,7 +331,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void stopVoice() {
-        MediaPlayerUtil.getInstance().stopMusic();
+        MediaPlayerUtil2.getInstance().stopMusic();
     }
 
 
@@ -353,7 +359,6 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 
     @Override
     public void onRecognResult(String result) {
-        mSoundView.testTime();
         Print.e("!!!!---- " + result);
         stopRecognizerListener();
         mSoundView.aiuiForLocal(result);
@@ -362,36 +367,36 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     @Override
     public void onErrInfo(int errorCode) {
         Print.e("onRecognDown total error ：" + errorCode);
-        switch (errorCode) {
-            case 10118:
-                startRecognizerListener();
-                break;
-            case 20006:
-                startRecognizerListener();
-                break;
-            case 10114:
-                startRecognizerListener();
-                break;
-            case 10108:
-                Print.e("网络差");
-                startRecognizerListener();
-                break;
-            case 20005:
-                Print.e("本地暂无此命令词");
-                startRecognizerListener();
-                break;
-            case 11201:
-                Print.e("授权不足");
-                mSoundView.showMsg("授权不足");
-                break;
-            case 12404:
-                startRecognizerListener();
-                break;
-            case 10700:
-                startRecognizerListener();
-                break;
-        }
-
+//        switch (errorCode) {
+//            case 10118:
+//                startRecognizerListener();
+//                break;
+//            case 20006:
+//                startRecognizerListener();
+//                break;
+//            case 10114:
+//                startRecognizerListener();
+//                break;
+//            case 10108:
+//                Print.e("网络差");
+//                startRecognizerListener();
+//                break;
+//            case 20005:
+//                Print.e("本地暂无此命令词");
+//                startRecognizerListener();
+//                break;
+//            case 11201:
+//                Print.e("授权不足");
+//                mSoundView.showMsg("授权不足");
+//                break;
+//            case 12404:
+//                startRecognizerListener();
+//                break;
+//            case 10700:
+//                startRecognizerListener();
+//                break;
+//        }
+        startRecognizerListener();
     }
 
     @Override
@@ -937,17 +942,13 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (TextUtils.isEmpty(url))
             return;
 
-        MediaPlayerUtil.getInstance().playMusic(url, new MediaPlayerUtil.OnMusicCompletionListener() {
+        MediaPlayerUtil2.getInstance().setListener(new MediaPlayerUtil2.OnMusicCompletionListener() {
             @Override
-            public void onCompletion(boolean isPlaySuccess) {
+            public void onFastForwarding() {
                 onCompleted();
             }
-
-            @Override
-            public void onPrepare() {
-                Print.e("onPrepare music ... ");
-            }
         });
+        MediaPlayerUtil2.getInstance().playMusic(url);
     }
 
     private GrammarListener mGrammarListener = new GrammarListener() {

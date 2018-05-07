@@ -141,4 +141,5 @@ dependencies {
     compile rootProject.ext.dependencies["panowidget"]
     compile rootProject.ext.dependencies["dagger"]
     annotationProcessor rootProject.ext.dependencies["dagger-compiler"]
+    compile rootProject.ext.dependencies["exoplayer"]
 }

@@ -183,7 +183,7 @@
                         android:id="@+id/tv_line_volume_tip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="语速"
+                        android:text="音量"
                         android:textSize="@dimen/x8" />
 
                     <SeekBar

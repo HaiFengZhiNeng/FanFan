@@ -1,16 +1,19 @@
 package com.fanfan.novel.presenter;
 
 import android.app.Activity;
+import android.media.AudioManager;
 import android.os.Handler;
 
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.presenter.ipresenter.ISynthesizerPresenter;
 import com.fanfan.novel.service.listener.TtsListener;
+import com.fanfan.novel.utils.FucUtil;
 import com.fanfan.robot.app.RobotInfo;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechSynthesizer;
+import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 
 import java.util.Random;
@@ -71,14 +74,21 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
         mTts.setParameter(SpeechConstant.PARAMS, null);
         mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
 
+        mTts.setParameter(ResourceUtil.TTS_RES_PATH, FucUtil.getResTtsPath(mTtsView.getContext(), RobotInfo.getInstance().getTtsLocalTalker()));
         mTts.setParameter(SpeechConstant.VOICE_NAME, RobotInfo.getInstance().getTtsLineTalker());
         mTts.setParameter(SpeechConstant.SPEED, String.valueOf(RobotInfo.getInstance().getLineSpeed()));
         mTts.setParameter(SpeechConstant.PITCH, "50");
         mTts.setParameter(SpeechConstant.VOLUME, String.valueOf(RobotInfo.getInstance().getLineVolume()));
-        mTts.setParameter(SpeechConstant.STREAM_TYPE, "3");
-        mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "true");
+        mTts.setParameter(SpeechConstant.STREAM_TYPE, "" + AudioManager.STREAM_VOICE_CALL);
+        mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "3");
         mTts.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mTts.setParameter(SpeechConstant.TTS_AUDIO_PATH, Constants.PROJECT_PATH + "/msc/tts.wav");
+        //开启VAD
+        mTts.setParameter(SpeechConstant.VAD_ENABLE, "1");
+        //会话最长时间
+        mTts.setParameter(SpeechConstant.KEY_SPEECH_TIMEOUT, "100");
+
+        mTts.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
         Print.e("initTts success ...");
     }
 
@@ -93,7 +103,7 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
     public void doAnswer(String answer) {
         mTtsView.stopSound();
         mTts.startSpeaking(answer, mTtsListener);
-        mTtsView.onSpeakBegin();
+        mTtsView.onSpeakBegin(answer);
     }
 
     @Override
@@ -107,6 +117,13 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
         doAnswer(wakeUp);
     }
 
+    @Override
+    public boolean isSpeaking() {
+        if (mTts == null)
+            return false;
+        return mTts.isSpeaking();
+    }
+
     private String resFoFinal(int id) {
         String[] arrResult = ((Activity) mTtsView).getResources().getStringArray(id);
         return arrResult[new Random().nextInt(arrResult.length)];
@@ -114,7 +131,9 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
 
     @Override
     public void onCompleted() {
-        Print.e("结束说话");
+        if (isSpeaking()) {
+            return;
+        }
         mHandler.postDelayed(runnable, 1000);
     }
 
@@ -127,7 +146,5 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
 
     @Override
     public void onSpeakBegin() {
-        Print.e("开始说话");
-        mTtsView.onSpeakBegin();
     }
 }

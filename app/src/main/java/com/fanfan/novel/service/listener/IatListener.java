@@ -16,6 +16,10 @@ import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.seabreeze.log.Print;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import java.util.List;
 
 /**
@@ -48,6 +52,19 @@ public class IatListener implements RecognizerListener {
 
     @Override
     public void onResult(RecognizerResult recognizerResult, boolean isHas) {
+
+        JSONTokener tokener = new JSONTokener(recognizerResult.getResultString());
+        int sn;
+        try {
+            JSONObject joResult = new JSONObject(tokener);
+            sn = joResult.getInt("sn");
+
+            if (sn == 2) {
+                return;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         final String engineType = RobotInfo.getInstance().getEngineType();
         if (engineType.equals(SpeechConstant.TYPE_LOCAL)) {
@@ -92,10 +109,8 @@ public class IatListener implements RecognizerListener {
                     }
                 }
 
-                if (isHas) {
-                    mosaicComplete(mosaicSb.toString());
-                    mosaicSb.delete(0, mosaicSb.length());
-                }
+                mosaicComplete(mosaicSb.toString());
+                mosaicSb.delete(0, mosaicSb.length());
             }
         }
     }

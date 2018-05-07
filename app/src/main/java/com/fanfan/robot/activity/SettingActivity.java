@@ -342,6 +342,7 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
     @Override
     public void onFinish(File file, Progress progress) {
         if (progress.status == Progress.FINISH) {
+            dismissAllDialog();
             showSuccessDialog(file);
         }
     }

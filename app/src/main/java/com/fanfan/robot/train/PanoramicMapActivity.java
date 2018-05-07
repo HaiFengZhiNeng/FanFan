@@ -5,10 +5,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.BaseTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.SizeReadyCallback;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
@@ -71,7 +81,21 @@ public class PanoramicMapActivity extends BarBaseActivity implements ILocalSound
         options.inputType = VrPanoramaView.Options.TYPE_STEREO_OVER_UNDER;
 
         paNormalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.andes);
-        mVrPanoramaView.loadImageFromBitmap(paNormalBitmap, options);
+//        mVrPanoramaView.loadImageFromBitmap(paNormalBitmap, options);
+//        Glide.with(this)
+//                .asBitmap()
+//                .load("https://qcdn.veervr.tv/6aac80c6073f40f49d6d7044576cd7dd.png-video.vr.medium?sign=2614396c907222d4eabc68eb505a2dfe&t=5afcc600")
+//                .into(new SimpleTarget<Bitmap>() {
+//                    @Override
+//                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+//                        if(resource != null){
+//                            mVrPanoramaView.loadImageFromBitmap(resource, options);
+//                        }else{
+//                            mVrPanoramaView.loadImageFromBitmap(paNormalBitmap, options);
+//                        }
+//                    }
+//                });
+
 
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);

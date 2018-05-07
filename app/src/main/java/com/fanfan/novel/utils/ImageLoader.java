@@ -30,38 +30,58 @@ public class ImageLoader {
     public static void loadLargeImage(final Context context, final ImageView imageView, @Nullable final Object model, final int error) {
         final RequestOptions requestOptions = new RequestOptions()
                 .placeholder(error)
+                .error(error)
                 .dontAnimate()
                 .centerCrop()
-                .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
-        Glide.with(context)
-                .asBitmap()
-                .load(model)
-                .apply(requestOptions)
-                .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
-                    @Override
-                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                        int imageHeight = resource.getHeight();
-                        if (imageHeight > 4096) {
-                            imageHeight = 4096;
-                            ViewGroup.LayoutParams para = imageView.getLayoutParams();
-                            para.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                            para.height = imageHeight;
-                            imageView.setLayoutParams(para);
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE);
+        if (model != null) {
+            Glide.with(context)
+                    .asBitmap()
+                    .load(model)
+                    .apply(requestOptions)
+                    .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                        @Override
+                        public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                            int imageHeight = resource.getHeight();
+                            if (imageHeight > 4096) {
+                                imageHeight = 4096;
+                                ViewGroup.LayoutParams para = imageView.getLayoutParams();
+                                para.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                                para.height = imageHeight;
+                                imageView.setLayoutParams(para);
 
-                            Glide.with(context)
-                                    .load(model)
-                                    .apply(requestOptions)
-                                    .into(imageView);
-                        } else {
-                            ViewGroup.LayoutParams para = imageView.getLayoutParams();
-                            para.width = -1;
-                            para.height = -1;
-                            loadImage(context, imageView, model, error);
+                                Glide.with(context)
+                                        .load(model)
+                                        .apply(requestOptions)
+                                        .into(imageView);
+                            } else {
+                                ViewGroup.LayoutParams para = imageView.getLayoutParams();
+                                para.width = -1;
+                                para.height = -1;
+                                //      loadImage(context, imageView, model, error);
+                                RequestOptions options = new RequestOptions()
+                                        .centerCrop()
+                                        .placeholder(error)
+                                        .error(error)
+                                        // .priority(priority)
+                                        .skipMemoryCache(true)
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                        .transform(new GlideRoundTransform());
+
+                                Glide.with(context)
+                                        .load(model)
+                                        .apply(options)
+                                        .into(imageView);
+                            }
                         }
-                    }
-                });
-
+                    });
+        } else {
+            Glide.with(context)
+                    .load(model)
+                    .apply(requestOptions)
+                    .into(imageView);
+        }
     }
 
     public static void loadImageAsGif(Context context, ImageView imageView, @Nullable Object model) {
@@ -99,7 +119,7 @@ public class ImageLoader {
     }
 
     public static void loadImage(Context context, ImageView imageView, @Nullable Object model,
-                                  int placeholder, int error, boolean skip, @NonNull DiskCacheStrategy strategy) {
+                                 int placeholder, int error, boolean skip, @NonNull DiskCacheStrategy strategy) {
         loadImage(context, imageView, model, placeholder, error, Priority.NORMAL, skip, strategy, new GlideRoundTransform());
     }
 

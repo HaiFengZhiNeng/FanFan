@@ -263,7 +263,8 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
                 mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getExpressionData());
             }
         }
-        ImageLoader.loadLargeImage(mContext, ivVoiceImage, itemData.getImgUrl(), R.mipmap.video_image);
+
+        ImageLoader.loadLargeImage(mContext, ivVoiceImage, itemData.getImgUrl(), R.mipmap.load_image);
 
     }
 

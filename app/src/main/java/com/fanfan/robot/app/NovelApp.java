@@ -9,6 +9,7 @@ import com.fanfan.novel.common.lifecycle.Foreground;
 import com.fanfan.novel.db.base.BaseManager;
 import com.fanfan.novel.service.cache.Config;
 import com.fanfan.novel.service.cache.UserInfoCache;
+import com.fanfan.novel.utils.music.MediaPlayerUtil2;
 import com.fanfan.robot.BuildConfig;
 import com.fanfan.robot.R;
 import com.fanfan.youtu.Youtucode;
@@ -58,6 +59,7 @@ public class NovelApp extends BaseApplication {
         //初始化本机
         RobotInfo.getInstance().init(this);
 
+        MediaPlayerUtil2.getInstance().initMediaplayer(this);
     }
 
 

@@ -135,6 +135,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private Youtucode youtucode;
 
+    private int id;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main1;
@@ -175,6 +177,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     @Override
     protected void onResume() {
         super.onResume();
+
+        Constants.isDance = false;
+
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
         mMainManager.onResume();
     }
@@ -374,7 +379,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             isAutoAction = true;
             sendOrder(SerialService.DEV_BAUDRATE, "A503800AAA");
             Print.e("自由运动(开)");
-            mHandler.postDelayed(runnable, 600);
+            mHandler.postDelayed(runnable, 200);
         }
     }
 
@@ -392,7 +397,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         public void run() {
             if (isAutoAction) {
                 sendOrder(SerialService.DEV_BAUDRATE, "A503800AAA");
-                mHandler.postDelayed(runnable, 600);
+                mHandler.postDelayed(runnable, 200);
                 Print.e("自由运动(开)");
             }
         }
@@ -561,12 +566,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     //**********************************************************************************************
     @Override
-    public void onSpeakBegin() {
+    public void onSpeakBegin(String answer) {
+
+        setChatContent(answer);
         setChatView(true);
         loadImage(R.mipmap.fanfan_lift_hand, R.mipmap.fanfan_hand);
-
-        long current = System.currentTimeMillis() - curTime;
-        showMsg(current + "");
     }
 
     @Override
@@ -598,7 +602,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 //        }
         if (isShow) {
             AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
-            alphaAnimation.setDuration(300);
+            alphaAnimation.setDuration(1000);
             alphaAnimation.setFillAfter(true);
             chatContent.bringToFront();
             chatContent.startAnimation(alphaAnimation);
@@ -666,13 +670,18 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     @Override
     public void parseMsgcomplete(String str) {
         addSpeakAnswer(str, true);
-        setChatContent(str);
     }
 
     @Override
     public void parseCustomMsgcomplete(String customMsg) {
         RobotBean bean = GsonUtil.GsonToBean(customMsg, RobotBean.class);
-        if (bean == null || bean.getType().equals("") || bean.getOrder().equals("")) {
+        if (bean == null) {
+            return;
+        }
+        if (bean.getType() == null || bean.getType().equals("")) {
+            return;
+        }
+        if (bean.getOrder() == null || bean.getOrder().equals("")) {
             return;
         }
         RobotType robotType = bean.getType();
@@ -746,32 +755,109 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void parseServerMsgcomplete(String txt) {
-        if (txt.equals("1") || txt.equals("2") || txt.equals("3") || txt.equals("4") || txt.equals("5")
-                || txt.equals("6") || txt.equals("7") || txt.equals("8") || txt.equals("9")) {
-            int i = Integer.valueOf(txt);
-            switch (i) {
-                case 1:
-                    txt = "这个问题有点难，你能告诉我答案么，我会努力学习的";
-                case 2:
-                    txt = "这个知识我还没有学到啊，您能教我么";
-                case 3:
-                    txt = "哎呀，我没有听清，您能再说一遍么";
-                case 4:
-                    txt = "您好，很高兴见到您";
-                case 5:
-                    txt = "这个问题好难啊，我还没学过这个，您能教我么";
-                case 6:
-                    txt = "刚才的问题您能再说一遍么 我需要思考一下";
-                case 7:
-                    txt = "我是服务机器人芳芳";
-                case 8:
-                    txt = "您在我前面站了这么久  要和我说点什么么";
-                case 9:
-                    txt = "您好，您可以和我对话聊天，提问解答，我很乐意为您服务";
+        Print.e("接收到客服发来的消息： " + txt);
+
+        txt = txt.trim();
+        if (txt.equals("a")) {
+            mMainManager.stopVoice();
+        } else if (txt.equals("s")) {
+            mMainManager.startVoice();
+        } else if (txt.equals("g")) {
+            stopAll();
+
+        } else if (txt.equals("h")) {//前进
+            sendOrder(SerialService.DEV_BAUDRATE, "A5038002AA");
+
+        } else if (txt.equals("j")) {//后退
+            sendOrder(SerialService.DEV_BAUDRATE, "A5038008AA");
+
+        } else if (txt.equals("k")) {//左转
+            sendOrder(SerialService.DEV_BAUDRATE, "A5038004AA");
+
+        } else if (txt.equals("l")) {//右转
+            sendOrder(SerialService.DEV_BAUDRATE, "A5038006AA");
+
+        } else if (txt.equals("q")) {
+            animateSequentially(ivFanfan);
+
+        } else if (txt.equals("w")) {
+            ProblemConsultingActivity.newInstance(this);
+
+        } else if (txt.equals("e")) {
+            VideoIntroductionActivity.newInstance(this);
+        } else if (txt.equals("r")) {
+            NavigationActivity.newInstance(this);
+        } else if (txt.equals("t")) {
+            if (Constants.isDance) {
+                Print.e("正在跳舞，return");
+                return;
             }
+            beginDance();
+        } else if (txt.equals("u")) {
+            sendOrder(SerialService.DEV_BAUDRATE, "A50C800CAA");
+            addSpeakAnswer("你好", false);
+        } else if (txt.equals("d")) {
+            if (isAutoAction) {
+                return;
+            }
+            sendAutoAction();
+        } else if (txt.equals("f")) {
+            stopAutoAction();
+        } else {
+            if (txt.equals("1") || txt.equals("2") || txt.equals("3") || txt.equals("4") || txt.equals("5")
+                    || txt.equals("6") || txt.equals("7") || txt.equals("8") || txt.equals("9")) {
+                int i = Integer.valueOf(txt);
+                switch (i) {
+                    case 1:
+                        txt = "正在为您检索答案，请您稍等";
+                        break;
+                    case 2:
+                        txt = "数据库中未检索到符合的答案，如需咨询业务相关，您可以对我说“业务办理”";
+                        break;
+                    case 3:
+                        txt = "您好，请问您想办理什么业务";
+                        break;
+                    case 4:
+                        txt = "您好，很高兴见到您";
+                        break;
+                    case 5:
+                        txt = "这个问题好难啊，我还没学过这个，您能教我么";
+                        break;
+                    case 6:
+                        txt = "领导您好，我是境境，希望您能喜欢我";
+                        break;
+                    case 7:
+                        txt = "我是服务机器人境境";
+                        break;
+                    case 8:
+                        txt = "您在我前面站了这么久  要和我说点什么么";
+                        break;
+                    case 9:
+                        txt = "您好，您可以和我对话聊天，提问解答，我很乐意为您服务";
+                        break;
+
+                }
+            }
+            addSpeakAnswer(txt, true);
         }
-        addSpeakAnswer(txt, true);
-        setChatContent(txt);
+    }
+
+    private void beginDance() {
+        Constants.isDance = true;
+        addSpeakAnswer("请您欣赏舞蹈", false);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                DanceDBManager danceDBManager = new DanceDBManager();
+                List<Dance> dances = danceDBManager.loadAll();
+                if (dances != null && dances.size() > 0) {
+                    Dance dance = dances.get(0);
+                    DanceActivity.newInstance(MainActivity.this, dance.getId());
+                } else {
+                    addSpeakAnswer("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈", true);
+                }
+            }
+        }, 2000);
     }
 
     //**********************************************************************************************
@@ -780,7 +866,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
         mMainManager.stopVoice();
         String wakeUp = resFoFinal(R.array.wake_up);
-        setChatContent(wakeUp);
         mMainManager.stopAll(wakeUp);
     }
 
@@ -792,9 +877,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
     @Override
     public void aiuiForLocal(String result) {
-        Print.e("aiuiForLocal : " + result);
         String unicode = result.replaceAll("\\p{P}", "");
-        Print.e("aiuiForLocal : " + unicode);
         if (unicode.equals("百度")) {
             IntentUtil.openUrl(mContext, "http://www.baidu.com/");
         } else if (unicode.equals("新闻")) {
@@ -825,66 +908,52 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         if (voiceBean.getExpressionData() != null)
             sendOrder(SerialService.DEV_BAUDRATE, voiceBean.getExpressionData());
 
-        setChatContent(voiceBean.getVoiceAnswer());
         addSpeakAnswer(voiceBean.getVoiceAnswer(), true);
     }
 
 
     @Override
     public void refHomePage(String question, String finalText) {
-        setChatContent(finalText);
     }
 
     @Override
     public void refHomePage(String question, String finalText, String url) {
-        setChatContent(finalText);
     }
 
     @Override
     public void refHomePage(String question, News news) {
-        setChatContent(news.getContent());
     }
 
     @Override
     public void refHomePage(String question, Radio radio) {
-        setChatContent(radio.getDescription());
     }
 
     @Override
     public void refHomePage(String question, Poetry poetry) {
-        setChatContent(poetry.getContent());
     }
 
     @Override
     public void refHomePage(String question, Cookbook cookbook) {
-        setChatContent(cookbook.getSteps());
     }
 
     @Override
     public void refHomePage(String question, EnglishEveryday englishEveryday) {
-        setChatContent(englishEveryday.getContent());
     }
 
     @Override
     public void special(String result, SpecialType type) {
         switch (type) {
             case Story:
+                onCompleted();
                 break;
             case Music:
                 bindService(true);
                 break;
             case Joke:
+                onCompleted();
                 break;
             case Dance:
-                DanceDBManager danceDBManager = new DanceDBManager();
-                List<Dance> dances = danceDBManager.loadAll();
-                if (dances != null && dances.size() > 0) {
-                    Dance dance = dances.get(new Random().nextInt(dances.size()));
-                    DanceActivity.newInstance(this, dance.getId());
-                } else {
-                    setChatContent("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈");
-                    addSpeakAnswer("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈", true);
-                }
+                beginDance();
                 break;
             case Hand:
                 sendOrder(SerialService.DEV_BAUDRATE, "A50C800CAA");
@@ -992,15 +1061,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     public void noAnswer(String question) {
         Print.e("noAnswer : " + question);
         String identifier = UserInfo.getInstance().getIdentifier();
-        youtucode.requestProblem(identifier, question);
+        youtucode.requestProblem(identifier, question, id);
     }
 
-    private long curTime;
-
-    @Override
-    public void testTime() {
-        curTime = System.currentTimeMillis();
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onResultEvent(RequestProblemEvent event) {
@@ -1025,11 +1088,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             }
             Print.e(requestProblem);
             String anwer = answerBean.getAnswer();
+            id = answerBean.getId();
             if (anwer == null || anwer.length() < 1) {
                 mMainManager.sendMessage(identifier, requestProblem.getQuestion());
                 onCompleted();
             } else {
-                setChatContent(anwer);
                 addSpeakAnswer(anwer, true);
             }
         } else {

@@ -10,13 +10,16 @@
     "打招呼+握手+拥抱", "看书+小动作考虑+优雅解释右", "拥抱+起飞+掐腰", "优雅解释左+考虑一下+优雅解释右",
     "单手奏乐+看书+啊！白云", "太极+啊白云", "保证左+优雅打招呼右", "保证右+优雅打招呼左",
     "开始跳舞", "停止跳舞"};
-    public static final String[] action_order = {"A50C8001AA", "A50C8002AA", "A50C8003AA","A50C8004AA",
-    "A50C8005AA", "A50C8006AA", "A50C8007AA", "A50C8008AA", "A50C8009AA", "A50C800AAA", "A50C800BAA",
-    "A50C800CAA", "A50C800DAA", "A50C800EAA",  "A50C800FAA", "A50C8010AA", "A50C8011AA", "A50C8012AA","A50C8013AA",
-    "A50C8014AA", "A50C8015AA", "A50C8016AA", "A50C8017AA", "A50C8018AA",  "A50C8019AA",
+    public static final String[] action_order = {"A50C8001AA", "A50C8002AA",
+    "A50C8003AA","A50C8004AA",
+    "A50C8005AA", "A50C8006AA", "A50C8007AA", "A50C8008AA", "A50C8009AA", "A50C800AAA",
+    "A50C800BAA",
+    "A50C800CAA", "A50C800DAA", "A50C800EAA", "A50C800FAA", "A50C8010AA", "A50C8011AA",
+    "A50C8012AA","A50C8013AA",
+    "A50C8014AA", "A50C8015AA", "A50C8016AA", "A50C8017AA", "A50C8018AA", "A50C8019AA",
     "A50C8021AA", "A50C8022AA","A50C8023AA", "A50C8024AA", "A50C8025AA",
-    "A50C8026AA", "A50C8027AA",  "A50C8028AA", "A50C8029AA",
-    "A50C802AAA", "A50C802BAA",  "A50C802CAA", "A50C802DAA",
+    "A50C8026AA", "A50C8027AA", "A50C8028AA", "A50C8029AA",
+    "A50C802AAA", "A50C802BAA", "A50C802CAA", "A50C802DAA",
     "A50C80E1AA", "A50C80E2AA"};
 
     public static final String[] expression = {"微笑", "萌", "下看", "右看", "左看", "滑稽", "大哭", "心", "疑惑",
@@ -199,10 +202,17 @@
 
     <string-array name="dance">
         <item>舞蹈1</item>
+        <item>舞蹈2</item>
     </string-array>
 
     <string-array name="dance_data">
         <item>A50C80E1AA</item>
+        <item>A50C80EAAA</item>
     </string-array>
-    A50C80E2AA
+
+    <string-array name="dance_music_data">
+        <item>dance.mp3</item>
+        <item>dance2.mp3</item>
+    </string-array>
+
 </resources>

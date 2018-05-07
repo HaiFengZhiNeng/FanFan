@@ -136,6 +136,7 @@ public class DanceAddActivity extends BarBaseActivity {
         dance.setTitle(getText(etQuestion));
         dance.setOrder(resArray(R.array.dance)[curDance]);
         dance.setOrderData(resArray(R.array.dance_data)[curDance]);
+        dance.setPath(resArray(R.array.dance_music_data)[curDance]);
         if (saveLocalId == -1) {
             mDanceDBManager.insert(dance);
         } else {

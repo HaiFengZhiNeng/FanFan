@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.MediaPlayer;
 import android.widget.ImageView;
 
 import com.fanfan.novel.common.Constants;
@@ -70,7 +71,12 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
         if (danceId != -1) {
             DanceDBManager danceDBManager = new DanceDBManager();
             dance = danceDBManager.selectByPrimaryKey(danceId);
-            DanceUtils.getInstance().startDance(this, dance.getPath());
+            DanceUtils.getInstance().startDanceName(this, dance.getPath(), new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    stopAll();
+                }
+            });
             mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, dance.getOrderData());
         }
 

@@ -339,8 +339,9 @@ public class AiuiListener implements AIUIListener {
                     } else if (service.equals("openQA")) {
                         aiListener.onDoAnswer(question, text);
                     } else {
-                        getExecutorService().execute(new JsonThread(question));
-                        aiListener.onDoAnswer(question, "等待添加！！！");
+//                        getExecutorService().execute(new JsonThread(question));
+//                        aiListener.onDoAnswer(question, "等待添加！！！");
+                        noResult(question);
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();

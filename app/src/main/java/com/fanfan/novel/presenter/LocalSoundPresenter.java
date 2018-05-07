@@ -107,6 +107,12 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
         mTts.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mTts.setParameter(SpeechConstant.TTS_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/tts.wav");
 
+        //开启VAD
+        mTts.setParameter(SpeechConstant.VAD_ENABLE, "1");
+        //会话最长时间
+        mTts.setParameter(SpeechConstant.KEY_SPEECH_TIMEOUT, "100");
+
+        mTts.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
     }
 
     @Override
@@ -136,9 +142,9 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
         mIat.setParameter(SpeechConstant.LOCAL_GRAMMAR, LOCAL_GRAMMAR_NAME);
         mIat.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
         mIat.setParameter(SpeechConstant.RESULT_TYPE, "json");
-        mIat.setParameter(SpeechConstant.VAD_BOS, "99000");
+        mIat.setParameter(SpeechConstant.VAD_BOS, "9000");
         mIat.setParameter(SpeechConstant.VAD_EOS, "1000");
-        mIat.setParameter(SpeechConstant.ASR_PTT, "1");
+        mIat.setParameter(SpeechConstant.ASR_PTT, "0");
         mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Constants.GRM_PATH + File.separator + "iat.wav");
         Print.e("initIat success ...");
@@ -268,29 +274,30 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
     @Override
     public void onErrInfo(int errorCode) {
         Print.e("onRecognDown total error ：" + errorCode);
-        switch (errorCode) {
-            case 10118:
-                startRecognizerListener();
-                break;
-            case 20006:
-                startRecognizerListener();
-                break;
-            case 10114:
-                startRecognizerListener();
-                break;
-            case 10108:
-                Print.e("网络差");
-                startRecognizerListener();
-                break;
-            case 20005:
-                Print.e("本地暂无此命令词");
-                startRecognizerListener();
-                break;
-            case 11201:
-                Print.e("授权不足");
-                mSoundView.showMsg("授权不足");
-                break;
-        }
+//        switch (errorCode) {
+//            case 10118:
+//                startRecognizerListener();
+//                break;
+//            case 20006:
+//                startRecognizerListener();
+//                break;
+//            case 10114:
+//                startRecognizerListener();
+//                break;
+//            case 10108:
+//                Print.e("网络差");
+//                startRecognizerListener();
+//                break;
+//            case 20005:
+//                Print.e("本地暂无此命令词");
+//                startRecognizerListener();
+//                break;
+//            case 11201:
+//                Print.e("授权不足");
+//                mSoundView.showMsg("授权不足");
+//                break;
+//        }
+        startRecognizerListener();
     }
 
     @Override
