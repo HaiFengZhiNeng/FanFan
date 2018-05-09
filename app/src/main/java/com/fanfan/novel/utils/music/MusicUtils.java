@@ -104,7 +104,11 @@ public class MusicUtils {
             music.setPath(path);
             music.setFileName(fileName);
             music.setFileSize(fileSize);
-            musicList.add(music);
+            if (fileName.endsWith(".wav")) {
+
+            } else {
+                musicList.add(music);
+            }
         }
         cursor.close();
         if (isTF) {

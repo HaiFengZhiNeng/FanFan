@@ -123,20 +123,20 @@ public class PlayService extends Service implements MediaPlayer.OnCompletionList
      */
     @SuppressLint("StaticFieldLeak")
     public void updateMusicList(final EventCallback<Void> callback) {
-
+        PreferencesUtils.putBoolean(PlayService.this, Constants.MUSIC_UPDATE, false);
         if (PreferencesUtils.getBoolean(PlayService.this, Constants.MUSIC_UPDATE, false)) {
             scanMussicExecute(callback);
         } else {
             if (unusual) {
 
-            new SingleMediaScanner(this, Environment.getExternalStorageDirectory(),
-                    new SingleMediaScanner.ScanListener() {
-                        @Override
-                        public void onScanFinish(String s, Uri uri) {
-                            Print.e("onScanCompleted : " + s);
-                            loadMusic(callback);
-                        }
-                    });
+                new SingleMediaScanner(this, Environment.getExternalStorageDirectory(),
+                        new SingleMediaScanner.ScanListener() {
+                            @Override
+                            public void onScanFinish(String s, Uri uri) {
+                                Print.e("onScanCompleted : " + s);
+                                loadMusic(callback);
+                            }
+                        });
             } else {
                 loadMusic(callback);
             }
