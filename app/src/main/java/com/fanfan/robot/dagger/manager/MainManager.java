@@ -120,4 +120,8 @@ public class MainManager {
     public void sendMessage(String identifier, String question) {
         mChatPresenter.sendServerMessage(question);
     }
+
+    public boolean isSpeaking() {
+        return mTtsPresenter.isSpeaking();
+    }
 }

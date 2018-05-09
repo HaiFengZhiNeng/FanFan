@@ -232,6 +232,8 @@
             android:name="com.fanfan.novel.activity.CameraRecoderActivity"
             android:theme="@style/AppTheme" />
 
+        <service android:name="com.fanfan.novel.service.SpeakService"/>
+
         <service android:name="com.fanfan.novel.service.UdpService" />
 
         <service android:name="com.fanfan.novel.service.SerialService" />

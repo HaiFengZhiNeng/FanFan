@@ -273,8 +273,8 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     @Override
     public void stopRecognizerListener() {
         if (mIat != null) {
-            mIat.startListening(null);
-            mIat.stopListening();
+//            mIat.startListening(null);
+//            mIat.stopListening();
         }
     }
 
@@ -361,6 +361,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     public void onRecognResult(String result) {
         Print.e("!!!!---- " + result);
         stopRecognizerListener();
+        startRecognizerListener();
         mSoundView.aiuiForLocal(result);
     }
 
@@ -420,13 +421,13 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
             if (RobotInfo.getInstance().isQueryLanage()) {
                 if (isTrans) {
                     isTrans = false;
-                    mSoundView.doAiuiAnwer(finalText);
+                    mSoundView.doAiuiAnwer(question, finalText);
                     mSoundView.refHomePage(question, finalText);
                 } else {
                     query(finalText);
                 }
             } else {
-                mSoundView.doAiuiAnwer(finalText);
+                mSoundView.doAiuiAnwer(question, finalText);
                 mSoundView.refHomePage(question, finalText);
             }
         }
@@ -441,7 +442,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                     playVoice(news.getUrl());
                     mSoundView.refHomePage(question, news);
                 } else {
-                    mSoundView.doAiuiAnwer(text + ", " + news.getContent());
+                    mSoundView.doAiuiAnwer(question, text + ", " + news.getContent());
                 }
             } else {
                 query(news.getContent());
@@ -451,7 +452,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 playVoice(news.getUrl());
                 mSoundView.refHomePage(question, news);
             } else {
-                mSoundView.doAiuiAnwer(text + ", " + news.getContent());
+                mSoundView.doAiuiAnwer(question, text + ", " + news.getContent());
             }
         }
     }
@@ -461,13 +462,13 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                mSoundView.doAiuiAnwer(text + ", " + cookbook.getSteps());
+                mSoundView.doAiuiAnwer(question, text + ", " + cookbook.getSteps());
                 mSoundView.refHomePage(question, cookbook);
             } else {
                 query(cookbook.getSteps());
             }
         } else {
-            mSoundView.doAiuiAnwer(text + ", " + cookbook.getSteps());
+            mSoundView.doAiuiAnwer(question, text + ", " + cookbook.getSteps());
             mSoundView.refHomePage(question, cookbook);
         }
     }
@@ -477,13 +478,13 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                mSoundView.doAiuiAnwer(poetry.getContent());
+                mSoundView.doAiuiAnwer(question, poetry.getContent());
                 mSoundView.refHomePage(question, poetry);
             } else {
                 query(poetry.getContent());
             }
         } else {
-            mSoundView.doAiuiAnwer(poetry.getContent());
+            mSoundView.doAiuiAnwer(question, poetry.getContent());
             mSoundView.refHomePage(question, poetry);
         }
     }
@@ -495,7 +496,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 isTrans = false;
                 if (isMedia) {
                     if (TextUtils.isEmpty(joke.getMp3Url())) {
-                        mSoundView.doAiuiAnwer(joke.getTitle() + " : " + joke.getContent());
+                        mSoundView.doAiuiAnwer(question, joke.getTitle() + " : " + joke.getContent());
                         mSoundView.refHomePage(question, joke.getTitle() + " : " + joke.getContent());
                     } else {
                         mSoundView.refHomePage(question, finalText);
@@ -511,7 +512,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         } else {
             if (isMedia) {
                 if (TextUtils.isEmpty(joke.getMp3Url())) {
-                    mSoundView.doAiuiAnwer(joke.getTitle() + " : " + joke.getContent());
+                    mSoundView.doAiuiAnwer(question, joke.getTitle() + " : " + joke.getContent());
                     mSoundView.refHomePage(question, joke.getTitle() + " : " + joke.getContent());
                 } else {
                     mSoundView.refHomePage(question, finalText);
@@ -556,7 +557,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                mSoundView.doAiuiAnwer(finalText);
+                mSoundView.doAiuiAnwer(question, finalText);
                 mSoundView.refHomePage(question, finalText);
                 if (Constants.isTrain) {
                     mSoundView.train(trains);
@@ -571,7 +572,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 query(finalText);
             }
         } else {
-            mSoundView.doAiuiAnwer(finalText);
+            mSoundView.doAiuiAnwer(question, finalText);
             mSoundView.refHomePage(question, finalText);
             if (Constants.isTrain) {
                 mSoundView.train(trains);
@@ -590,7 +591,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                mSoundView.doAiuiAnwer(finalText);
+                mSoundView.doAiuiAnwer(question, finalText);
                 mSoundView.refHomePage(question, finalText);
                 int total;
                 if (flights.size() < 10) {
@@ -608,7 +609,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 query(finalText);
             }
         } else {
-            mSoundView.doAiuiAnwer(finalText);
+            mSoundView.doAiuiAnwer(question, finalText);
             mSoundView.refHomePage(question, finalText);
             int total;
             if (flights.size() < 10) {
@@ -716,13 +717,13 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                mSoundView.doAiuiAnwer(englishEveryday.getContent());
+                mSoundView.doAiuiAnwer(question, englishEveryday.getContent());
                 mSoundView.refHomePage(question, englishEveryday);
             } else {
                 query(finalText);
             }
         } else {
-            mSoundView.doAiuiAnwer(englishEveryday.getContent());
+            mSoundView.doAiuiAnwer(question, englishEveryday.getContent());
             mSoundView.refHomePage(question, englishEveryday);
         }
     }
@@ -740,7 +741,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                     Fortune fortune = fortunes.get(i);
                     sb.append(fortune.getName()).append(" : ").append(fortune.getDescription());
                 }
-                mSoundView.doAiuiAnwer(sb.toString());
+                mSoundView.doAiuiAnwer(question, sb.toString());
                 mSoundView.refHomePage(question, sb.toString());
             } else {
                 query(finalText);
@@ -753,7 +754,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 Fortune fortune = fortunes.get(i);
                 sb.append(fortune.getName()).append(" : ").append(fortune.getDescription());
             }
-            mSoundView.doAiuiAnwer(sb.toString());
+            mSoundView.doAiuiAnwer(question, sb.toString());
             mSoundView.refHomePage(question, sb.toString());
         }
     }
@@ -769,7 +770,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                 sb.append("\n截止到").append(stock.getUpdateDateTime()).append(", ").append(stock.getName()).append(" ")
                         .append(stock.getStockCode()).append(", 当前价格为 ： ").append(stock.getOpeningPrice()).append(", 上升率为 ： ")
                         .append(stock.getRiseRate()).append(" 详情请查看列表信息");
-                mSoundView.doAiuiAnwer(sb.toString());
+                mSoundView.doAiuiAnwer(question, sb.toString());
 
                 sb.append("\n最高价 ： ").append(stock.getHighPrice());
                 sb.append("  最低价 ： ").append(stock.getLowPrice());
@@ -788,7 +789,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
             sb.append("\n截止到").append(stock.getUpdateDateTime()).append(", ").append(stock.getName()).append(" ")
                     .append(stock.getStockCode()).append(", 当前价格为 ： ").append(stock.getOpeningPrice()).append(", 上升率为 ： ")
                     .append(stock.getRiseRate()).append(" 详情请查看列表信息");
-            mSoundView.doAiuiAnwer(sb.toString());
+            mSoundView.doAiuiAnwer(question, sb.toString());
 
             sb.append("\n最高价 ： ").append(stock.getHighPrice());
             sb.append("  最低价 ： ").append(stock.getLowPrice());
@@ -807,13 +808,13 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                mSoundView.doAiuiAnwer(riddle.getTitle() + "\n谜底请查看列表");
+                mSoundView.doAiuiAnwer(question, riddle.getTitle() + "\n谜底请查看列表");
                 mSoundView.refHomePage(question, riddle.getTitle() + "\n\n" + riddle.getAnswer() + "\n");
             } else {
                 query(finalText);
             }
         } else {
-            mSoundView.doAiuiAnwer(riddle.getTitle() + "\n谜底请查看列表");
+            mSoundView.doAiuiAnwer(question, riddle.getTitle() + "\n谜底请查看列表");
             mSoundView.refHomePage(question, riddle.getTitle() + "\n\n" + riddle.getAnswer() + "\n");
         }
     }
@@ -842,13 +843,13 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                mSoundView.doAiuiAnwer(sb.toString());
+                mSoundView.doAiuiAnwer(question, sb.toString());
                 mSoundView.refHomePage(question, sb.toString());
             } else {
                 query(finalText);
             }
         } else {
-            mSoundView.doAiuiAnwer(sb.toString());
+            mSoundView.doAiuiAnwer(question, sb.toString());
             mSoundView.refHomePage(question, sb.toString());
         }
     }
@@ -863,33 +864,33 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
                     if (phones != null && phones.size() > 0) {
                         if (phones.size() == 1) {
                             String phoneNumber = phones.get(0);
-                            mSoundView.doAiuiAnwer("为您拨打 ： " + phoneNumber);
+                            mSoundView.doAiuiAnwer(question, "为您拨打 ： " + phoneNumber);
 //                            mSoundView.refHomePage(question, "为您拨打 ： " + phoneNumber);
                             mSoundView.doCallPhone(phoneNumber);
                         } else {
-                            mSoundView.doAiuiAnwer("为您找到如下号码 ： ");
+                            mSoundView.doAiuiAnwer(question, "为您找到如下号码 ： ");
                             mSoundView.refHomePage(question, "为您找到如下号码 ： ");
                             for (String phone : phones) {
                                 mSoundView.refHomePage(null, phone);
                             }
                         }
                     } else {
-                        mSoundView.doAiuiAnwer("暂无此名字电话号码");
+                        mSoundView.doAiuiAnwer(question, "暂无此名字电话号码");
                         mSoundView.refHomePage(question, "通讯录中暂无");
                     }
                 } else {
-                    mSoundView.doAiuiAnwer("为您匹配到如下姓名 ： ");
+                    mSoundView.doAiuiAnwer(question, "为您匹配到如下姓名 ： ");
                     mSoundView.refHomePage(question, "为您匹配到如下姓名 ： ");
                     for (Telephone telephone : telephones) {
                         mSoundView.refHomePage(null, telephone.getName());
                     }
                 }
             } else {
-                mSoundView.doAiuiAnwer("通讯录中暂无" + value);
+                mSoundView.doAiuiAnwer(question, "通讯录中暂无" + value);
                 mSoundView.refHomePage(question, "通讯录中暂无" + value);
             }
         } else {
-            mSoundView.doAiuiAnwer("为您拨打 ： " + value);
+            mSoundView.doAiuiAnwer(question, "为您拨打 ： " + value);
             mSoundView.doCallPhone(value);
         }
     }

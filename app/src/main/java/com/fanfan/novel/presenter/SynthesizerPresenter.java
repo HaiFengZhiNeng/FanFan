@@ -80,7 +80,7 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
         mTts.setParameter(SpeechConstant.PITCH, "50");
         mTts.setParameter(SpeechConstant.VOLUME, String.valueOf(RobotInfo.getInstance().getLineVolume()));
         mTts.setParameter(SpeechConstant.STREAM_TYPE, "" + AudioManager.STREAM_VOICE_CALL);
-        mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "3");
+        mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "false");
         mTts.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mTts.setParameter(SpeechConstant.TTS_AUDIO_PATH, Constants.PROJECT_PATH + "/msc/tts.wav");
         //开启VAD

@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -27,6 +29,7 @@ import com.fanfan.novel.im.init.LoginBusiness;
 import com.fanfan.novel.map.activity.AMapActivity;
 import com.fanfan.novel.model.RobotBean;
 import com.fanfan.novel.model.SerialBean;
+import com.fanfan.novel.model.SpeakBean;
 import com.fanfan.novel.model.UserInfo;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.model.xf.service.Cookbook;
@@ -43,6 +46,7 @@ import com.fanfan.novel.presenter.ipresenter.ISynthesizerPresenter;
 import com.fanfan.novel.service.LoadFileService;
 import com.fanfan.novel.service.PlayService;
 import com.fanfan.novel.service.SerialService;
+import com.fanfan.novel.service.SpeakService;
 import com.fanfan.novel.service.UdpService;
 import com.fanfan.novel.service.cache.LoadFileCache;
 import com.fanfan.novel.service.cache.MusicCache;
@@ -137,6 +141,46 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private int id;
 
+    private SpeakService.SpeakBinder mSpeakBinder;
+
+    private ServiceConnection mSpeakConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mSpeakBinder = (SpeakService.SpeakBinder) service;
+            mSpeakBinder.initSpeakManager(MainActivity.this);
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+    private Runnable speakRunnable = new Runnable() {
+        @Override
+        public void run() {
+            SpeakBean speakBean = null;
+            if (!mMainManager.isSpeaking()) {
+                if (mSpeakBinder != null) {
+                    speakBean = mSpeakBinder.getSpeakMorestr();
+                }
+            }
+            if (speakBean == null) {
+                mHandler.postDelayed(speakRunnable, 1000);
+            } else {
+                if (System.currentTimeMillis() - speakBean.getTime() < 1000) {
+                    mMainManager.doAnswer(speakBean.getAnwer());
+                    if (speakBean.isAction()) {
+                        speakingAddAction(speakBean.getAnwer().length());
+                    }
+                } else {
+                    mHandler.postDelayed(speakRunnable, 1000);
+                }
+            }
+        }
+    };
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main1;
@@ -153,6 +197,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         youtucode = Youtucode.getSingleInstance();
 
         youtucode.updateProgram(1);
+
+        Intent intent = new Intent(this, SpeakService.class);
+        bindService(intent, mSpeakConn, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -405,12 +452,18 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     //**********************************************************************************************
 
-    private void addSpeakAnswer(String messageContent, boolean isAction) {
+    private void addSpeakAnswer(String problem, String messageContent, boolean isAction) {
         mMainManager.stopVoice();
         mMainManager.stopHandler();
-        mMainManager.doAnswer(messageContent);
-        if (isAction) {
-            speakingAddAction(messageContent.length());
+//        mMainManager.doAnswer(messageContent);
+        if (mMainManager.isSpeaking()) {
+            SpeakBean speakBean = new SpeakBean(problem, messageContent, System.currentTimeMillis(), isAction);
+            mSpeakBinder.dispatchSpeak(speakBean);
+        } else {
+            mMainManager.doAnswer(messageContent);
+            if (isAction) {
+                speakingAddAction(messageContent.length());
+            }
         }
     }
 
@@ -578,7 +631,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
         sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
-        mMainManager.startVoice();
+//        mMainManager.startVoice();
+        mHandler.post(speakRunnable);
     }
 
     @Override
@@ -669,7 +723,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void parseMsgcomplete(String str) {
-        addSpeakAnswer(str, true);
+        addSpeakAnswer("TextMsg", str, true);
     }
 
     @Override
@@ -693,7 +747,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 mMainManager.setSpeech(isSpeech);
                 break;
             case Text:
-                addSpeakAnswer(bean.getOrder(), true);
+                addSpeakAnswer("CustomMsg", bean.getOrder(), true);
                 break;
             case SmartChat:
 
@@ -792,10 +846,10 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 Print.e("正在跳舞，return");
                 return;
             }
-            beginDance();
+            beginDance("ServerMsg");
         } else if (txt.equals("u")) {
             sendOrder(SerialService.DEV_BAUDRATE, "A50C800CAA");
-            addSpeakAnswer("你好", false);
+            addSpeakAnswer("ServerMsg", "你好", false);
         } else if (txt.equals("d")) {
             if (isAutoAction) {
                 return;
@@ -838,13 +892,13 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
                 }
             }
-            addSpeakAnswer(txt, true);
+            addSpeakAnswer("ServerMsg", txt, true);
         }
     }
 
-    private void beginDance() {
+    private void beginDance(final String problem) {
         Constants.isDance = true;
-        addSpeakAnswer("请您欣赏舞蹈", false);
+        addSpeakAnswer(problem, "请您欣赏舞蹈", false);
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -854,7 +908,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                     Dance dance = dances.get(0);
                     DanceActivity.newInstance(MainActivity.this, dance.getId());
                 } else {
-                    addSpeakAnswer("本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈", true);
+                    addSpeakAnswer(problem, "本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈", true);
                 }
             }
         }, 2000);
@@ -897,8 +951,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     @Override
-    public void doAiuiAnwer(String anwer) {
-        addSpeakAnswer(anwer, true);
+    public void doAiuiAnwer(String question, String anwer) {
+        addSpeakAnswer(question, anwer, true);
     }
 
     @Override
@@ -908,7 +962,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         if (voiceBean.getExpressionData() != null)
             sendOrder(SerialService.DEV_BAUDRATE, voiceBean.getExpressionData());
 
-        addSpeakAnswer(voiceBean.getVoiceAnswer(), true);
+        addSpeakAnswer(voiceBean.getShowTitle(), voiceBean.getVoiceAnswer(), true);
     }
 
 
@@ -953,11 +1007,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 onCompleted();
                 break;
             case Dance:
-                beginDance();
+                beginDance(result);
                 break;
             case Hand:
                 sendOrder(SerialService.DEV_BAUDRATE, "A50C800CAA");
-                addSpeakAnswer("你好", false);
+                addSpeakAnswer(result, "你好", false);
                 break;
         }
     }
@@ -1093,7 +1147,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 mMainManager.sendMessage(identifier, requestProblem.getQuestion());
                 onCompleted();
             } else {
-                addSpeakAnswer(anwer, true);
+                addSpeakAnswer(requestProblem.getQuestion(), anwer, true);
             }
         } else {
             mMainManager.sendMessage(identifier, requestProblem.getQuestion());

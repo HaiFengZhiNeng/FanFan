@@ -50,7 +50,7 @@ public abstract class ILineSoundPresenter implements BasePresenter {
 
         void aiuiForLocal(String result);
 
-        void doAiuiAnwer(String anwer);
+        void doAiuiAnwer(String problem, String anwer);
 
         void refHomePage(VoiceBean voiceBean);
 
