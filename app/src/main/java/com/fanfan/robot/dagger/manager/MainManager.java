@@ -69,8 +69,8 @@ public class MainManager {
         stopVoice();
     }
 
-    public void startVoice() {
-        mSoundPresenter.startRecognizerListener();
+    public void startVoice(boolean focus) {
+        mSoundPresenter.startRecognizerListener(focus);
     }
 
     public void stopVoice() {
@@ -103,10 +103,13 @@ public class MainManager {
     }
 
     public void doAnswer(String messageContent) {
-        if (mTtsPresenter.isSpeaking()) {
-            return;
-        }
+
         mTtsPresenter.doAnswer(messageContent);
+    }
+
+    public void doUrl(String url) {
+
+        mSoundPresenter.playVoice(url);
     }
 
     public void setSpeech(boolean isSpeech) {
@@ -124,4 +127,6 @@ public class MainManager {
     public boolean isSpeaking() {
         return mTtsPresenter.isSpeaking();
     }
+
+
 }

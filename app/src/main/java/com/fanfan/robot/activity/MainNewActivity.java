@@ -539,7 +539,7 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
         sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
-        mMainManager.startVoice();
+        mMainManager.startVoice(true);
     }
 
     @Override
@@ -728,9 +728,15 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
     }
 
     @Override
-    public void doAiuiAnwer(String anwer) {
+    public void doAiuiAnwer(String problem, String anwer) {
         addSpeakAnswer(anwer, true);
     }
+
+    @Override
+    public void doAiuiUrl(String question, String url) {
+
+    }
+
 
     @Override
     public void refHomePage(VoiceBean voiceBean) {

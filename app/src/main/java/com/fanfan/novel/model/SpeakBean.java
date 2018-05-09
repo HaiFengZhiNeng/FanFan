@@ -6,12 +6,14 @@ public class SpeakBean {
     private String anwer;
     private long time;
     private boolean action;
+    private boolean isUrl;
 
-    public SpeakBean(String problem, String anwer, long time, boolean action) {
+    public SpeakBean(String problem, String anwer, long time, boolean action, boolean isUrl) {
         this.problem = problem;
         this.anwer = anwer;
         this.time = time;
         this.action = action;
+        this.isUrl = isUrl;
     }
 
     public String getProblem() {
@@ -44,5 +46,13 @@ public class SpeakBean {
 
     public void setAction(boolean action) {
         this.action = action;
+    }
+
+    public boolean isUrl() {
+        return isUrl;
+    }
+
+    public void setUrl(boolean url) {
+        isUrl = url;
     }
 }

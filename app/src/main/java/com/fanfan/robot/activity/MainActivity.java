@@ -169,12 +169,21 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             if (speakBean == null) {
                 mHandler.postDelayed(speakRunnable, 1000);
             } else {
-                if (System.currentTimeMillis() - speakBean.getTime() < 1000) {
-                    mMainManager.doAnswer(speakBean.getAnwer());
-                    if (speakBean.isAction()) {
-                        speakingAddAction(speakBean.getAnwer().length());
+                if (System.currentTimeMillis() - speakBean.getTime() < 3000) {
+                    if (mMainManager.isSpeaking()) {
+                        mSpeakBinder.dispatchSpeak(speakBean);
+                    } else {
+                        if (speakBean.isUrl()) {
+                            mMainManager.doUrl(speakBean.getAnwer());
+                        } else {
+                            mMainManager.doAnswer(speakBean.getAnwer());
+                            if (speakBean.isAction()) {
+                                speakingAddAction(speakBean.getAnwer().length());
+                            }
+                        }
                     }
                 } else {
+                    Print.e("时间过长");
                     mHandler.postDelayed(speakRunnable, 1000);
                 }
             }
@@ -252,6 +261,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         }
         stopService(new Intent(this, UdpService.class));
         stopService(new Intent(this, SerialService.class));
+        if (mSpeakConn != null) {
+            unbindService(mSpeakConn);
+        }
         super.onDestroy();
         mMainManager.onDestroy();
     }
@@ -452,17 +464,21 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     //**********************************************************************************************
 
-    private void addSpeakAnswer(String problem, String messageContent, boolean isAction) {
+    private void addSpeakAnswer(String problem, String messageContent, boolean isAction, boolean isUrl) {
         mMainManager.stopVoice();
         mMainManager.stopHandler();
 //        mMainManager.doAnswer(messageContent);
         if (mMainManager.isSpeaking()) {
-            SpeakBean speakBean = new SpeakBean(problem, messageContent, System.currentTimeMillis(), isAction);
+            SpeakBean speakBean = new SpeakBean(problem, messageContent, System.currentTimeMillis(), isAction, isUrl);
             mSpeakBinder.dispatchSpeak(speakBean);
         } else {
-            mMainManager.doAnswer(messageContent);
-            if (isAction) {
-                speakingAddAction(messageContent.length());
+            if (isUrl) {
+                mMainManager.doUrl(messageContent);
+            } else {
+                mMainManager.doAnswer(messageContent);
+                if (isAction) {
+                    speakingAddAction(messageContent.length());
+                }
             }
         }
     }
@@ -631,7 +647,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
         sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
-//        mMainManager.startVoice();
+        mMainManager.startVoice(true);
         mHandler.post(speakRunnable);
     }
 
@@ -723,7 +739,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void parseMsgcomplete(String str) {
-        addSpeakAnswer("TextMsg", str, true);
+        addSpeakAnswer("TextMsg", str, true, false);
     }
 
     @Override
@@ -747,7 +763,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 mMainManager.setSpeech(isSpeech);
                 break;
             case Text:
-                addSpeakAnswer("CustomMsg", bean.getOrder(), true);
+                addSpeakAnswer("CustomMsg", bean.getOrder(), true, false);
                 break;
             case SmartChat:
 
@@ -815,7 +831,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         if (txt.equals("a")) {
             mMainManager.stopVoice();
         } else if (txt.equals("s")) {
-            mMainManager.startVoice();
+            mMainManager.startVoice(false);
         } else if (txt.equals("g")) {
             stopAll();
 
@@ -849,7 +865,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             beginDance("ServerMsg");
         } else if (txt.equals("u")) {
             sendOrder(SerialService.DEV_BAUDRATE, "A50C800CAA");
-            addSpeakAnswer("ServerMsg", "你好", false);
+            addSpeakAnswer("ServerMsg", "你好", false, false);
         } else if (txt.equals("d")) {
             if (isAutoAction) {
                 return;
@@ -892,13 +908,13 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
                 }
             }
-            addSpeakAnswer("ServerMsg", txt, true);
+            addSpeakAnswer("ServerMsg", txt, true, false);
         }
     }
 
     private void beginDance(final String problem) {
         Constants.isDance = true;
-        addSpeakAnswer(problem, "请您欣赏舞蹈", false);
+        addSpeakAnswer(problem, "请您欣赏舞蹈", false, false);
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -908,7 +924,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                     Dance dance = dances.get(0);
                     DanceActivity.newInstance(MainActivity.this, dance.getId());
                 } else {
-                    addSpeakAnswer(problem, "本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈", true);
+                    addSpeakAnswer(problem, "本地暂未添加舞蹈，请到设置或多媒体中添加舞蹈", true, false);
                 }
             }
         }, 2000);
@@ -952,7 +968,12 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void doAiuiAnwer(String question, String anwer) {
-        addSpeakAnswer(question, anwer, true);
+        addSpeakAnswer(question, anwer, true, false);
+    }
+
+    @Override
+    public void doAiuiUrl(String question, String url) {
+        addSpeakAnswer(question, url, false, true);
     }
 
     @Override
@@ -962,7 +983,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         if (voiceBean.getExpressionData() != null)
             sendOrder(SerialService.DEV_BAUDRATE, voiceBean.getExpressionData());
 
-        addSpeakAnswer(voiceBean.getShowTitle(), voiceBean.getVoiceAnswer(), true);
+        addSpeakAnswer(voiceBean.getShowTitle(), voiceBean.getVoiceAnswer(), true, false);
     }
 
 
@@ -1011,7 +1032,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 break;
             case Hand:
                 sendOrder(SerialService.DEV_BAUDRATE, "A50C800CAA");
-                addSpeakAnswer(result, "你好", false);
+                addSpeakAnswer(result, "你好", false, false);
                 break;
         }
     }
@@ -1147,7 +1168,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 mMainManager.sendMessage(identifier, requestProblem.getQuestion());
                 onCompleted();
             } else {
-                addSpeakAnswer(requestProblem.getQuestion(), anwer, true);
+                addSpeakAnswer(requestProblem.getQuestion(), anwer, true, false);
             }
         } else {
             mMainManager.sendMessage(identifier, requestProblem.getQuestion());

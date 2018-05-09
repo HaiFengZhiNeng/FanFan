@@ -108,7 +108,7 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
 
     @Override
     public void stopHandler() {
-        mHandler.removeCallbacks(runnable);
+//        mHandler.removeCallbacks(runnable);
     }
 
     @Override
@@ -131,18 +131,19 @@ public class SynthesizerPresenter extends ISynthesizerPresenter implements TtsLi
 
     @Override
     public void onCompleted() {
-        if (isSpeaking()) {
-            return;
-        }
-        mHandler.postDelayed(runnable, 1000);
+//        if (isSpeaking()) {
+//            return;
+//        }
+        mTtsView.onRunable();
+//        mHandler.postDelayed(runnable, 1000);
     }
 
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            mTtsView.onRunable();
-        }
-    };
+//    Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            mTtsView.onRunable();
+//        }
+//    };
 
     @Override
     public void onSpeakBegin() {

@@ -90,7 +90,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     private IatListener mIatListener;
     private AiuiListener aiuiListener;
 
-    private boolean isMedia;
+    //    private boolean isMedia;
     private boolean isTrans;
 
     private String mOtherText;
@@ -111,7 +111,6 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     public void start() {
         initAiui();
         initIat();
-        isMedia = true;
     }
 
     @Override
@@ -157,7 +156,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
             initIat();
         }
         if (RobotInfo.getInstance().isInitialization()) {
-            startRecognizerListener();
+            startRecognizerListener(false);
         } else {
             structure();
         }
@@ -213,15 +212,15 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     }
 
     @Override
-    public void startRecognizerListener() {
+    public void startRecognizerListener(boolean focus) {
         if (isOpening) {
-            setIatparameter();
+            setIatparameter(focus);
             mIat.startListening(mIatListener);
             Print.e("startListening ...");
         }
     }
 
-    private void setIatparameter() {
+    private void setIatparameter(boolean focus) {
         if (mIat == null) {
             return;
         }
@@ -267,6 +266,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
         mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
         mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Constants.GRM_PATH + File.separator + "iat.wav");
+        mIat.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, String.valueOf(focus));
         Print.e("initIat success ...");
     }
 
@@ -338,7 +338,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     @Override
     public void setSpeech(boolean speech) {
         if (speech) {
-            startRecognizerListener();
+            startRecognizerListener(false);
         } else {
             stopRecognizerListener();
         }
@@ -361,7 +361,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     public void onRecognResult(String result) {
         Print.e("!!!!---- " + result);
         stopRecognizerListener();
-        startRecognizerListener();
+        startRecognizerListener(false);
         mSoundView.aiuiForLocal(result);
     }
 
@@ -397,12 +397,12 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
 //                startRecognizerListener();
 //                break;
 //        }
-        startRecognizerListener();
+        startRecognizerListener(false);
     }
 
     @Override
     public void onRecognDown() {
-        startRecognizerListener();
+        startRecognizerListener(false);
     }
 
     @Override
@@ -438,22 +438,14 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                if (isMedia) {
-                    playVoice(news.getUrl());
-                    mSoundView.refHomePage(question, news);
-                } else {
-                    mSoundView.doAiuiAnwer(question, text + ", " + news.getContent());
-                }
+                mSoundView.doAiuiUrl(question, news.getUrl());
+                mSoundView.refHomePage(question, news);
             } else {
                 query(news.getContent());
             }
         } else {
-            if (isMedia) {
-                playVoice(news.getUrl());
-                mSoundView.refHomePage(question, news);
-            } else {
-                mSoundView.doAiuiAnwer(question, text + ", " + news.getContent());
-            }
+            mSoundView.doAiuiUrl(question, news.getUrl());
+            mSoundView.refHomePage(question, news);
         }
     }
 
@@ -494,33 +486,23 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                if (isMedia) {
-                    if (TextUtils.isEmpty(joke.getMp3Url())) {
-                        mSoundView.doAiuiAnwer(question, joke.getTitle() + " : " + joke.getContent());
-                        mSoundView.refHomePage(question, joke.getTitle() + " : " + joke.getContent());
-                    } else {
-                        mSoundView.refHomePage(question, finalText);
-                        playVoice(joke.getMp3Url());
-                    }
-                } else {
-                    stopRecognizerListener();
-                    mSoundView.special(question, SpecialType.Joke);
-                }
-            } else {
-                query(finalText);
-            }
-        } else {
-            if (isMedia) {
                 if (TextUtils.isEmpty(joke.getMp3Url())) {
                     mSoundView.doAiuiAnwer(question, joke.getTitle() + " : " + joke.getContent());
                     mSoundView.refHomePage(question, joke.getTitle() + " : " + joke.getContent());
                 } else {
                     mSoundView.refHomePage(question, finalText);
-                    playVoice(joke.getMp3Url());
+                    mSoundView.doAiuiUrl(question, joke.getMp3Url());
                 }
             } else {
-                stopRecognizerListener();
-                mSoundView.special(question, SpecialType.Joke);
+                query(finalText);
+            }
+        } else {
+            if (TextUtils.isEmpty(joke.getMp3Url())) {
+                mSoundView.doAiuiAnwer(question, joke.getTitle() + " : " + joke.getContent());
+                mSoundView.refHomePage(question, joke.getTitle() + " : " + joke.getContent());
+            } else {
+                mSoundView.refHomePage(question, finalText);
+                mSoundView.doAiuiUrl(question, joke.getMp3Url());
             }
         }
     }
@@ -530,24 +512,14 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                if (isMedia) {
-                    mSoundView.refHomePage(question, finalText);
-                    playVoice(story.getPlayUrl());
-                } else {
-                    stopRecognizerListener();
-                    mSoundView.special(question, SpecialType.Joke);
-                }
+                mSoundView.refHomePage(question, finalText);
+                mSoundView.doAiuiUrl(question, story.getPlayUrl());
             } else {
                 query(finalText);
             }
         } else {
-            if (isMedia) {
-                mSoundView.refHomePage(question, finalText);
-                playVoice(story.getPlayUrl());
-            } else {
-                stopRecognizerListener();
-                mSoundView.special(question, SpecialType.Joke);
-            }
+            mSoundView.refHomePage(question, finalText);
+            mSoundView.doAiuiUrl(question, story.getPlayUrl());
         }
     }
 
@@ -637,24 +609,14 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
-                if (isMedia) {
-                    mSoundView.refHomePage(question, radio);
-                    playVoice(radio.getUrl());
-                } else {
-                    stopRecognizerListener();
-                    mSoundView.special(question, SpecialType.Joke);
-                }
+                mSoundView.refHomePage(question, radio);
+                mSoundView.doAiuiUrl(question, radio.getUrl());
             } else {
                 query(finalText);
             }
         } else {
-            if (isMedia) {
-                mSoundView.refHomePage(question, radio);
-                playVoice(radio.getUrl());
-            } else {
-                stopRecognizerListener();
-                mSoundView.special(question, SpecialType.Joke);
-            }
+            mSoundView.refHomePage(question, radio);
+            mSoundView.doAiuiUrl(question, radio.getUrl());
         }
     }
 
@@ -712,8 +674,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     }
 
     @Override
-    public void onDoAnswer(String question, String
-            finalText, EnglishEveryday englishEveryday) {
+    public void onDoAnswer(String question, String     finalText, EnglishEveryday englishEveryday) {
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
@@ -729,8 +690,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     }
 
     @Override
-    public void onDoAnswer(String question, String
-            finalText, Constellation constellation) {
+    public void onDoAnswer(String question, String finalText, Constellation constellation) {
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
@@ -939,7 +899,8 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         });
     }
 
-    private void playVoice(String url) {
+    @Override
+    public void playVoice(String url) {
         if (TextUtils.isEmpty(url))
             return;
 

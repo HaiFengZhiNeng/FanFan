@@ -31,7 +31,7 @@ public abstract class ILineSoundPresenter implements BasePresenter {
 
     public abstract void buildIat();
 
-    public abstract void startRecognizerListener();
+    public abstract void startRecognizerListener(boolean focus);
 
     public abstract void stopRecognizerListener();
 
@@ -45,12 +45,16 @@ public abstract class ILineSoundPresenter implements BasePresenter {
 
     public abstract void setOpening(boolean isOpen);
 
+    public abstract void playVoice(String url);
+
     public interface ILineSoundView extends BaseView {
 
 
         void aiuiForLocal(String result);
 
         void doAiuiAnwer(String problem, String anwer);
+
+        void doAiuiUrl(String question, String url);
 
         void refHomePage(VoiceBean voiceBean);
 
@@ -87,7 +91,6 @@ public abstract class ILineSoundPresenter implements BasePresenter {
         void onCompleted();
 
         void noAnswer(String question);
-
     }
 
 

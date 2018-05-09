@@ -20,7 +20,7 @@ public class Constants {
     public static int IMSDK_ACCOUNT_TYPE = 17967;
 
     public static String controlId = "hotel002";
-    public static String serverId = "hotel003";
+    public static String serverId = "fanw108";
     public static final String roomAVId = "@TGS#2GOCMM6EN";
 
     public static final String NET_LOONGGG_EXITAPP = "net.loonggg.exitapp";
