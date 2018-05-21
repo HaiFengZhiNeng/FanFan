@@ -58,9 +58,9 @@ public class SerialPortManager extends SerialPort {
                 mOnOpenSerialPortListener.onSuccess(device, baudRate);
             }
             // 开启发送消息的线程
-            startSendThread(baudRate);
+            startSendThread(device.getAbsolutePath(), baudRate);
             // 开启接收消息的线程
-            startReadThread(baudRate);
+            startReadThread(device.getAbsolutePath(), baudRate);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,7 +133,7 @@ public class SerialPortManager extends SerialPort {
     /**
      * 开启发送消息的线程
      */
-    private void startSendThread(final int baudRate) {
+    private void startSendThread(final String absolute, final int baudRate) {
         // 开启发送消息的线程
         mSendingHandlerThread = new HandlerThread("mSendingHandlerThread");
         mSendingHandlerThread.start();
@@ -147,8 +147,8 @@ public class SerialPortManager extends SerialPort {
                     try {
                         mFileOutputStream.write(sendBytes);
                         if (null != mOnSerialPortDataListener) {
-                            mOnSerialPortDataListener.onDataSent(baudRate, sendBytes);
-                    }
+                            mOnSerialPortDataListener.onDataSent(absolute, baudRate, sendBytes);
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -172,15 +172,15 @@ public class SerialPortManager extends SerialPort {
     /**
      * 开启接收消息的线程
      */
-    private void startReadThread(int baudRate) {
+    private void startReadThread(String absolute, int baudRate) {
         Print.e("启动线程");
-        mSerialPortReadThread = new SerialPortReadThread(baudRate, mFileInputStream) {
+        mSerialPortReadThread = new SerialPortReadThread(absolute, baudRate, mFileInputStream) {
             @Override
-            public void onDataReceived(int baudRate, byte[] bytes) {
+            public void onDataReceived(String absolute, int baudRate, byte[] bytes) {
 
                 Print.e("线程启动了");
                 if (null != mOnSerialPortDataListener) {
-                    mOnSerialPortDataListener.onDataReceived(baudRate, bytes);
+                    mOnSerialPortDataListener.onDataReceived(absolute, baudRate, bytes);
                 }
             }
         };

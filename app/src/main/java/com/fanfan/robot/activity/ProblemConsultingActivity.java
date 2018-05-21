@@ -15,6 +15,7 @@ import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.VoiceDBManager;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.model.VoiceBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
@@ -406,6 +407,11 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
 
     }
 

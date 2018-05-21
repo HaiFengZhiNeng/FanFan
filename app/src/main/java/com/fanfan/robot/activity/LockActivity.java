@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 import com.fanfan.novel.common.Constants;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
@@ -277,6 +278,11 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
 
     }
 }

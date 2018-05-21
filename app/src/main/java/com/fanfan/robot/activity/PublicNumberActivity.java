@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.SiteDBManager;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.model.SiteBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
@@ -316,6 +317,11 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
 
     }
 

@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.request.RequestOptions;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
 import com.fanfan.novel.presenter.SerialPresenter;
@@ -227,6 +228,11 @@ public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSo
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
 
     }
 }

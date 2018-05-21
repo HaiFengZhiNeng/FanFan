@@ -6,14 +6,16 @@ import java.io.InputStream;
 
 public abstract class SerialPortReadThread extends Thread {
 
-    public abstract void onDataReceived(int baudRate, byte[] bytes);
+    public abstract void onDataReceived(String absolute, int baudRate, byte[] bytes);
 
+    private String mAbsolute;
     private int iBaudRate;
 
     private InputStream mInputStream;
     private byte[] mReadBuffer;
 
-    public SerialPortReadThread(int baudRate, InputStream inputStream) {
+    public SerialPortReadThread(String absolute, int baudRate, InputStream inputStream) {
+        mAbsolute = absolute;
         iBaudRate = baudRate;
         mInputStream = inputStream;
         mReadBuffer = new byte[1024];
@@ -35,7 +37,7 @@ public abstract class SerialPortReadThread extends Thread {
 
                     System.arraycopy(mReadBuffer, 0, readBytes, 0, size);
 
-                    onDataReceived(iBaudRate, readBytes);
+                    onDataReceived(mAbsolute, iBaudRate, readBytes);
                 }
                 try {
                     Thread.sleep(50);//延时50ms

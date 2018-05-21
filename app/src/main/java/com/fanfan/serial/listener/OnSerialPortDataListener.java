@@ -7,12 +7,12 @@ public interface OnSerialPortDataListener {
      *
      * @param bytes 接收到的数据
      */
-    void onDataReceived(int baudRate, byte[] bytes);
+    void onDataReceived(String absolute , int baudRate, byte[] bytes);
 
     /**
      * 数据发送
      *
      * @param bytes 发送的数据
      */
-    void onDataSent(int baudRate, byte[] bytes);
+    void onDataSent(String absolute, int baudRate, byte[] bytes);
 }

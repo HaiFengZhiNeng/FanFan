@@ -29,6 +29,7 @@ import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.VoiceDBManager;
 import com.fanfan.novel.im.init.LoginBusiness;
 import com.fanfan.novel.map.activity.AMapActivity;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.RobotBean;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.model.VoiceBean;
@@ -700,6 +701,11 @@ public class MainNewActivity extends BarBaseActivity implements ISynthesizerPres
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
 
     }
 

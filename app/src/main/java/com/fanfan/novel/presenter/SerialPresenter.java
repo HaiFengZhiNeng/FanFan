@@ -2,6 +2,7 @@ package com.fanfan.novel.presenter;
 
 import android.os.Handler;
 
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
 import com.fanfan.novel.service.SerialService;
@@ -62,7 +63,32 @@ public class SerialPresenter extends ISerialPresenter {
     public void onDataReceiverd(SerialBean serialBean) {
         int iBaudRate = serialBean.getBaudRate();
         String motion = serialBean.getMotion();
-        if (iBaudRate == SerialService.DEV_BAUDRATE) {
+        if (iBaudRate == 9600) {
+            String absolute = serialBean.getAbsolute();
+            if(absolute.endsWith(SerialService.devName)){
+
+            }else if(absolute.endsWith(SerialService.alarmName)){
+                String alarmStr= serialBean.getMotion();
+//                Alarm alarm = GsonUtil.GsonToBean(alarmStr, Alarm.class);
+                String tempAlarmStr = alarmStr;
+                int length = tempAlarmStr.length();
+                String replace = tempAlarmStr.replace(",", "");
+                int replaceLength = replace.length();
+                if(length - replaceLength == 4){
+
+                    String[] arr = alarmStr.split(",");
+                    if(arr.length == 5) {
+                        int fog = Integer.valueOf(arr[0]);
+                        int flame = Integer.valueOf(arr[1]);
+                        double dust = Double.valueOf(arr[2]);
+                        double humidity = Double.valueOf(arr[3]);
+                        double temperature = Double.valueOf(arr[4]);
+                        Alarm alarm = new Alarm(fog,flame,dust,humidity, temperature);
+                        mSerialView.onAlarm(alarm);
+                    }
+                }
+
+            }
 
         } else if (iBaudRate == SerialService.VOICE_BAUDRATE) {
             if (motion.toString().contains("WAKE UP!")) {

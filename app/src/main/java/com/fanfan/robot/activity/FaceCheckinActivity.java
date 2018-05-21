@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.FaceAuthDBManager;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.FaceAuth;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.CameraPresenter;
@@ -722,6 +723,11 @@ public class FaceCheckinActivity extends BarBaseActivity implements
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
 
     }
 }

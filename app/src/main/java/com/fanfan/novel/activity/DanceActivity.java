@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.SerialPresenter;
 import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
@@ -162,6 +163,11 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
 
     }
 

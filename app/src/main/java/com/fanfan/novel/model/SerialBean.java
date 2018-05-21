@@ -6,8 +6,17 @@ package com.fanfan.novel.model;
 
 public class SerialBean {
 
+    private String absolute;
     private int baudRate;
     private String motion;
+
+    public String getAbsolute() {
+        return absolute;
+    }
+
+    public void setAbsolute(String absolute) {
+        this.absolute = absolute;
+    }
 
     public int getBaudRate() {
         return baudRate;
@@ -28,7 +37,8 @@ public class SerialBean {
     @Override
     public String toString() {
         return "SerialBean{" +
-                "baudRate=" + baudRate +
+                "absolute='" + absolute + '\'' +
+                ", baudRate=" + baudRate +
                 ", motion='" + motion + '\'' +
                 '}';
     }

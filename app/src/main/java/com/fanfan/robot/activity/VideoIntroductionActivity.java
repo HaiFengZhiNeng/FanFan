@@ -16,6 +16,7 @@ import com.fanfan.novel.activity.VideoDetailActivity;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.VideoDBManager;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.model.VideoBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
@@ -424,6 +425,11 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
 
     }
 

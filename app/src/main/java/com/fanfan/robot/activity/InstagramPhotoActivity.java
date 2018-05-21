@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.CameraPresenter;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
@@ -405,6 +406,11 @@ public class InstagramPhotoActivity extends BarBaseActivity implements
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
 
     }
 

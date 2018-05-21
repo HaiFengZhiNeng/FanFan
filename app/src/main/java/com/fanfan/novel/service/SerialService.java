@@ -27,14 +27,17 @@ public class SerialService extends BaseService implements OnOpenSerialPortListen
     public static final String devName = "ttyUSB0";
     public static final String voiceName = "ttyUSB1";
     public static final String cruiseName = "ttyUSB2";
+    public static final String alarmName = "ttyS1";
 
     public static final int DEV_BAUDRATE = 9600;
     public static final int VOICE_BAUDRATE = 115200;
     public static final int CRUISE_BAUDRATE = 57600;
+    public static final int ALARM_BAUDRATE = 9600;
 
     private SerialPortManager mManager1;
     private SerialPortManager mManager2;
     private SerialPortManager mManager3;
+    private SerialPortManager mManager4;
 
     @Override
     public void onCreate() {
@@ -43,6 +46,7 @@ public class SerialService extends BaseService implements OnOpenSerialPortListen
         mManager2 = init(mManager2, new File(DEV + voiceName), DEV_BAUDRATE);
         mManager1 = init(mManager1, new File(DEV + devName), VOICE_BAUDRATE);
         mManager3 = init(mManager3, new File(DEV + cruiseName), CRUISE_BAUDRATE);
+        mManager4 = init(mManager4, new File(DEV + alarmName), ALARM_BAUDRATE);
 
     }
 
@@ -112,7 +116,7 @@ public class SerialService extends BaseService implements OnOpenSerialPortListen
 
     //****************************收发数据
     @Override
-    public void onDataReceived(int baudRate, byte[] bytes) {
+    public void onDataReceived(String absolute, int baudRate, byte[] bytes) {
 
         StringBuilder sMsg = new StringBuilder();
         if (baudRate == VOICE_BAUDRATE) {
@@ -122,8 +126,10 @@ public class SerialService extends BaseService implements OnOpenSerialPortListen
             sMsg.append(new String(bytes));
         }
         SerialBean serialBean = new SerialBean();
+        serialBean.setAbsolute(absolute);
         serialBean.setBaudRate(baudRate);
         serialBean.setMotion(sMsg.toString());
+
         Print.e("service中接受到串口的数据" + serialBean.toString());
 
         ServiceToActivityEvent serviceToActivityEvent = new ServiceToActivityEvent("");
@@ -132,7 +138,7 @@ public class SerialService extends BaseService implements OnOpenSerialPortListen
     }
 
     @Override
-    public void onDataSent(int baudRate, byte[] bytes) {
+    public void onDataSent(String absolute, int baudRate, byte[] bytes) {
         Print.e("send success " + baudRate);
     }
 }

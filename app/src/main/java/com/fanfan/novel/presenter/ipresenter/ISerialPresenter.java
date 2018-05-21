@@ -2,6 +2,7 @@ package com.fanfan.novel.presenter.ipresenter;
 
 import com.fanfan.novel.common.presenter.BasePresenter;
 import com.fanfan.novel.common.presenter.BaseView;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.SerialBean;
 
 /**
@@ -25,5 +26,7 @@ public abstract class ISerialPresenter implements BasePresenter {
         void stopAll();
 
         void onMoveStop();
+
+        void onAlarm(Alarm alarm);
     }
 }

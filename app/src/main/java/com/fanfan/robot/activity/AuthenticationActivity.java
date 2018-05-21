@@ -19,6 +19,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.common.glide.GlideRoundTransform;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.PersonInfo;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.CameraPresenter;
@@ -591,6 +592,11 @@ public class AuthenticationActivity extends BarBaseActivity implements
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
 
     }
 }

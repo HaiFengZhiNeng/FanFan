@@ -15,6 +15,7 @@ import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.common.enums.SpecialType;
 import com.fanfan.novel.db.manager.NavigationDBManager;
+import com.fanfan.novel.model.Alarm;
 import com.fanfan.novel.model.NavigationBean;
 import com.fanfan.novel.model.SerialBean;
 import com.fanfan.novel.presenter.LocalSoundPresenter;
@@ -424,6 +425,11 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
             }, 500);
 
         }
+    }
+
+    @Override
+    public void onAlarm(Alarm alarm) {
+
     }
 
     @Override
