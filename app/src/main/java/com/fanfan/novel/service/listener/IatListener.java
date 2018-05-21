@@ -10,16 +10,20 @@ import com.fanfan.novel.model.local.Cw;
 import com.fanfan.novel.model.local.Ws;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.youtu.utils.GsonUtil;
+import com.google.gson.JsonParser;
 import com.iflytek.cloud.RecognizerListener;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.seabreeze.log.Print;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -29,6 +33,9 @@ import java.util.List;
 public class IatListener implements RecognizerListener {
 
     private StringBuffer mosaicSb;
+
+    // 用HashMap存储听写结果
+    private HashMap<String, String> mIatResults = new LinkedHashMap<String, String>();
 
     public IatListener(RecognListener recognListener) {
         mosaicSb = new StringBuffer();
@@ -48,6 +55,39 @@ public class IatListener implements RecognizerListener {
     @Override
     public void onEndOfSpeech() {
 
+        Print.e("onEndOfSpeech : " + mosaicSb.toString());
+
+        if (recognListener == null) {
+            recognListener.onRecognDown();
+            return;
+        }
+        String trim = mosaicSb.toString().trim();
+
+        String engineType = RobotInfo.getInstance().getEngineType();
+        if (engineType.equals(SpeechConstant.TYPE_LOCAL)) {
+            if (trim.length() > 0) {
+                recognListener.onRecognResult(trim);
+                mosaicSb.delete(0, mosaicSb.length());
+            } else {
+                recognListener.onLevelSmall();
+            }
+        } else {
+            if (RobotInfo.getInstance().isTranslateEnable()) {
+                if (trim.length() > 0) {
+                    recognListener.onTranslate(trim);
+                    mosaicSb.delete(0, mosaicSb.length());
+                } else {
+                    recognListener.onRecognDown();
+                }
+            } else {
+                if (trim.length() > 0) {
+                    recognListener.onRecognResult(trim);
+                    mosaicSb.delete(0, mosaicSb.length());
+                } else {
+                    recognListener.onRecognDown();
+                }
+            }
+        }
     }
 
     @Override
@@ -84,19 +124,13 @@ public class IatListener implements RecognizerListener {
                         }
                     }
                 }
-
-                recognListener.onRecognResult(mosaicSb.toString().trim());
-                mosaicSb.delete(0, mosaicSb.length());
-            } else {
-                Print.e("置信度小 : " + local.getSc());
-                recognListener.onLevelSmall();
             }
 
         } else if (engineType.equals(SpeechConstant.TYPE_CLOUD)) {
 
             if (RobotInfo.getInstance().isTranslateEnable()) {
                 Trans trans = GsonUtil.GsonToBean(recognizerResult.getResultString(), Trans.class);
-                recognListener.onTranslate(trans.getTrans_result().getDst());
+                mosaicSb.append(trans.getTrans_result().getDst());
             } else {
                 Asr line = GsonUtil.GsonToBean(recognizerResult.getResultString(), Asr.class);
                 List<Ws> wsList = line.getWs();
@@ -109,22 +143,29 @@ public class IatListener implements RecognizerListener {
                     }
                 }
 
-                mosaicComplete(mosaicSb.toString());
-                mosaicSb.delete(0, mosaicSb.length());
             }
         }
+
+        Print.e("onResult : " + mosaicSb.toString());
     }
 
-    private void mosaicComplete(String mosaic) {
-        if (recognListener != null) {
-            if (!TextUtils.isEmpty(mosaic)) {
-                recognListener.onRecognResult(mosaic.trim());
-            } else {
-                recognListener.onRecognDown();
+    public String parseIatResult(String json) {
+        StringBuffer ret = new StringBuffer();
+        try {
+            JSONTokener tokener = new JSONTokener(json);
+            JSONObject joResult = new JSONObject(tokener);
+
+            JSONArray words = joResult.getJSONArray("ws");
+            for (int i = 0; i < words.length(); i++) {
+                // 转写结果词，默认使用第一个结果
+                JSONArray items = words.getJSONObject(i).getJSONArray("cw");
+                JSONObject obj = items.getJSONObject(0);
+                ret.append(obj.getString("w"));
             }
-        } else {
-            recognListener.onRecognDown();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return ret.toString();
     }
 
     @Override
