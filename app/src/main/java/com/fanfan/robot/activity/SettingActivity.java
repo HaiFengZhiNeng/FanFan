@@ -30,6 +30,7 @@ import com.fanfan.novel.activity.DataVideoActivity;
 import com.fanfan.novel.activity.DataVoiceActivity;
 import com.fanfan.novel.activity.FaceDataActivity;
 import com.fanfan.novel.activity.SelectCtiyActivity;
+import com.fanfan.novel.activity.SettingPwdActivity;
 import com.fanfan.novel.common.Constants;
 import com.fanfan.novel.common.activity.BarBaseActivity;
 import com.fanfan.novel.map.activity.AMapActivity;
@@ -103,6 +104,8 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
     TextView tvMap;
     @BindView(R.id.tv_vr)
     TextView tvVr;
+    @BindView(R.id.rl_setpwd)
+    RelativeLayout rlSetpwd;
     @BindView(R.id.tv_cur_code)
     TextView tvCurCode;
 
@@ -169,7 +172,8 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
 
 
     @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.add_site, R.id.import_layout,
-            R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout, R.id.rl_city, R.id.tv_vr, R.id.tv_map, R.id.rl_update})
+            R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout, R.id.rl_city, R.id.tv_vr,
+            R.id.tv_map, R.id.rl_update, R.id.rl_setpwd})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.add_video:
@@ -214,6 +218,9 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
                 break;
             case R.id.rl_update:
                 youtucode.updateProgram(1);
+                break;
+            case R.id.rl_setpwd:
+                SettingPwdActivity.newInstance(this);
                 break;
         }
     }

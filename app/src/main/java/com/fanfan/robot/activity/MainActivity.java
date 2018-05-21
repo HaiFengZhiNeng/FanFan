@@ -3,12 +3,15 @@ package com.fanfan.robot.activity;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -18,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fanfan.novel.activity.DanceActivity;
 import com.fanfan.novel.common.Constants;
@@ -74,8 +78,10 @@ import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.base.Constant;
 import com.fanfan.youtu.api.hfrobot.bean.Check;
 import com.fanfan.youtu.api.hfrobot.bean.RequestProblem;
+import com.fanfan.youtu.api.hfrobot.bean.SetBean;
 import com.fanfan.youtu.api.hfrobot.event.CheckEvent;
 import com.fanfan.youtu.api.hfrobot.event.RequestProblemEvent;
+import com.fanfan.youtu.api.hfrobot.event.SetEvent;
 import com.fanfan.youtu.utils.GsonUtil;
 import com.github.florent37.viewanimator.ViewAnimator;
 import com.iflytek.cloud.SpeechConstant;
@@ -306,7 +312,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 FaceRecognitionActivity.newInstance(this);
                 break;
             case R.id.iv_seting_up:
-                SettingActivity.newInstance(this, SettingActivity.LOGOUT_TO_MAIN_REQUESTCODE);
+                clickSetting();
                 break;
             case R.id.iv_public:
                 PublicNumberActivity.newInstance(this);
@@ -315,6 +321,75 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 NavigationActivity.newInstance(this);
                 break;
         }
+    }
+
+
+    private String mInput;
+
+    private void clickSetting() {
+        ivSetingUp.setEnabled(false);
+        youtucode.selectSet(UserInfo.getInstance().getIdentifier());
+    }
+
+    @SuppressLint("NewApi")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(SetEvent event) {
+        ivSetingUp.setEnabled(true);
+        if (event.isOk()) {
+            SetBean bean = event.getBean();
+            Print.e(bean);
+            if (bean.getCode() == 0) {
+                showSetDialog(bean.getData());
+            } else if (bean.getCode() == 1) {
+                SettingActivity.newInstance(MainActivity.this, SettingActivity.LOGOUT_TO_MAIN_REQUESTCODE);
+            } else {
+                onError(bean.getCode(), bean.getMsg());
+            }
+        } else {
+            onError(event);
+        }
+    }
+
+    private void showSetDialog(final SetBean.Data data) {
+        MaterialDialog materialDialog = new MaterialDialog.Builder(this)
+                .title(R.string.title_setting_pwd)
+                .inputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD | InputType.TYPE_CLASS_NUMBER)
+                .negativeText(R.string.cancel)
+                .positiveText(R.string.confirm)
+                .inputRange(6, 10)
+                .alwaysCallInputCallback()
+                .input(getString(R.string.input_hint_pwd), "", false, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                        Print.e(input);
+                        mInput = String.valueOf(input);
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        onCompleted();
+                    }
+                })
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (data.getSet_pwd().equals(mInput)) {
+                            SettingActivity.newInstance(MainActivity.this, SettingActivity.LOGOUT_TO_MAIN_REQUESTCODE);
+                        } else {
+                            showMsg("密码错误");
+                        }
+                    }
+                })
+                .build();
+        materialDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                return false;
+            }
+        });
+        materialDialog.setCancelable(false);
+        materialDialog.show();
     }
 
     private void bindService(boolean isPlay) {
@@ -1068,7 +1143,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 FaceRecognitionActivity.newInstance(this);
                 break;
             case Seting_up:
-                SettingActivity.newInstance(this, SettingActivity.LOGOUT_TO_MAIN_REQUESTCODE);
+                clickSetting();
                 break;
             case Public_num:
                 PublicNumberActivity.newInstance(this);

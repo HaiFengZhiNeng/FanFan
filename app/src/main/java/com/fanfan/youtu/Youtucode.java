@@ -183,4 +183,19 @@ public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
     public String requestProblem(String identifier, String problem, int id) {
         return sRobotImplement.requestProblem(identifier, problem, id);
     }
+
+    @Override
+    public String addSet(String user_name, String set_pwd) {
+        return sRobotImplement.addSet(user_name, set_pwd);
+    }
+
+    @Override
+    public String updateSet(String user_name, String set_pwd) {
+        return sRobotImplement.updateSet(user_name, set_pwd);
+    }
+
+    @Override
+    public String selectSet(String user_name) {
+        return sRobotImplement.selectSet(user_name);
+    }
 }

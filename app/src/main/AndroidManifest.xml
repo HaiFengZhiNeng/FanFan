@@ -231,6 +231,9 @@
         <activity
             android:name="com.fanfan.novel.activity.CameraRecoderActivity"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name="com.fanfan.novel.activity.SettingPwdActivity"
+            android:theme="@style/AppThemeAction" />
 
         <service android:name="com.fanfan.novel.service.SpeakService"/>
 

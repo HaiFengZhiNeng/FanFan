@@ -16,6 +16,9 @@
     <string name="string_help_text">当前应用缺少必要权限。\n\n请点击\"设置\"-\"权限\"-打开所需权限。\n\n最后点击两次后退按钮，即可返回。</string>
     <string name="quit">退出</string>
 
+    <string name="title_setting_pwd">请输入密码</string>
+    <string name="input_hint_pwd">请输入密码</string>
+
     <string name="confirm">确定</string>
     <string name="cancel">取消</string>
     <string name="tip_close_camera">关闭摄像头</string>
