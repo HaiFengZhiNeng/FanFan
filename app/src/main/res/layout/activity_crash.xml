@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.fanfan.novel.common.activity.CrashActivity">
+    tools:context=".app.common.act.CrashActivity">
 
     <ImageView
         android:layout_width="match_parent"

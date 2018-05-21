@@ -1,8 +1,8 @@
 package com.fanfan.robot.dagger.manager;
 
-import com.fanfan.novel.model.SerialBean;
-import com.fanfan.novel.presenter.LocalSoundPresenter;
-import com.fanfan.novel.presenter.SerialPresenter;
+import com.fanfan.robot.model.SerialBean;
+import com.fanfan.robot.presenter.LocalSoundPresenter;
+import com.fanfan.robot.presenter.SerialPresenter;
 
 import javax.inject.Inject;
 

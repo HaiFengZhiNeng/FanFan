@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tool:context="com.fanfan.novel.activity.SimpleCallActivity">
+    tool:context=".ui.call.SimpleCallActivity">
 
 
     <RelativeLayout
@@ -39,7 +39,7 @@
 
         </RelativeLayout>
 
-        <com.fanfan.novel.ui.glowpadview.GlowPadView
+        <com.fanfan.robot.view.glowpadview.GlowPadView
             android:id="@+id/glow_pad_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

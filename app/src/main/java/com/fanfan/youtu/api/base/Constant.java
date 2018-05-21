@@ -1,6 +1,6 @@
 package com.fanfan.youtu.api.base;
 
-import com.fanfan.novel.common.Constants;
+import com.fanfan.robot.app.common.Constants;
 
 /**
  * Created by android on 2018/1/4.

@@ -1,6 +1,6 @@
 package com.fanfan.novel.im.init;
 
-import com.fanfan.novel.common.Constants;
+import com.fanfan.robot.app.common.Constants;
 import com.seabreeze.log.Print;
 import com.tencent.TIMCallBack;
 import com.tencent.TIMManager;

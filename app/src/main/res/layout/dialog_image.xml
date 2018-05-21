@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     android:background="@color/black">
 
-    <com.fanfan.novel.ui.PinchImageView
+    <com.fanfan.robot.view.PinchImageView
         android:id="@+id/pinch_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
-    <com.fanfan.novel.ui.subscaleview.SubsamplingScaleImageView
+    <com.fanfan.robot.view.subscaleview.SubsamplingScaleImageView
         android:id="@+id/subsampling_scale_imageview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -47,7 +47,7 @@
 
     </RelativeLayout>
 
-    <com.fanfan.novel.ui.MyScrollView
+    <com.fanfan.robot.view.MyScrollView
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -69,6 +69,6 @@
             android:textColor="@android:color/white"
             android:textSize="@dimen/x8" />
 
-    </com.fanfan.novel.ui.MyScrollView>
+    </com.fanfan.robot.view.MyScrollView>
 
 </RelativeLayout>

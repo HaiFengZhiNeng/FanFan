@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 
-import com.fanfan.novel.model.xf.Telephone;
+import com.fanfan.robot.model.xf.Telephone;
 
 import java.util.ArrayList;
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".activity.MainActivity">
+    tools:context=".ui.main.MainActivity">
 
 
     <ImageView
@@ -154,7 +154,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.fanfan.novel.ui.ChatTextView
+    <com.fanfan.robot.view.ChatTextView
         android:id="@+id/chat_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

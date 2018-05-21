@@ -3,11 +3,7 @@ package com.fanfan.youtu;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
-import com.fanfan.novel.common.Constants;
-import com.fanfan.youtu.api.base.Constant;
 import com.fanfan.youtu.api.base.OkhttpManager;
 import com.fanfan.youtu.api.face.api.FaceAPI;
 import com.fanfan.youtu.api.face.api.FaceImpl;
@@ -15,25 +11,9 @@ import com.fanfan.youtu.api.hfrobot.api.RobotAPI;
 import com.fanfan.youtu.api.hfrobot.api.RobotImpl;
 import com.fanfan.youtu.api.uploadfile.api.FilezooAPI;
 import com.fanfan.youtu.api.uploadfile.api.FilezooImpl;
-import com.fanfan.youtu.token.YoutuSign;
-import com.seabreeze.log.Print;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.Authenticator;
-import okhttp3.Cache;
-import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.Route;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * Created by android on 2018/1/4.

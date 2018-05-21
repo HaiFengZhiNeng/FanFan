@@ -5,7 +5,7 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
-import com.fanfan.novel.utils.MediaFile;
+import com.fanfan.novel.utils.media.MediaFile;
 
 import java.io.File;
 import java.io.IOException;

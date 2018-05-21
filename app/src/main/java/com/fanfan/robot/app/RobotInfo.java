@@ -2,8 +2,8 @@ package com.fanfan.robot.app;
 
 import android.content.Context;
 
-import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.utils.PreferencesUtils;
+import com.fanfan.robot.app.common.Constants;
+import com.fanfan.novel.utils.system.PreferencesUtils;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
 

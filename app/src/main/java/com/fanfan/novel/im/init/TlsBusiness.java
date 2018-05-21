@@ -2,7 +2,7 @@ package com.fanfan.novel.im.init;
 
 import android.content.Context;
 
-import com.fanfan.novel.common.Constants;
+import com.fanfan.robot.app.common.Constants;
 import com.fanfan.novel.im.MyTLSService;
 
 /**

@@ -2,7 +2,7 @@ package com.fanfan.novel.utils;
 
 import android.content.res.Resources;
 
-import com.fanfan.novel.common.enums.SpecialType;
+import com.fanfan.robot.app.enums.SpecialType;
 import com.fanfan.robot.R;
 
 import java.util.Arrays;

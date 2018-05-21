@@ -1,15 +1,15 @@
 package com.fanfan.robot.presenter.ipersenter;
 
-import com.fanfan.novel.common.enums.SpecialType;
-import com.fanfan.novel.common.presenter.BasePresenter;
-import com.fanfan.novel.common.presenter.BaseView;
-import com.fanfan.novel.model.VoiceBean;
-import com.fanfan.novel.model.xf.service.Cookbook;
-import com.fanfan.novel.model.xf.service.News;
-import com.fanfan.novel.model.xf.service.Poetry;
-import com.fanfan.novel.model.xf.service.englishEveryday.EnglishEveryday;
-import com.fanfan.novel.model.xf.service.radio.Radio;
-import com.fanfan.novel.model.xf.service.train.Train;
+import com.fanfan.robot.app.enums.SpecialType;
+import com.fanfan.robot.app.common.presenter.BasePresenter;
+import com.fanfan.robot.app.common.presenter.BaseView;
+import com.fanfan.robot.model.VoiceBean;
+import com.fanfan.robot.model.xf.Cookbook;
+import com.fanfan.robot.model.xf.News;
+import com.fanfan.robot.model.xf.Poetry;
+import com.fanfan.robot.model.xf.englishEveryday.EnglishEveryday;
+import com.fanfan.robot.model.xf.radio.Radio;
+import com.fanfan.robot.model.xf.train.Train;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.fanfan.robot.dagger.module;
 
-import com.fanfan.novel.presenter.ChatPresenter;
-import com.fanfan.novel.presenter.ipresenter.IChatPresenter;
+import com.fanfan.robot.presenter.ChatPresenter;
+import com.fanfan.robot.presenter.ipersenter.IChatPresenter;
 
 import dagger.Module;
 import dagger.Provides;

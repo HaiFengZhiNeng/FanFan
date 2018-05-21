@@ -2,7 +2,7 @@ package com.fanfan.robot.model;
 
 import android.support.annotation.NonNull;
 
-import com.fanfan.novel.ui.recyclerview.tree.base.BaseItemData;
+import com.fanfan.robot.view.recyclerview.tree.base.BaseItemData;
 import com.fanfan.youtu.api.face.bean.FaceIdentify;
 
 import org.greenrobot.greendao.annotation.Entity;

@@ -17,8 +17,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.fanfan.novel.common.activity.CrashActivity;
-import com.fanfan.novel.common.base.ActivityCollector;
+import com.fanfan.robot.app.common.act.CrashActivity;
+import com.fanfan.robot.app.common.base.ActivityCollector;
 import com.fanfan.robot.app.NovelApp;
 import com.seabreeze.log.Print;
 

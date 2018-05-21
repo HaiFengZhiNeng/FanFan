@@ -11,7 +11,7 @@
     android:visibility="gone">
 
 
-    <com.fanfan.novel.ui.CircleImageView
+    <com.fanfan.robot.view.CircleImageView
         android:id="@+id/ic_head"
         android:layout_width="@dimen/y120"
         android:layout_height="@dimen/y120"

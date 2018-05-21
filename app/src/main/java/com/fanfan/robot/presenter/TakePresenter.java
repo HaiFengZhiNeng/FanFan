@@ -3,7 +3,6 @@ package com.fanfan.robot.presenter;
 import android.graphics.Bitmap;
 import android.os.CountDownTimer;
 
-import com.fanfan.novel.common.presenter.BasePresenter;
 import com.fanfan.robot.presenter.ipersenter.ITakePresenter;
 import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.uploadfile.bean.Filezoo;

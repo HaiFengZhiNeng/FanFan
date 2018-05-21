@@ -2,16 +2,13 @@ package com.fanfan.robot.presenter.ipersenter;
 
 import android.graphics.Bitmap;
 
-import com.fanfan.novel.common.presenter.BasePresenter;
-import com.fanfan.novel.common.presenter.BaseView;
-import com.fanfan.novel.model.FaceAuth;
-import com.fanfan.robot.model.CheckIn;
+import com.fanfan.robot.app.common.presenter.BasePresenter;
+import com.fanfan.robot.app.common.presenter.BaseView;
+import com.fanfan.robot.model.FaceAuth;
 import com.fanfan.youtu.api.base.event.BaseEvent;
 import com.fanfan.youtu.api.face.bean.FaceIdentify;
 import com.fanfan.youtu.api.face.bean.GetInfo;
 import com.fanfan.youtu.api.face.bean.detectFace.Face;
-
-import java.util.List;
 
 /**
  * Created by android on 2018/1/10.

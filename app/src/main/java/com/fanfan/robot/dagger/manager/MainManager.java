@@ -1,12 +1,12 @@
 package com.fanfan.robot.dagger.manager;
 
-import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.model.RobotBean;
-import com.fanfan.novel.model.SerialBean;
-import com.fanfan.novel.presenter.ChatPresenter;
-import com.fanfan.novel.presenter.SerialPresenter;
-import com.fanfan.novel.presenter.SynthesizerPresenter;
-import com.fanfan.novel.service.SerialService;
+import com.fanfan.robot.app.common.Constants;
+import com.fanfan.robot.model.RobotBean;
+import com.fanfan.robot.model.SerialBean;
+import com.fanfan.robot.presenter.ChatPresenter;
+import com.fanfan.robot.presenter.SerialPresenter;
+import com.fanfan.robot.presenter.SynthesizerPresenter;
+import com.fanfan.robot.service.SerialService;
 import com.fanfan.robot.presenter.LineSoundPresenter;
 
 import javax.inject.Inject;

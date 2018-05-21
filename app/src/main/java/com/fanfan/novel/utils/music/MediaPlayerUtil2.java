@@ -4,7 +4,7 @@ import android.content.Context;
 import android.media.session.PlaybackState;
 import android.net.Uri;
 
-import com.fanfan.novel.utils.AppUtil;
+import com.fanfan.novel.utils.system.AppUtil;
 import com.google.android.exoplayer2.ControlDispatcher;
 import com.google.android.exoplayer2.DefaultControlDispatcher;
 import com.google.android.exoplayer2.ExoPlayer;

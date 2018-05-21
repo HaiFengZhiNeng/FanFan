@@ -15,12 +15,12 @@ import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
-import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.utils.FileUtil;
-import com.fanfan.novel.utils.ImageUtils;
-import com.fanfan.novel.utils.MediaFile;
-import com.fanfan.novel.utils.PreferencesUtils;
-import com.fanfan.novel.utils.SystemUtils;
+import com.fanfan.robot.app.common.Constants;
+import com.fanfan.novel.utils.system.FileUtil;
+import com.fanfan.novel.utils.bitmap.ImageUtils;
+import com.fanfan.novel.utils.media.MediaFile;
+import com.fanfan.novel.utils.system.PreferencesUtils;
+import com.fanfan.novel.utils.system.SystemUtils;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.model.Music;

@@ -1,8 +1,8 @@
 package com.fanfan.robot.presenter.ipersenter;
 
-import com.fanfan.novel.common.presenter.BasePresenter;
-import com.fanfan.novel.common.presenter.BaseView;
-import com.fanfan.novel.model.PersonInfo;
+import com.fanfan.robot.app.common.presenter.BasePresenter;
+import com.fanfan.robot.app.common.presenter.BaseView;
+import com.fanfan.robot.model.PersonInfo;
 
 /**
  * Created by android on 2018/1/10.

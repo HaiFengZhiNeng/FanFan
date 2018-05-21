@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@mipmap/background"
     android:fitsSystemWindows="true"
-    tools:context="com.fanfan.novel.activity.SplashActivity">
+    tools:context=".ui.land.SplashActivity">
 
     <ImageView
         android:id="@+id/iv_splash"

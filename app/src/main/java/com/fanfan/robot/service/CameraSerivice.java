@@ -23,8 +23,8 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.fanfan.novel.utils.CameraUtils;
-import com.fanfan.robot.service.event.FaceEvent;
+import com.fanfan.novel.utils.camera.CameraUtils;
+import com.fanfan.robot.other.event.FaceEvent;
 import com.fanfan.youtu.utils.UUIDGenerator;
 import com.seabreeze.log.Print;
 
@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.fanfan.novel.common.Constants.unusual;
+import static com.fanfan.robot.app.common.Constants.unusual;
 
 /**
  * Created by android on 2018/2/26.

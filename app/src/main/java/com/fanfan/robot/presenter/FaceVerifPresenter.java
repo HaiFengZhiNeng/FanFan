@@ -1,29 +1,17 @@
 package com.fanfan.robot.presenter;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.util.ArrayMap;
 
-import com.fanfan.novel.utils.BitmapUtils;
-import com.fanfan.robot.activity.AuthenticationActivity;
+import com.fanfan.novel.utils.bitmap.BitmapUtils;
 import com.fanfan.robot.presenter.ipersenter.IFaceVerifPresenter;
 import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.face.bean.FaceCompare;
-import com.fanfan.youtu.api.face.bean.FaceIdentify;
-import com.fanfan.youtu.api.face.bean.Newperson;
-import com.fanfan.youtu.api.face.bean.PersonModify;
 import com.fanfan.youtu.api.face.event.FaceCompareEvent;
-import com.fanfan.youtu.api.face.event.FaceIdentifyEvent;
-import com.fanfan.youtu.api.face.event.NewPersonEvent;
-import com.fanfan.youtu.api.face.event.PersonModifyEvent;
 import com.seabreeze.log.Print;
 
 import org.greenrobot.eventbus.EventBus;
@@ -31,11 +19,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by android on 2017/12/22.

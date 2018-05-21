@@ -1,7 +1,7 @@
 package com.fanfan.robot.dagger.module;
 
-import com.fanfan.novel.presenter.SerialPresenter;
-import com.fanfan.novel.presenter.ipresenter.ISerialPresenter;
+import com.fanfan.robot.presenter.SerialPresenter;
+import com.fanfan.robot.presenter.ipersenter.ISerialPresenter;
 
 import dagger.Module;
 import dagger.Provides;

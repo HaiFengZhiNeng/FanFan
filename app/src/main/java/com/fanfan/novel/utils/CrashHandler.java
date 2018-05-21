@@ -30,7 +30,7 @@ import android.os.Environment;
 import android.os.Process;
 import android.util.Log;
 
-import com.fanfan.novel.common.Constants;
+import com.fanfan.robot.app.common.Constants;
 
 import java.io.BufferedWriter;
 import java.io.File;

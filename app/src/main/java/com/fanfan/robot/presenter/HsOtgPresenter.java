@@ -4,14 +4,13 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 
-import com.fanfan.novel.model.PersonInfo;
-import com.fanfan.novel.utils.AppUtil;
+import com.fanfan.robot.model.PersonInfo;
+import com.fanfan.novel.utils.system.AppUtil;
 import com.fanfan.robot.presenter.ipersenter.IHsOtgPresenter;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;

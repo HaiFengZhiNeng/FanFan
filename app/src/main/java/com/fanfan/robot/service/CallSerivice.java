@@ -3,15 +3,12 @@ package com.fanfan.robot.service;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.fanfan.robot.activity.LockActivity;
 import com.seabreeze.log.Print;
 import com.tencent.av.sdk.AVAudioCtrl;
 import com.tencent.callsdk.ILVCallConstants;

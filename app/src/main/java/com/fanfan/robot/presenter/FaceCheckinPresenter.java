@@ -12,10 +12,8 @@ import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.util.ArrayMap;
 
-import com.fanfan.novel.model.FaceAuth;
-import com.fanfan.novel.utils.BitmapUtils;
-import com.fanfan.novel.utils.TimeUtils;
-import com.fanfan.robot.model.CheckIn;
+import com.fanfan.robot.model.FaceAuth;
+import com.fanfan.novel.utils.bitmap.BitmapUtils;
 import com.fanfan.robot.presenter.ipersenter.IFaceCheckinPresenter;
 import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.face.bean.FaceIdentify;
@@ -31,15 +29,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**

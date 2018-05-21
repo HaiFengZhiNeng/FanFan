@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/city_bg">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/city_bg"
+    tools:context=".ui.auxiliary.SelectCtiyActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -143,7 +145,7 @@
                         android:textSize="15sp" />
                 </LinearLayout>
 
-                <com.fanfan.novel.ui.plistview.BladeView
+                <com.fanfan.robot.view.plistview.BladeView
                     android:id="@+id/citys_bladeview"
                     android:layout_width="40dp"
                     android:layout_height="match_parent"

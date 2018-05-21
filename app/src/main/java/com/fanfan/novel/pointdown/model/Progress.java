@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.SystemClock;
 
-import com.fanfan.novel.utils.FileUtil;
+import com.fanfan.novel.utils.system.FileUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;

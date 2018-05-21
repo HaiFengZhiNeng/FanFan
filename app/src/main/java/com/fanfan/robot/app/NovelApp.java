@@ -3,12 +3,12 @@ package com.fanfan.robot.app;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.fanfan.novel.common.Constants;
-import com.fanfan.novel.common.base.BaseApplication;
-import com.fanfan.novel.common.lifecycle.Foreground;
-import com.fanfan.novel.db.base.BaseManager;
-import com.fanfan.novel.service.cache.Config;
-import com.fanfan.novel.service.cache.UserInfoCache;
+import com.fanfan.robot.app.common.Constants;
+import com.fanfan.robot.app.common.base.BaseApplication;
+import com.fanfan.robot.app.common.lifecycle.Foreground;
+import com.fanfan.robot.db.base.BaseManager;
+import com.fanfan.robot.other.cache.Config;
+import com.fanfan.robot.other.cache.UserInfoCache;
 import com.fanfan.novel.utils.music.MediaPlayerUtil2;
 import com.fanfan.robot.BuildConfig;
 import com.fanfan.robot.R;

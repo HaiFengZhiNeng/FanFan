@@ -1,16 +1,13 @@
 package com.fanfan.novel.im.init;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 
-import com.fanfan.novel.common.Constants;
+import com.fanfan.robot.app.common.Constants;
 import com.seabreeze.log.Print;
 import com.tencent.TIMConnListener;
 import com.tencent.TIMLogLevel;
 import com.tencent.TIMLogListener;
 import com.tencent.TIMManager;
-import com.tencent.TIMUserStatusListener;
 
 /**
  * Created by Administrator on 2017-06-21.

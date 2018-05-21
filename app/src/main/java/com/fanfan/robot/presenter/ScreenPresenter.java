@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 
-import com.fanfan.novel.common.Constants;
+import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.presenter.ipersenter.IScreenPresenter;
 
 /**

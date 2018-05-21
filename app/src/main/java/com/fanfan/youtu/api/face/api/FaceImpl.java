@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.ArrayMap;
 
-import com.fanfan.novel.model.UserInfo;
+import com.fanfan.robot.model.UserInfo;
 import com.fanfan.youtu.api.base.callback.BaseCallback;
 import com.fanfan.youtu.api.base.impl.BaseImpl;
 import com.fanfan.youtu.api.face.event.AddPersonEvent;

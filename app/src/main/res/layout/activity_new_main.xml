@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/beijing"
-    tools:context=".activity.MainNewActivity">
+    tools:context=".ui.main.MainNewActivity">
 
     <RelativeLayout
         android:id="@+id/show_laout"
@@ -161,7 +161,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <com.fanfan.novel.ui.ChatTextView
+        <com.fanfan.robot.view.ChatTextView
             android:id="@+id/chat_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

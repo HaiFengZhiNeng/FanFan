@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fanfan.novel.activity.CameraRecoderActivity">
+    tools:context=".ui.setting.act.video.recoder.CameraRecoderActivity">
 
-    <com.fanfan.novel.ui.camera.CameraView
+    <com.fanfan.robot.view.camera.CameraView
         android:id="@+id/camera_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

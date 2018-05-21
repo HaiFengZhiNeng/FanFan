@@ -28,7 +28,7 @@
         android:layout_toRightOf="@+id/other_user_icon"
         android:orientation="horizontal">
 
-        <com.fanfan.hotel.ui.BubbleImageView
+        <com.fanfan.robot.view.BubbleImageView
             android:id="@+id/image_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

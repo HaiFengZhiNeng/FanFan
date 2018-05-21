@@ -69,11 +69,11 @@
             android:value="b11de4341cd0acd1cb134240436a4d1a" />
 
         <meta-data
-            android:name="com.fanfan.novel.common.glide.BaseGlideModule"
+            android:name="com.fanfan.robot.app.common.glide.BaseGlideModule"
             android:value="GlideModule" />
 
         <activity
-            android:name="com.fanfan.novel.activity.SplashActivity"
+            android:name=".ui.land.SplashActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -83,165 +83,165 @@
         </activity>
 
         <activity
-            android:name="com.fanfan.novel.permiss.PermissionActivity"
+            android:name="com.fanfan.novel.utils.permiss.PermissionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme_Dialog"/>
 
         <activity
-            android:name="com.fanfan.novel.activity.SelectCtiyActivity"
+            android:name=".ui.auxiliary.SelectCtiyActivity"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name=".activity.MainNewActivity"
+            android:name=".ui.main.MainNewActivity"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name="com.fanfan.novel.map.activity.AMapActivity"
+            android:name=".ui.map.AMapActivity"
             android:theme="@style/AppThemeAction" />
 
         <activity
-            android:name=".activity.LockActivity"
+            android:name=".ui.auxiliary.LockActivity"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
 
         <activity
-            android:name="com.fanfan.novel.common.activity.CrashActivity"
+            android:name=".app.common.act.CrashActivity"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name="com.fanfan.novel.activity.LoginActivity"
+            android:name=".ui.land.LoginActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.RegisterActivity"
+            android:name=".ui.land.RegisterActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.ForgetActivity"
+            android:name=".ui.land.ForgetActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.SimpleCallActivity"
+            android:name=".ui.call.SimpleCallActivity"
             android:launchMode="singleTask"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.VideoDetailActivity"
+            android:name=".ui.video.VideoDetailActivity"
             android:theme="@style/AppThemeAction" />
 
         <activity
-            android:name=".activity.ProblemConsultingActivity"
+            android:name=".ui.voice.ProblemConsultingActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.VideoIntroductionActivity"
+            android:name=".ui.video.VideoIntroductionActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.MultimediaActivity"
+            android:name=".ui.media.MultimediaActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.PublicNumberActivity"
+            android:name=".ui.site.PublicNumberActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.FaceRecognitionActivity"
+            android:name=".ui.face.FaceRecognitionActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.SettingActivity"
+            android:name=".ui.setting.SettingActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.NavigationActivity"
+            android:name=".ui.naviga.NavigationActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.DataVideoActivity"
+            android:name=".ui.setting.act.video.DataVideoActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.AddVideoActivity"
+            android:name=".ui.setting.act.video.AddVideoActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.DataVoiceActivity"
+            android:name=".ui.setting.act.voice.DataVoiceActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.AddVoiceActivity"
+            android:name=".ui.setting.act.voice.AddVoiceActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.DataNavigationActivity"
+            android:name=".ui.setting.act.naviga.DataNavigationActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.AddNavigationActivity"
+            android:name=".ui.setting.act.naviga.AddNavigationActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.DataSiteActivity"
+            android:name=".ui.setting.act.site.DataSiteActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.AddSiteActivity"
+            android:name=".ui.setting.act.site.AddSiteActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.FaceDataActivity"
+            android:name=".ui.setting.act.face.FaceDataActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.ModifyActivity"
+            android:name=".ui.setting.act.face.ModifyActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.PersonInfoDetailActivity"
+            android:name=".ui.setting.act.face.PersonInfoDetailActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.InstagramPhotoActivity"
+            android:name=".ui.face.act.InstagramPhotoActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.FaceRegisterActivity"
+            android:name=".ui.face.act.FaceRegisterActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.FaceCheckinActivity"
+            android:name=".ui.face.act.FaceCheckinActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.SignAllActivity"
+            android:name=".ui.face.act.sign.SignAllActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.AuthenticationActivity"
+            android:name=".ui.face.act.AuthenticationActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.DanceAddActivity"
+            android:name=".ui.setting.act.dance.DanceAddActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.DanceActivity"
+            android:name=".ui.media.act.DanceActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".activity.ExhibitionActivity"
+            android:name=".ui.naviga.ExhibitionActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.FanFanIntroduceActivity"
+            android:name=".ui.auxiliary.FanFanIntroduceActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".activity.PPTActivity"
+            android:name=".ui.auxiliary.PPTActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.map.activity.DriveRouteDetailActivity"
+            android:name=".ui.map.act.DriveRouteDetailActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.map.activity.WalkRouteDetailActivity"
+            android:name=".ui.map.act.WalkRouteDetailActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.map.activity.BusRouteDetailActivity"
+            android:name=".ui.map.act.BusRouteDetailActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".train.TrainInquiryActivity"
+            android:name=".ui.auxiliary.TrainInquiryActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".train.PanoramicMapActivity"
+            android:name=".ui.auxiliary.PanoramicMapActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name="com.fanfan.novel.activity.CameraRecoderActivity"
+            android:name=".ui.setting.act.video.recoder.CameraRecoderActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com.fanfan.novel.activity.SettingPwdActivity"
+            android:name=".ui.setting.act.other.SettingPwdActivity"
             android:theme="@style/AppThemeAction" />
 
-        <service android:name="com.fanfan.novel.service.SpeakService"/>
+        <service android:name=".service.SpeakService"/>
 
-        <service android:name="com.fanfan.novel.service.UdpService" />
+        <service android:name=".service.UdpService" />
 
-        <service android:name="com.fanfan.novel.service.SerialService" />
+        <service android:name=".service.SerialService" />
 
-        <service android:name="com.fanfan.novel.service.PlayService" />
+        <service android:name=".service.PlayService" />
 
         <service android:name=".service.CameraSerivice" />
 
@@ -249,7 +249,7 @@
 
         <service android:name=".service.CallSerivice" />
 
-        <service android:name="com.fanfan.novel.service.LoadFileService" />
+        <service android:name=".service.LoadFileService" />
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" />
 
@@ -303,7 +303,7 @@
         </receiver>
 
         <!-- 开机广播 -->
-        <receiver android:name="com.fanfan.novel.service.BootBroadcastReceiver">
+        <receiver android:name=".service.receiver.BootBroadcastReceiver">
             <intent-filter>
 
                 <!-- 注册开机广播地址 -->

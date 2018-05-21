@@ -1,7 +1,7 @@
 package com.fanfan.robot.dagger.componet;
 
-import com.fanfan.robot.activity.AuthenticationActivity;
 import com.fanfan.robot.dagger.module.SimpleModule;
+import com.fanfan.robot.ui.face.act.AuthenticationActivity;
 
 import dagger.Component;
 

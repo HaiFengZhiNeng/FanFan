@@ -5,7 +5,7 @@
     android:id="@+id/backdrop"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.FaceCheckinActivity">
+    tools:context=".ui.face.act.FaceCheckinActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -18,12 +18,12 @@
             android:layout_height="match_parent"
             android:visibility="visible" />
 
-        <com.fanfan.novel.ui.camera.DetectionFaceView
+        <com.fanfan.robot.view.camera.DetectionFaceView
             android:id="@+id/detection_face_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <com.fanfan.novel.ui.camera.DetectOpenFaceView
+        <com.fanfan.robot.view.camera.DetectOpenFaceView
             android:id="@+id/opencv_face_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

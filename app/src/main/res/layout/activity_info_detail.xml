@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/note_bg"
-    tools:context="com.fanfan.novel.activity.PersonInfoDetailActivity">
+    tools:context=".ui.setting.act.face.PersonInfoDetailActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

@@ -8,7 +8,7 @@ import com.fanfan.novel.pointdown.event.ProgressEvent;
 import com.fanfan.novel.pointdown.model.Progress;
 import com.fanfan.novel.pointdown.model.Request;
 import com.fanfan.novel.pointdown.run.PriorityRunnable;
-import com.fanfan.novel.utils.FileUtil;
+import com.fanfan.novel.utils.system.FileUtil;
 import com.fanfan.youtu.utils.UUIDGenerator;
 import com.seabreeze.log.Print;
 

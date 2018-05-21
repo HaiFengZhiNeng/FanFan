@@ -2,8 +2,8 @@ package com.fanfan.robot.presenter.ipersenter;
 
 import android.graphics.Bitmap;
 
-import com.fanfan.novel.common.presenter.BasePresenter;
-import com.fanfan.novel.common.presenter.BaseView;
+import com.fanfan.robot.app.common.presenter.BasePresenter;
+import com.fanfan.robot.app.common.presenter.BaseView;
 import com.fanfan.youtu.api.base.event.BaseEvent;
 
 /**

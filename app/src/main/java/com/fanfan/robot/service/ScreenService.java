@@ -8,9 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 
-import com.fanfan.novel.utils.PowerManagerWakeLock;
-import com.fanfan.robot.activity.LockActivity;
-import com.seabreeze.log.Print;
+import com.fanfan.novel.utils.system.PowerManagerWakeLock;
+import com.fanfan.robot.ui.auxiliary.LockActivity;
 
 /**
  * Created by android on 2018/2/26.

@@ -2,11 +2,9 @@ package com.fanfan.robot.presenter;
 
 import android.graphics.Bitmap;
 
-import com.fanfan.novel.model.FaceAuth;
-import com.fanfan.novel.utils.BitmapUtils;
-import com.fanfan.novel.utils.PreferencesUtils;
+import com.fanfan.robot.model.FaceAuth;
+import com.fanfan.novel.utils.bitmap.BitmapUtils;
 import com.fanfan.robot.presenter.ipersenter.IFaceRegisterPresenter;
-import com.fanfan.robot.presenter.ipersenter.ITakePresenter;
 import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.face.bean.AddFace;
 import com.fanfan.youtu.api.face.bean.Newperson;

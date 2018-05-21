@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/note_bg"
-    tools:context=".activity.DanceAddActivity">
+    tools:context=".ui.setting.act.dance.DanceAddActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/navigation"
-    tools:context=".activity.NavigationActivity">
+    tools:context=".ui.naviga.NavigationActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -42,7 +42,7 @@
             <!--android:layout_height="match_parent"-->
             <!--android:layout_above="@+id/tv_tip">-->
 
-            <!--<com.fanfan.novel.ui.RangeClickImageView-->
+            <!--<com.fanfan.robot.view.RangeClickImageView-->
                 <!--android:id="@+id/iv_navigation"-->
                 <!--android:layout_width="wrap_content"-->
                 <!--android:layout_height="wrap_content"-->

@@ -3,7 +3,7 @@ package com.fanfan.youtu.api.base;
 import android.text.TextUtils;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
-import com.fanfan.novel.common.Constants;
+import com.fanfan.robot.app.common.Constants;
 import com.fanfan.youtu.token.YoutuSign;
 import com.seabreeze.log.Print;
 
