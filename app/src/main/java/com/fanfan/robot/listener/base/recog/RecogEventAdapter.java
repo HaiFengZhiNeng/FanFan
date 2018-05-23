@@ -2,6 +2,7 @@ package com.fanfan.robot.listener.base.recog;
 
 import android.os.Bundle;
 import android.util.ArrayMap;
+import android.util.Log;
 
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.model.local.Asr;
@@ -31,18 +32,23 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
 
     @Override
     public void onVolumeChanged(int volume, byte[] bytes) {
+//        Log.d("RecogEventAdapter", "onVolumeChanged");
         listener.onAsrVolume(bytes.length, volume);
     }
 
     @Override
     public void onBeginOfSpeech() {
+        Log.d("RecogEventAdapter", "onBeginOfSpeech");
         listener.onAsrBegin();
     }
 
     @Override
     public void onEndOfSpeech() {
+        Log.d("RecogEventAdapter", "onEndOfSpeech");
         String engineType = RobotInfo.getInstance().getEngineType();
         if (engineType.equals(SpeechConstant.TYPE_CLOUD)) {
+
+            Log.d("RecogEventAdapter", "onEndOfSpeech TYPE_CLOUD");
             if (mIatResults.size() > 0) {
                 StringBuffer sb = new StringBuffer();
                 for (String result : mIatResults.values()) {
@@ -59,6 +65,9 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
 
     @Override
     public void onResult(RecognizerResult recognizerResult, boolean isLast) {
+        Log.d("RecogEventAdapter", "onResult");
+
+        Print.e("onResult ++ : " + recognizerResult.getResultString());
 
         String engineType = RobotInfo.getInstance().getEngineType();
         if (engineType.equals(SpeechConstant.TYPE_LOCAL)) {
@@ -134,11 +143,13 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
 
     @Override
     public void onError(SpeechError speechError) {
+        Log.d("RecogEventAdapter", "onError");
         listener.onAsrFinishError(speechError.getErrorCode(), speechError.getErrorDescription());
     }
 
     @Override
     public void onEvent(int i, int i1, int i2, Bundle bundle) {
-
+        Log.d("RecogEventAdapter", "onEvent");
+        Print.e("onEvent i : " + i + " , i1 : " +i1 + " , i2 : " + i2);
     }
 }

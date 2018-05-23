@@ -63,10 +63,6 @@ public class MyRecognizerLocal {
         stop();
     }
 
-    public void onDestroy() {
-        release();
-    }
-
 
     public void start() {
         setIatparameter();
@@ -80,19 +76,12 @@ public class MyRecognizerLocal {
         }
     }
 
-    public void cancel() {
-        if (mIat != null) {
-            mIat.cancel();
-        }
-        mListener = null;
-    }
-
     public void release() {
         if (mIat == null) {
             return;
         }
-        stop();
-        cancel();
+        mListener = null;
+        mIat.cancel();
 //        mIat.destroy();
     }
 

@@ -59,11 +59,8 @@ public class MyRecognizer {
     }
 
     public void onResume() {
-        if (mIat == null) {
-            initIat();
-        }
         if (RobotInfo.getInstance().isInitialization()) {
-            start(false);
+            start(true);
         } else {
             MyFGrammarListener fGrammarListener = new MyFGrammarListener() {
                 @Override
@@ -81,11 +78,6 @@ public class MyRecognizer {
         stop();
     }
 
-    public void onDestroy() {
-        release();
-    }
-
-
     public void start(boolean focus) {
         setIatparameter(focus);
         mIat.startListening(mListener);
@@ -98,21 +90,14 @@ public class MyRecognizer {
         }
     }
 
-    public void cancel() {
-        if (mIat != null) {
-            mIat.cancel();
-        }
-        mListener = null;
-        isInited = false;
-    }
-
     public void release() {
         if (mIat == null) {
             return;
         }
-        stop();
-        cancel();
+        mListener = null;
+        mIat.cancel();
 //        mIat.destroy();
+        isInited = false;
     }
 
     private void setIatparameter(boolean focus) {

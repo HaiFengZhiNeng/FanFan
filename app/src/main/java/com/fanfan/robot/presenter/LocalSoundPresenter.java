@@ -8,6 +8,7 @@ import android.os.Handler;
 import com.fanfan.robot.app.enums.SpecialType;
 import com.fanfan.robot.listener.base.recog.AlarmListener;
 import com.fanfan.robot.listener.base.recog.IRecogListener;
+import com.fanfan.robot.listener.base.recog.LocalListener;
 import com.fanfan.robot.listener.base.recog.local.MyRecognizerLocal;
 import com.fanfan.robot.listener.base.synthesizer.EarListener;
 import com.fanfan.robot.listener.base.synthesizer.ISynthListener;
@@ -67,7 +68,7 @@ public class LocalSoundPresenter extends ILocalSoundPresenter {
         };
         mySynthesizer = new MySynthesizerLocal(mSoundView.getContext(), iSynthListener);
 
-        IRecogListener iRecogListener = new AlarmListener() {
+        IRecogListener iRecogListener = new LocalListener() {
 
             @Override
             public void onAsrLocalFinalResult(String result) {
@@ -92,9 +93,8 @@ public class LocalSoundPresenter extends ILocalSoundPresenter {
 
     @Override
     public void finish() {
-        RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
         mySynthesizer.release();
-        myRecognizer.onDestroy();
+        myRecognizer.release();
     }
 
     @Override

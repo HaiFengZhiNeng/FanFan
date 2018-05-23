@@ -274,27 +274,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         mySynthesizer = new MySynthesizer(this, iSynthListener);
     }
 
-    public void startRecognizerListener(boolean focus) {
-        if (isOpening) {
-            myRecognizer.start(focus);
-        }
-    }
-
-    public void stopRecognizerListener() {
-//        myRecognizer.stop();
-    }
-
-    public void doUrl(String url) {
-
-        mSoundPresenter.playVoice(url);
-    }
-
-    public void doAnswer(String messageContent) {
-        stopSound();
-        mySynthesizer.speak(messageContent);
-        onSpeakBegin(messageContent);
-    }
-
     @Override
     protected void initData() {
         mVoiceDBManager = new VoiceDBManager();
@@ -319,6 +298,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     protected void onResume() {
         super.onResume();
 
+        isOpening = true;
         Constants.isDance = false;
 
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
@@ -327,7 +307,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         mySynthesizer.onResume();
 
-        isOpening = true;
         myRecognizer.onResume();
     }
 
@@ -336,9 +315,13 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         super.onPause();
 
         isOpening = false;
+
+        mSpeakBinder.clear();
+
         myRecognizer.onPause();
 
         mySynthesizer.onPause();
+
 
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
@@ -424,6 +407,27 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         }
     }
 
+
+    public void startRecognizerListener(boolean focus) {
+//        if (isOpening) {
+            myRecognizer.start(focus);
+//        }
+    }
+
+    public void stopRecognizerListener() {
+//        myRecognizer.stop();
+    }
+
+    public void doUrl(String url) {
+
+        mSoundPresenter.playVoice(url);
+    }
+
+    public void doAnswer(String messageContent) {
+        stopSound();
+        mySynthesizer.speak(messageContent);
+        onSpeakBegin(messageContent);
+    }
 
     private String mInput;
 

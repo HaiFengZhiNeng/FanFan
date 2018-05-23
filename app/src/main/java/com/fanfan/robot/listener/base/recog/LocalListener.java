@@ -4,10 +4,10 @@ import com.fanfan.robot.model.local.Asr;
 import com.fanfan.robot.model.local.Trans;
 import com.seabreeze.log.Print;
 
-public class AlarmListener implements IRecogListener, NulState {
+public class LocalListener implements IRecogListener, NulState {
 
 
-    protected static final String TAG = "AlarmListener ";
+    protected static final String TAG = "LocalListener ";
 
     private long speechEndTime;
 

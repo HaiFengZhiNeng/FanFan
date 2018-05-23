@@ -58,5 +58,11 @@ public class SpeakService extends Service {
             }
             return null;
         }
+
+        public void clear() {
+            if (mSpeakQueue != null) {
+                mSpeakQueue.clear();
+            }
+        }
     }
 }
