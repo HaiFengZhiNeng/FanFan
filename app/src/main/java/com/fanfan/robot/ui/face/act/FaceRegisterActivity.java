@@ -252,23 +252,19 @@ public class FaceRegisterActivity extends BarBaseActivity implements
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        mSoundPresenter.startRecognizerListener();
         mFaceRegisterPresenter.start();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
+        mSoundPresenter.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
         mCameraPresenter.closeCamera();
     }
 
@@ -572,13 +568,6 @@ public class FaceRegisterActivity extends BarBaseActivity implements
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         finish();
     }
@@ -611,9 +600,7 @@ public class FaceRegisterActivity extends BarBaseActivity implements
     @Override
     public void stopAll() {
         super.stopAll();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
         mSoundPresenter.doAnswer(resFoFinal(R.array.wake_up));
     }
 

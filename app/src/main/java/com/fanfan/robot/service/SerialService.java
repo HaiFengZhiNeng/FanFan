@@ -71,7 +71,7 @@ public class SerialService extends BaseService implements OnOpenSerialPortListen
     public void onResultEvent(ActivityToServiceEvent event) {
         if (event.isOk()) {
             SerialBean serialBean = event.getBean();
-            Print.e("activity发送到service中的数据 " + serialBean.toString());
+            Print.i("activity发送到service中的数据 " + serialBean.toString());
             int iBaudRate = serialBean.getBaudRate();
             if (iBaudRate == DEV_BAUDRATE) {
                 byte[] bOutArray = HexUtils.HexToByteArr(serialBean.getMotion());

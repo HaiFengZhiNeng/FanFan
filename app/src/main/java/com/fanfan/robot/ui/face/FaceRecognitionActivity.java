@@ -49,7 +49,8 @@ import butterknife.OnClick;
 /**
  * 人脸模块开始
  */
-public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
+public class FaceRecognitionActivity extends BarBaseActivity implements
+        ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
 
     @BindView(R.id.iv_face_check_in)
     ImageView ivFaceCheckIn;
@@ -100,22 +101,18 @@ public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSo
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        mSoundPresenter.startRecognizerListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
+        mSoundPresenter.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
     }
 
     @Override
@@ -327,13 +324,6 @@ public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSo
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         finish();
     }
@@ -399,9 +389,7 @@ public class FaceRecognitionActivity extends BarBaseActivity implements ILocalSo
     @Override
     public void stopAll() {
         super.stopAll();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
         addSpeakAnswer("你好，这里是人脸识别页面");
     }
 

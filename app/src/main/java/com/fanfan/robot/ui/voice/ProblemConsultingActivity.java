@@ -46,7 +46,8 @@ import java.util.Random;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class ProblemConsultingActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
+public class ProblemConsultingActivity extends BarBaseActivity implements
+        ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerVoice;
@@ -124,7 +125,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
+        mSoundPresenter.onResume();
 
         addSpeakAnswer("你好，这里是问题咨询页面，点击上方列表或说出列表中问题可得到答案");
 
@@ -133,9 +134,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     @Override
     protected void onPause() {
         super.onPause();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
     }
 
     @Override
@@ -221,8 +220,6 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     }
 
     private void addSpeakAnswer(String messageContent) {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
         mSoundPresenter.doAnswer(messageContent);
     }
 
@@ -315,13 +312,6 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         if (isShow) {
             dismissImage();
@@ -335,7 +325,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     public void onBackPressed() {
         if (isShow) {
             dismissImage();
-            mSoundPresenter.stopRecognizerListener();
+            mSoundPresenter.stopEvery();
         } else {
             finish();
         }
@@ -393,9 +383,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements ILocal
     @Override
     public void stopAll() {
         super.stopAll();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
 //        addSpeakAnswer("你好，这里是问题咨询页面，点击上方列表或说出列表中问题可得到答案");
         addSpeakAnswer("您好");
     }

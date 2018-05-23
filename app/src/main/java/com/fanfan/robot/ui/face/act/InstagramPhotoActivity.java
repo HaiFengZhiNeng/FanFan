@@ -124,21 +124,20 @@ public class InstagramPhotoActivity extends BarBaseActivity implements
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        mSoundPresenter.startRecognizerListener();
         mTakePresenter.start();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
+        mSoundPresenter.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mCameraPresenter.closeCamera();
+        mSoundPresenter.onPause();
     }
 
     @Override
@@ -146,9 +145,6 @@ public class InstagramPhotoActivity extends BarBaseActivity implements
         super.onStop();
         EventBus.getDefault().unregister(this);
         mTakePresenter.finish();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
     }
 
     @Override
@@ -358,13 +354,6 @@ public class InstagramPhotoActivity extends BarBaseActivity implements
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         finish();
     }
@@ -397,9 +386,7 @@ public class InstagramPhotoActivity extends BarBaseActivity implements
     @Override
     public void stopAll() {
         super.stopAll();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
         mSoundPresenter.doAnswer(resFoFinal(R.array.wake_up));
     }
 

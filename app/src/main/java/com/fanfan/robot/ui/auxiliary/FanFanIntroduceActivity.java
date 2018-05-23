@@ -33,7 +33,8 @@ import butterknife.BindView;
 /**
  * fanfan介绍
  */
-public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
+public class FanFanIntroduceActivity extends BarBaseActivity implements
+        ILocalSoundPresenter.ILocalSoundView,
         ISerialPresenter.ISerialView {
 
     public static void newInstance(Activity context) {
@@ -69,21 +70,18 @@ public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSo
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        mSoundPresenter.startRecognizerListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
+        mSoundPresenter.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
     }
 
     @Override
@@ -181,13 +179,6 @@ public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSo
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         finish();
     }
@@ -220,9 +211,7 @@ public class FanFanIntroduceActivity extends BarBaseActivity implements ILocalSo
     @Override
     public void stopAll() {
         super.stopAll();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
     }
 
     @Override

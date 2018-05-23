@@ -56,7 +56,7 @@ public class OkhttpManager {
         HttpLoggingInterceptor.Logger logger = new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
-                Print.e(message);
+//                Print.e(message);
 //                try {
 //                    String text = URLDecoder.decode(message, "utf-8");
 //                    Print.e(text);

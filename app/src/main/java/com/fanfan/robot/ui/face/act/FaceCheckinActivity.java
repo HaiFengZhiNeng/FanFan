@@ -250,7 +250,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
+        mSoundPresenter.onResume();
         addSpeakAnswer("请对准摄像头");
     }
 
@@ -258,9 +258,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     protected void onPause() {
         super.onPause();
         mCameraPresenter.closeCamera();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
     }
 
     @Override
@@ -359,13 +357,12 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     }
 
     private void addSpeakAnswer(String messageContent) {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
         mSoundPresenter.doAnswer(messageContent);
     }
 
     private void addSpeakAnswer(int res) {
+        mSoundPresenter.stopEvery();
         mSoundPresenter.doAnswer(getResources().getString(res));
     }
 
@@ -666,13 +663,6 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         if (state != State.CAMERA) {
             changeCamera();
@@ -715,9 +705,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     @Override
     public void stopAll() {
         super.stopAll();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
         mSoundPresenter.doAnswer(resFoFinal(R.array.wake_up));
     }
 

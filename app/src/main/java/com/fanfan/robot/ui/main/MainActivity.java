@@ -26,6 +26,12 @@ import com.fanfan.robot.app.enums.RobotType;
 import com.fanfan.robot.app.enums.SpecialType;
 import com.fanfan.robot.db.manager.VoiceDBManager;
 import com.fanfan.novel.im.init.LoginBusiness;
+import com.fanfan.robot.listener.base.recog.AlarmListener;
+import com.fanfan.robot.listener.base.recog.IRecogListener;
+import com.fanfan.robot.listener.base.recog.cloud.MyRecognizer;
+import com.fanfan.robot.listener.base.synthesizer.EarListener;
+import com.fanfan.robot.listener.base.synthesizer.ISynthListener;
+import com.fanfan.robot.listener.base.synthesizer.cloud.MySynthesizer;
 import com.fanfan.robot.model.Alarm;
 import com.fanfan.robot.model.RobotBean;
 import com.fanfan.robot.model.SerialBean;
@@ -40,6 +46,9 @@ import com.fanfan.robot.model.xf.radio.Radio;
 import com.fanfan.robot.model.xf.train.Train;
 import com.fanfan.novel.pointdown.db.DownloadDBDao;
 import com.fanfan.novel.pointdown.model.Progress;
+import com.fanfan.robot.presenter.ChatPresenter;
+import com.fanfan.robot.presenter.LineSoundPresenter;
+import com.fanfan.robot.presenter.SerialPresenter;
 import com.fanfan.robot.presenter.ipersenter.IChatPresenter;
 import com.fanfan.robot.presenter.ipersenter.ISerialPresenter;
 import com.fanfan.robot.presenter.ipersenter.ISynthesizerPresenter;
@@ -62,7 +71,6 @@ import com.fanfan.novel.utils.customtabs.IntentUtil;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.dagger.componet.DaggerMainComponet;
-import com.fanfan.robot.dagger.manager.MainManager;
 import com.fanfan.robot.dagger.module.MainModule;
 import com.fanfan.robot.db.manager.DanceDBManager;
 import com.fanfan.robot.model.Dance;
@@ -135,8 +143,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private boolean quit;
 
-    @Inject
-    MainManager mMainManager;
+//    @Inject
+//    MainManager mMainManager;
 
     private VoiceDBManager mVoiceDBManager;
 
@@ -170,7 +178,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         @Override
         public void run() {
             SpeakBean speakBean = null;
-            if (!mMainManager.isSpeaking()) {
+            if (!mySynthesizer.isSpeaking()) {
                 if (mSpeakBinder != null) {
                     speakBean = mSpeakBinder.getSpeakMorestr();
                 }
@@ -179,13 +187,13 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 mHandler.postDelayed(speakRunnable, 1000);
             } else {
                 if (System.currentTimeMillis() - speakBean.getTime() < 3000) {
-                    if (mMainManager.isSpeaking()) {
+                    if (mySynthesizer.isSpeaking()) {
                         mSpeakBinder.dispatchSpeak(speakBean);
                     } else {
                         if (speakBean.isUrl()) {
-                            mMainManager.doUrl(speakBean.getAnwer());
+                            doUrl(speakBean.getAnwer());
                         } else {
-                            mMainManager.doAnswer(speakBean.getAnwer());
+                            doAnswer(speakBean.getAnwer());
                             if (speakBean.isAction()) {
                                 speakingAddAction(speakBean.getAnwer().length());
                             }
@@ -199,10 +207,22 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         }
     };
 
+    private MyRecognizer myRecognizer;
+    private boolean isOpening;
+
+    private MySynthesizer mySynthesizer;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main1;
     }
+
+    @Inject
+    ChatPresenter mChatPresenter;
+    @Inject
+    SerialPresenter mSerialPresenter;
+    @Inject
+    LineSoundPresenter mSoundPresenter;
 
     @Override
     protected void initView() {
@@ -210,7 +230,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         DaggerMainComponet.builder().mainModule(new MainModule(this)).build().inject(this);
 
-        mMainManager.onCreate();
+        mSerialPresenter.start();
+        mSoundPresenter.start();
 
         youtucode = Youtucode.getSingleInstance();
 
@@ -218,6 +239,60 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         Intent intent = new Intent(this, SpeakService.class);
         bindService(intent, mSpeakConn, BIND_AUTO_CREATE);
+
+        IRecogListener iRecogListener = new AlarmListener() {
+            @Override
+            public void onAsrFinalResult(String result) {
+                super.onAsrFinalResult(result);
+                aiuiForLocal(result);
+                startRecognizerListener(false);
+            }
+
+            @Override
+            public void onAsrOnlineNluResult(int type, String nluResult) {
+                super.onAsrOnlineNluResult(type, nluResult);
+                if (type == STATUS_END) {
+                    startRecognizerListener(false);
+                }
+            }
+
+            @Override
+            public void onAsrFinishError(int errorCode, String errorMessage) {
+                super.onAsrFinishError(errorCode, errorMessage);
+                startRecognizerListener(false);
+            }
+        };
+        myRecognizer = new MyRecognizer(this, iRecogListener);
+
+        ISynthListener iSynthListener = new EarListener() {
+            @Override
+            public void onCompleted() {
+                super.onCompleted();
+                onRunable();
+            }
+        };
+        mySynthesizer = new MySynthesizer(this, iSynthListener);
+    }
+
+    public void startRecognizerListener(boolean focus) {
+        if (isOpening) {
+            myRecognizer.start(focus);
+        }
+    }
+
+    public void stopRecognizerListener() {
+//        myRecognizer.stop();
+    }
+
+    public void doUrl(String url) {
+
+        mSoundPresenter.playVoice(url);
+    }
+
+    public void doAnswer(String messageContent) {
+        stopSound();
+        mySynthesizer.speak(messageContent);
+        onSpeakBegin(messageContent);
     }
 
     @Override
@@ -230,7 +305,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     protected void callStop() {
-        mMainManager.callStop();
+        mySynthesizer.stop();
+        mSoundPresenter.stopVoice();
     }
 
     @Override
@@ -246,20 +322,38 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         Constants.isDance = false;
 
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
-        mMainManager.onResume();
+
+        mChatPresenter.start();
+
+        mySynthesizer.onResume();
+
+        isOpening = true;
+        myRecognizer.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
+        isOpening = false;
+        myRecognizer.onPause();
+
+        mySynthesizer.onPause();
+
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
-        mMainManager.onPause();
+
+        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
+
+        mSoundPresenter.stopVoice();
+
+        mChatPresenter.finish();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+
         EventBus.getDefault().unregister(this);
     }
 
@@ -274,7 +368,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             unbindService(mSpeakConn);
         }
         super.onDestroy();
-        mMainManager.onDestroy();
+
+        mSoundPresenter.finish();
+
+        myRecognizer.release();
+        mySynthesizer.release();
     }
 
     @Override
@@ -364,7 +462,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 .input(getString(R.string.input_hint_pwd), "", false, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        Print.e(input);
                         mInput = String.valueOf(input);
                     }
                 })
@@ -416,7 +513,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             if (resultCode == MultimediaActivity.MULTIMEDIA_RESULTCODE) {
                 Print.e("断开与音乐服务的连接");
                 unbindService(mPlayServiceConnection);
-                mMainManager.onResume();
+                mChatPresenter.start();
+                myRecognizer.onResume();
+                mySynthesizer.onResume();
             }
         }
     }
@@ -427,11 +526,19 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     private boolean isAutoAction;
 
     private void sendOrder(int type, String motion) {
-        mMainManager.receiveMotion(type, motion);
+        receiveMotion(type, motion);
     }
 
     private void sendCustom(RobotBean localVoice) {
-        mMainManager.sendCustomMessage(localVoice);
+        sendCustomMessage(localVoice);
+    }
+
+    public void sendCustomMessage(RobotBean robotBean) {
+        mChatPresenter.sendCustomMessage(robotBean);
+    }
+
+    public void receiveMotion(int type, String motion) {
+        mSerialPresenter.receiveMotion(type, motion);
     }
 
     @Override
@@ -543,17 +650,17 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
 
     private void addSpeakAnswer(String problem, String messageContent, boolean isAction, boolean isUrl) {
-        mMainManager.stopVoice();
-        mMainManager.stopHandler();
-//        mMainManager.doAnswer(messageContent);
-        if (mMainManager.isSpeaking()) {
+        mSoundPresenter.stopVoice();
+        stopRecognizerListener();
+//        doAnswer(messageContent);
+        if (mySynthesizer.isSpeaking()) {
             SpeakBean speakBean = new SpeakBean(problem, messageContent, System.currentTimeMillis(), isAction, isUrl);
             mSpeakBinder.dispatchSpeak(speakBean);
         } else {
             if (isUrl) {
-                mMainManager.doUrl(messageContent);
+                doUrl(messageContent);
             } else {
-                mMainManager.doAnswer(messageContent);
+                doAnswer(messageContent);
                 if (isAction) {
                     speakingAddAction(messageContent.length());
                 }
@@ -616,7 +723,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     public void onResultEvent(ServiceToActivityEvent event) {
         if (event.isOk()) {
             SerialBean serialBean = event.getBean();
-            mMainManager.onDataReceiverd(serialBean);
+            mSerialPresenter.onDataReceiverd(serialBean);
         } else {
             Print.e("ReceiveEvent error");
         }
@@ -725,14 +832,14 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
         sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
-        mMainManager.startVoice(true);
+        startRecognizerListener(true);
         mHandler.post(speakRunnable);
     }
 
     @Override
     public void stopSound() {
-        mMainManager.stopVoice();
-        mMainManager.stopHandler();
+        mSoundPresenter.stopVoice();
+        stopRecognizerListener();
     }
 
     private void loadImage(int load, int place) {
@@ -807,12 +914,12 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
     @Override
     public void onSendMessageSuccess(TIMMessage message) {
-        Print.e("发送消息成功");
+        Print.i("onSendMessageSuccess : 发送消息成功");
     }
 
     @Override
     public void onSendMessageFail(int code, String desc, TIMMessage message) {
-        Print.e("发送消息失败");
+        Print.e("onSendMessageFail : 发送消息失败");
     }
 
     @Override
@@ -838,7 +945,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 break;
             case VoiceSwitch:
                 boolean isSpeech = bean.getOrder().equals("语音开");
-                mMainManager.setSpeech(isSpeech);
+                setSpeech(isSpeech);
                 break;
             case Text:
                 addSpeakAnswer("CustomMsg", bean.getOrder(), true, false);
@@ -895,7 +1002,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 }
                 break;
             case Anwser:
-                mMainManager.stopVoice();
+                mSoundPresenter.stopVoice();
+                stopRecognizerListener();
                 aiuiForLocal(bean.getOrder());
                 break;
         }
@@ -907,9 +1015,10 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         txt = txt.trim();
         if (txt.equals("a")) {
-            mMainManager.stopVoice();
+            mSoundPresenter.stopVoice();
+            stopRecognizerListener();
         } else if (txt.equals("s")) {
-            mMainManager.startVoice(false);
+            startRecognizerListener(false);
         } else if (txt.equals("g")) {
             stopAll();
 
@@ -1012,9 +1121,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     @Override
     public void stopAll() {
         sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
-        mMainManager.stopVoice();
+        mSoundPresenter.stopVoice();
+        stopRecognizerListener();
         String wakeUp = resFoFinal(R.array.wake_up);
-        mMainManager.stopAll(wakeUp);
+        mySynthesizer.stop();
+        mySynthesizer.speak(wakeUp);
     }
 
     @Override
@@ -1045,7 +1156,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                     }
                 }
             }
-            mMainManager.onlineResult(unicode);
+            mSoundPresenter.onlineResult(unicode);
         }
     }
 
@@ -1167,7 +1278,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void spakeMove(SpecialType type, String result) {
-        mMainManager.onCompleted();
+        onCompleted();
         switch (type) {
             case Forward:
                 sendOrder(SerialService.DEV_BAUDRATE, "A5038002AA");
@@ -1212,14 +1323,22 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void onCompleted() {
-        mMainManager.onCompleted();
+
     }
 
     @Override
     public void noAnswer(String question) {
-        Print.e("noAnswer : " + question);
         String identifier = UserInfo.getInstance().getIdentifier();
         youtucode.requestProblem(identifier, question, id);
+    }
+
+    @Override
+    public void setSpeech(boolean speech) {
+        if (speech) {
+            startRecognizerListener(false);
+        } else {
+            stopRecognizerListener();
+        }
     }
 
 
@@ -1235,12 +1354,12 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         if (requestProblem.getCode() == 2) {//添加成功
             Print.e(requestProblem.getMsg());
 
-            mMainManager.sendMessage(identifier, requestProblem.getQuestion());
+            mChatPresenter.sendServerMessage(identifier, requestProblem.getQuestion());
             onCompleted();
         } else if (requestProblem.getCode() == 0) {//已经添加过，有答案
             RequestProblem.AnswerBean answerBean = requestProblem.getAnswerBean();
             if (answerBean == null) {
-                mMainManager.sendMessage(identifier, requestProblem.getQuestion());
+                mChatPresenter.sendServerMessage(identifier, requestProblem.getQuestion());
                 onCompleted();
                 return;
             }
@@ -1248,13 +1367,13 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             String anwer = answerBean.getAnswer();
             id = answerBean.getId();
             if (anwer == null || anwer.length() < 1) {
-                mMainManager.sendMessage(identifier, requestProblem.getQuestion());
+                mChatPresenter.sendServerMessage(identifier, requestProblem.getQuestion());
                 onCompleted();
             } else {
                 addSpeakAnswer(requestProblem.getQuestion(), anwer, true, false);
             }
         } else {
-            mMainManager.sendMessage(identifier, requestProblem.getQuestion());
+            mChatPresenter.sendServerMessage(identifier, requestProblem.getQuestion());
             onError(requestProblem.getCode(), requestProblem.getMsg());
             onCompleted();
         }

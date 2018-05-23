@@ -90,6 +90,8 @@ public class IatListener implements RecognizerListener {
     @Override
     public void onResult(RecognizerResult recognizerResult, boolean isHas) {
 
+        Print.e("RecognizerResult : " + recognizerResult.getResultString());
+
         JSONTokener tokener = new JSONTokener(recognizerResult.getResultString());
         int sn;
         try {

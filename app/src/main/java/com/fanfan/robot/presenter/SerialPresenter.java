@@ -46,7 +46,6 @@ public class SerialPresenter extends ISerialPresenter {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Print.e("send " + motion);
                 SerialBean serialBean = new SerialBean();
                 serialBean.setBaudRate(type);
                 serialBean.setMotion(motion);

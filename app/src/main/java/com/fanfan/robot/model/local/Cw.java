@@ -43,4 +43,10 @@ public class Cw {
         return w;
     }
 
+    @Override
+    public String toString() {
+        return "Cw{" +
+                "w='" + w + '\'' +
+                '}';
+    }
 }

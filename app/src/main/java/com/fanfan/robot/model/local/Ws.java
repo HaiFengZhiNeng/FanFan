@@ -32,4 +32,10 @@ public class Ws {
         return cw;
     }
 
+    @Override
+    public String toString() {
+        return "Ws{" +
+                " cw=" + cw +
+                '}';
+    }
 }

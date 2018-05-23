@@ -309,7 +309,7 @@ public class CameraSerivice extends Service implements SurfaceHolder.Callback, C
                 EventBus.getDefault().post(event.setEvent(200, faceNumber));
             }
         } else {
-            Print.e("no face");
+            Print.i("no face");
         }
 
         copyBitmap.recycle();

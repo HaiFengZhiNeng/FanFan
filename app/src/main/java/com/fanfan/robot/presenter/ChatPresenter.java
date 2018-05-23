@@ -351,7 +351,7 @@ public class ChatPresenter extends IChatPresenter implements Observer {
     }
 
     @Override
-    public void sendServerMessage(String question) {
+    public void sendServerMessage(String identifier, String question) {
         final TIMMessage msg = new TIMMessage();
 
         //添加文本内容

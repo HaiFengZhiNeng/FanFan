@@ -140,4 +140,7 @@
     <string name="permission_btn_next">下一步</string>
     <string name="permission_go_to_setting">去设置</string>
 
+    <string name="tts_toast_format_buffer" formatted="false">缓冲进度为%d%%</string>
+    <string name="tts_toast_format_speak" formatted="false">播放进度为%d%%</string>
+
 </resources>

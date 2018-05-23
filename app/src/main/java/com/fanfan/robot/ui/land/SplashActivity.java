@@ -40,7 +40,6 @@ import com.fanfan.novel.utils.permiss.HiPermission;
 import com.fanfan.novel.utils.permiss.PermissionCallback;
 import com.fanfan.robot.R;
 import com.fanfan.robot.ui.main.MainActivity;
-import com.fanfan.robot.ui.main.MainNewActivity;
 import com.seabreeze.log.Print;
 import com.tencent.TIMCallBack;
 import com.tencent.ilivesdk.ILiveCallBack;
@@ -322,11 +321,11 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
                 startService(new Intent(SplashActivity.this, UdpService.class));
                 startService(new Intent(SplashActivity.this, SerialService.class));
                 Intent intent;
-                if (Constants.isTrain) {
-                    intent = new Intent(SplashActivity.this, MainNewActivity.class);
-                } else {
+//                if (Constants.isTrain) {
+//                    intent = new Intent(SplashActivity.this, MainNewActivity.class);
+//                } else {
                     intent = new Intent(SplashActivity.this, MainActivity.class);
-                }
+//                }
                 startActivity(intent);
 
                 finish();

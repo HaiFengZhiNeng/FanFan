@@ -5,7 +5,6 @@ import com.fanfan.robot.presenter.LocalSoundPresenter;
 import com.fanfan.robot.presenter.SerialPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILocalSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ISerialPresenter;
-import com.fanfan.robot.dagger.manager.SimpleManager;
 
 import dagger.Module;
 import dagger.Provides;
@@ -33,9 +32,9 @@ public class SimpleModule {
         return new SerialPresenter((ISerialPresenter.ISerialView) baseView);
     }
 
-    @Provides
-    public SimpleManager provideMainManager(LocalSoundPresenter localSoundPresenter, SerialPresenter serialPresenter) {
-        return new SimpleManager(localSoundPresenter, serialPresenter);
-    }
+//    @Provides
+//    public SimpleManager provideMainManager(LocalSoundPresenter localSoundPresenter, SerialPresenter serialPresenter) {
+//        return new SimpleManager(localSoundPresenter, serialPresenter);
+//    }
 
 }

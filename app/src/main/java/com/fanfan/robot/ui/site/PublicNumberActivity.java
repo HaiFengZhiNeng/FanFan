@@ -44,7 +44,8 @@ import butterknife.BindView;
  * Created by android on 2018/1/6.
  */
 
-public class PublicNumberActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
+public class PublicNumberActivity extends BarBaseActivity implements
+        ILocalSoundPresenter.ILocalSoundView,
         ISerialPresenter.ISerialView {
 
     @BindView(R.id.iv_splash_back)
@@ -143,22 +144,18 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        mSoundPresenter.startRecognizerListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
+        mSoundPresenter.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
     }
 
     @Override
@@ -257,13 +254,6 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         finish();
     }
@@ -308,9 +298,7 @@ public class PublicNumberActivity extends BarBaseActivity implements ILocalSound
     @Override
     public void stopAll() {
         super.stopAll();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
         addSpeakAnswer("识别图中二维码");
 //        mSoundPresenter.doAnswer(resFoFinal(R.array.wake_up));
     }

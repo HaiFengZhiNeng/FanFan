@@ -5,8 +5,6 @@ import android.text.TextUtils;
 
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.enums.SpecialType;
-import com.fanfan.robot.model.hotword.HotWord;
-import com.fanfan.robot.model.hotword.Userword;
 import com.fanfan.robot.model.xf.Telephone;
 import com.fanfan.robot.model.xf.Cookbook;
 import com.fanfan.robot.model.xf.Flight;
@@ -25,10 +23,7 @@ import com.fanfan.robot.model.xf.story.Story;
 import com.fanfan.robot.model.xf.train.Train;
 import com.fanfan.robot.model.xf.wordFinding.WordFinding;
 import com.fanfan.robot.listener.base.AiuiListener;
-import com.fanfan.robot.listener.base.IatListener;
-import com.fanfan.novel.utils.system.AppUtil;
 import com.fanfan.novel.utils.media.AudioUtil;
-import com.fanfan.novel.utils.system.FileUtil;
 import com.fanfan.novel.utils.FucUtil;
 import com.fanfan.novel.utils.SpecialUtils;
 import com.fanfan.novel.utils.music.MediaPlayerUtil2;
@@ -37,18 +32,9 @@ import com.fanfan.novel.utils.tele.TelePhoneUtils;
 import com.fanfan.novel.utils.youdao.TranslateData;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
-import com.fanfan.youtu.utils.GsonUtil;
 import com.iflytek.aiui.AIUIAgent;
 import com.iflytek.aiui.AIUIConstant;
 import com.iflytek.aiui.AIUIMessage;
-import com.iflytek.cloud.ErrorCode;
-import com.iflytek.cloud.GrammarListener;
-import com.iflytek.cloud.InitListener;
-import com.iflytek.cloud.LexiconListener;
-import com.iflytek.cloud.SpeechConstant;
-import com.iflytek.cloud.SpeechError;
-import com.iflytek.cloud.SpeechRecognizer;
-import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 import com.youdao.sdk.app.Language;
 import com.youdao.sdk.app.LanguageUtils;
@@ -58,8 +44,6 @@ import com.youdao.sdk.ydonlinetranslate.TranslateParameters;
 import com.youdao.sdk.ydonlinetranslate.Translator;
 import com.youdao.sdk.ydtranslate.Translate;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -67,76 +51,38 @@ import java.util.Random;
  * Created by android on 2017/12/18.
  */
 
-public class LineSoundPresenter extends ILineSoundPresenter implements IatListener.RecognListener,
+public class LineSoundPresenter extends ILineSoundPresenter implements
+//        IatListener.RecognListener,
         AiuiListener.AiListener {
-
-    private static final String GRAMMAR_BNF = "bnf";
-    private static final String GRAMMAR_ABNF = "abnf";
-
-    private static final String LOCAL_GRAMMAR_NAME = "local";
-    private static final String GRAMMAR_LOCAL_FILE_NAME = "local.bnf";
-    private static final String GRAMMAR_CLOUD_FILE_NAME = "abnf.abnf";
-
-    private static final String STANDARD_TEXT_ENCODING = "utf-8";
 
     private static final String ASSESTS_AIUI_CFG = "cfg/aiui_phone.cfg";
 
     private ILineSoundView mSoundView;
 
-    private SpeechRecognizer mIat;
     private AIUIAgent mAIUIAgent;
 
-    private IatListener mIatListener;
     private AiuiListener aiuiListener;
 
-    //    private boolean isMedia;
     private boolean isTrans;
 
     private String mOtherText;
-
-    private boolean isOpening;
 
     public LineSoundPresenter(ILineSoundView baseView) {
         super(baseView);
         mSoundView = baseView;
 
-        mIatListener = new IatListener(this);
         aiuiListener = new AiuiListener((Activity) mSoundView.getContext(), this);
-
-
     }
 
     @Override
     public void start() {
         initAiui();
-        initIat();
     }
 
     @Override
     public void finish() {
         if (mAIUIAgent != null) {
             mAIUIAgent.destroy();
-        }
-        if (mIat != null) {
-            mIat.cancel();
-        }
-        aiuiListener = null;
-        mIatListener = null;
-    }
-
-    @Override
-    public void initIat() {
-
-        if (mIat == null) {
-            mIat = SpeechRecognizer.createRecognizer(mSoundView.getContext(), new InitListener() {
-                @Override
-                public void onInit(int code) {
-                    if (code != ErrorCode.SUCCESS) {
-                        Print.e("初始化失败，错误码：" + code);
-                    }
-                    Print.e("local initIat success");
-                }
-            });
         }
     }
 
@@ -146,135 +92,6 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         mAIUIAgent = AIUIAgent.createAgent(mSoundView.getContext(), params, aiuiListener);
         AIUIMessage startMsg = new AIUIMessage(AIUIConstant.CMD_START, 0, 0, null, null);
         mAIUIAgent.sendMessage(startMsg);
-    }
-
-
-    @Override
-    public void buildIat() {
-        if (mIat == null) {
-            initIat();
-        }
-        if (RobotInfo.getInstance().isInitialization()) {
-            startRecognizerListener(false);
-        } else {
-            structure();
-        }
-    }
-
-    private void structure() {
-        String grammarType;
-        String content;
-        if (RobotInfo.getInstance().isCloudBuild()) {
-            RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_LOCAL);
-            if (!RobotInfo.getInstance().isLocalBuild()) {
-                mIat.setParameter(SpeechConstant.PARAMS, null);
-                mIat.setParameter(SpeechConstant.ENGINE_TYPE, RobotInfo.getInstance().getEngineType());
-                mIat.setParameter(SpeechConstant.TEXT_ENCODING, STANDARD_TEXT_ENCODING);
-                FileUtil.mkdir(Constants.GRM_PATH);
-                mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
-                mIat.setParameter(ResourceUtil.ASR_RES_PATH, FucUtil.getResAsrPath(mSoundView.getContext()));
-                mIat.setParameter(SpeechConstant.LOCAL_GRAMMAR, LOCAL_GRAMMAR_NAME);
-                mIat.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
-                content = FucUtil.readFile(mSoundView.getContext(), GRAMMAR_LOCAL_FILE_NAME, STANDARD_TEXT_ENCODING);
-                grammarType = GRAMMAR_BNF;
-                mIat.buildGrammar(grammarType, content, mGrammarListener);
-            }
-
-        } else {
-            mIat.setParameter(SpeechConstant.PARAMS, null);
-            mIat.setParameter(SpeechConstant.ENGINE_TYPE, RobotInfo.getInstance().getEngineType());
-            mIat.setParameter(SpeechConstant.TEXT_ENCODING, STANDARD_TEXT_ENCODING);
-            content = FucUtil.readFile(mSoundView.getContext(), GRAMMAR_CLOUD_FILE_NAME, STANDARD_TEXT_ENCODING);
-            grammarType = GRAMMAR_ABNF;
-            mIat.buildGrammar(grammarType, content, mGrammarListener);
-        }
-        if (RobotInfo.getInstance().isCloudBuild() && RobotInfo.getInstance().isLocalBuild() &&
-                RobotInfo.getInstance().isCloudUpdatelexicon() && RobotInfo.getInstance().isLocalUpdatelexicon()) {
-            RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
-            RobotInfo.getInstance().setInitialization(true);
-            buildIat();
-        }
-    }
-
-    private void updateLocation(String lexiconName, String lexiconContents) {
-        mIat.setParameter(SpeechConstant.PARAMS, null);
-        if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_CLOUD)) {
-            mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8");
-        } else if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_LOCAL)) {
-            mIat.setParameter(SpeechConstant.ENGINE_TYPE, RobotInfo.getInstance().getEngineType());
-            mIat.setParameter(ResourceUtil.ASR_RES_PATH, FucUtil.getResAsrPath(mSoundView.getContext()));
-            mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
-            mIat.setParameter(SpeechConstant.GRAMMAR_LIST, LOCAL_GRAMMAR_NAME);
-            mIat.setParameter(SpeechConstant.TEXT_ENCODING, STANDARD_TEXT_ENCODING);
-        }
-        mIat.updateLexicon(lexiconName, lexiconContents, mLexiconListener);
-    }
-
-    @Override
-    public void startRecognizerListener(boolean focus) {
-        if (isOpening) {
-            setIatparameter(focus);
-            mIat.startListening(mIatListener);
-            Print.e("startListening ...");
-        }
-    }
-
-    private void setIatparameter(boolean focus) {
-        if (mIat == null) {
-            return;
-        }
-        mIat.setParameter(SpeechConstant.PARAMS, null);
-        mIat.setParameter(SpeechConstant.ENGINE_TYPE, RobotInfo.getInstance().getEngineType());
-
-        //麦克风阵列开启远场识别
-        mIat.setParameter("domain", "fariat");
-        mIat.setParameter("aue", "speex-wb;10");
-
-        if (!RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_CLOUD)) {
-            if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_LOCAL)) {
-                mIat.setParameter(ResourceUtil.ASR_RES_PATH, FucUtil.getResAsrPath(mSoundView.getContext()));
-                mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
-                mIat.setParameter(SpeechConstant.LOCAL_GRAMMAR, LOCAL_GRAMMAR_NAME);
-                mIat.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
-            }
-        }
-        mIat.setParameter(SpeechConstant.RESULT_TYPE, "json");
-
-        if (RobotInfo.getInstance().isTranslateEnable()) {
-            mIat.setParameter(SpeechConstant.ASR_SCH, "1");
-            mIat.setParameter(SpeechConstant.ADD_CAP, "translate");
-            mIat.setParameter(SpeechConstant.TRS_SRC, "its");
-        }
-
-        mIat.setParameter(SpeechConstant.LANGUAGE, RobotInfo.getInstance().getLineLanguage());
-        // 设置语言区域
-        mIat.setParameter(SpeechConstant.ACCENT, RobotInfo.getInstance().getIatLineLanguage());
-
-        //英语转中文     是中文不用转
-        if (RobotInfo.getInstance().isTranslateEnable()) {
-            mIat.setParameter(SpeechConstant.ORI_LANG, "en");
-            mIat.setParameter(SpeechConstant.TRANS_LANG, "cn");
-        }
-
-        // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
-        mIat.setParameter(SpeechConstant.VAD_BOS, "9000");
-        // 设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入， 自动停止录音
-        mIat.setParameter(SpeechConstant.VAD_EOS, "1000");
-        // 设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
-        mIat.setParameter(SpeechConstant.ASR_PTT, "0");
-        // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
-        mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
-        mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Constants.GRM_PATH + File.separator + "iat.wav");
-        mIat.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, String.valueOf(focus));
-        Print.e("initIat success ...");
-    }
-
-    @Override
-    public void stopRecognizerListener() {
-        if (mIat != null) {
-//            mIat.startListening(null);
-//            mIat.stopListening();
-        }
     }
 
     @Override
@@ -297,7 +114,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         } else if (specialType == SpecialType.Joke) {
             aiuiWriteText(result);
         } else if (specialType == SpecialType.StopListener) {
-            setSpeech(false);
+            mSoundView.setSpeech(false);
         } else if (specialType == SpecialType.Fanfan || specialType == SpecialType.Video
                 || specialType == SpecialType.Problem || specialType == SpecialType.Face
                 || specialType == SpecialType.Seting_up || specialType == SpecialType.Public_num
@@ -332,84 +149,6 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     public void stopVoice() {
         MediaPlayerUtil2.getInstance().stopMusic();
     }
-
-
-    @Override
-    public void setSpeech(boolean speech) {
-        if (speech) {
-            startRecognizerListener(false);
-        } else {
-            stopRecognizerListener();
-        }
-    }
-
-    @Override
-    public void setOpening(boolean isOpen) {
-        isOpening = isOpen;
-    }
-
-    //**********************************************************************************************
-    @Override
-    public void onTranslate(String result) {
-        Print.e("!!!!---- " + result);
-        stopRecognizerListener();
-        mSoundView.aiuiForLocal(result);
-    }
-
-    @Override
-    public void onRecognResult(String result) {
-        Print.e("!!!!---- " + result);
-        stopRecognizerListener();
-        startRecognizerListener(false);
-        mSoundView.aiuiForLocal(result);
-    }
-
-    @Override
-    public void onErrInfo(int errorCode) {
-        Print.e("onRecognDown total error ：" + errorCode);
-//        switch (errorCode) {
-//            case 10118:
-//                startRecognizerListener();
-//                break;
-//            case 20006:
-//                startRecognizerListener();
-//                break;
-//            case 10114:
-//                startRecognizerListener();
-//                break;
-//            case 10108:
-//                Print.e("网络差");
-//                startRecognizerListener();
-//                break;
-//            case 20005:
-//                Print.e("本地暂无此命令词");
-//                startRecognizerListener();
-//                break;
-//            case 11201:
-//                Print.e("授权不足");
-//                mSoundView.showMsg("授权不足");
-//                break;
-//            case 12404:
-//                startRecognizerListener();
-//                break;
-//            case 10700:
-//                startRecognizerListener();
-//                break;
-//        }
-        startRecognizerListener(false);
-    }
-
-    @Override
-    public void onRecognDown() {
-        startRecognizerListener(false);
-    }
-
-    @Override
-    public void onLevelSmall() {
-
-    }
-
-    //**********************************************************************************************
 
     @Override
     public void onDoAnswer(String question, String finalText) {
@@ -673,7 +412,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
     }
 
     @Override
-    public void onDoAnswer(String question, String     finalText, EnglishEveryday englishEveryday) {
+    public void onDoAnswer(String question, String finalText, EnglishEveryday englishEveryday) {
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
@@ -912,60 +651,4 @@ public class LineSoundPresenter extends ILineSoundPresenter implements IatListen
         MediaPlayerUtil2.getInstance().playMusic(url);
     }
 
-    private GrammarListener mGrammarListener = new GrammarListener() {
-        @Override
-        public void onBuildFinish(String grammarId, SpeechError error) {
-            if (error == null) {
-                if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_LOCAL)) {
-                    if (RobotInfo.getInstance().isLocalUpdatelexicon()) {
-                        RobotInfo.getInstance().setLocalBuild();
-                        structure();
-                    } else {
-                        String lexiconContents = AppUtil.words2Contents();
-                        updateLocation("voice", lexiconContents);
-                    }
-                } else if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_CLOUD)) {
-
-                    if (!RobotInfo.getInstance().isCloudUpdatelexicon()) {
-                        List<String> words = AppUtil.getLocalStrings();
-
-                        Userword userword = new Userword();
-                        userword.setName("userword");
-                        userword.setWords(words);
-                        List<Userword> userwordList = new ArrayList<>();
-                        userwordList.add(userword);
-                        HotWord hotWord = new HotWord(userwordList);
-
-                        updateLocation("userword", GsonUtil.GsonString(hotWord));
-                    } else {
-                        RobotInfo.getInstance().setCloudBuild();
-                        structure();
-                    }
-                }
-            } else {
-                Print.e("语法构建失败,错误码：" + error.getErrorCode());
-            }
-        }
-    };
-
-
-    private LexiconListener mLexiconListener = new LexiconListener() {
-        @Override
-        public void onLexiconUpdated(String s, SpeechError error) {
-            if (error == null) {
-
-                if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_CLOUD)) {
-                    RobotInfo.getInstance().setCloudBuild();
-                    RobotInfo.getInstance().setCloudUpdatelexicon();
-                    structure();
-                } else if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_LOCAL)) {
-                    RobotInfo.getInstance().setLocalBuild();
-                    RobotInfo.getInstance().setLocalUpdatelexicon();
-                    structure();
-                }
-            } else {
-                Print.e("词典更新失败,错误码：" + error.getErrorCode());
-            }
-        }
-    };
 }

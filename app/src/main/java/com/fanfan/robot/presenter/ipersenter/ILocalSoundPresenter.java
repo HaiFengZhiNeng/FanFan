@@ -16,25 +16,15 @@ public abstract class ILocalSoundPresenter implements BasePresenter {
         mBaseView = baseView;
     }
 
-    public abstract void initTts();
-
-    public abstract void buildTts();
-
-    public abstract void initIat();
-
-    public abstract void buildIat();
-
-    public abstract void stopTts();
-
     public abstract void doAnswer(String answer);
 
-    public abstract void startRecognizerListener();
+    public abstract void onResume();
 
-    public abstract void stopRecognizerListener();
+    public abstract void onPause();
 
-    public abstract void stopAll();
+    public abstract void stopEvery();
 
-    public abstract void stopHandler();
+    public abstract void onCompleted();
 
     public interface ILocalSoundView extends BaseView {
 
@@ -59,7 +49,7 @@ public abstract class ILocalSoundPresenter implements BasePresenter {
         /**
          * 停止监听
          */
-        void stopListener();
+//        void stopListener();
 
         /**
          * 返回

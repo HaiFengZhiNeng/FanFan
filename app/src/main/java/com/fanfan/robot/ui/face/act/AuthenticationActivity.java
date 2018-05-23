@@ -23,6 +23,8 @@ import com.fanfan.robot.model.Alarm;
 import com.fanfan.robot.model.PersonInfo;
 import com.fanfan.robot.model.SerialBean;
 import com.fanfan.robot.presenter.CameraPresenter;
+import com.fanfan.robot.presenter.LocalSoundPresenter;
+import com.fanfan.robot.presenter.SerialPresenter;
 import com.fanfan.robot.presenter.ipersenter.ICameraPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILocalSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ISerialPresenter;
@@ -33,7 +35,6 @@ import com.fanfan.robot.other.udp.SocketManager;
 import com.fanfan.novel.utils.bitmap.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.dagger.componet.DaggerSimpleComponet;
-import com.fanfan.robot.dagger.manager.SimpleManager;
 import com.fanfan.robot.dagger.module.SimpleModule;
 import com.fanfan.robot.presenter.FaceVerifPresenter;
 import com.fanfan.robot.presenter.HsOtgPresenter;
@@ -171,10 +172,8 @@ public class AuthenticationActivity extends BarBaseActivity implements
     private FaceVerifPresenter mFaceVerifPresenter;
     private HsOtgPresenter mHsOtgPresenter;
 
-    @Inject
-    SimpleManager mSimpleManager;
-//    private LocalSoundPresenter mSoundPresenter;
-//    private SerialPresenter mSerialPresenter;
+    private LocalSoundPresenter mSoundPresenter;
+    private SerialPresenter mSerialPresenter;
 
     private PersonInfo personInfo;
     private Bitmap bitmapB;
@@ -196,12 +195,17 @@ public class AuthenticationActivity extends BarBaseActivity implements
 
         mCameraPresenter = new CameraPresenter(this, holder);
         mFaceVerifPresenter = new FaceVerifPresenter(this);
+        mSoundPresenter = new LocalSoundPresenter(this);
+        mSerialPresenter = new SerialPresenter(this);
 
         mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
 
         DaggerSimpleComponet.builder().simpleModule(new SimpleModule(this)).build().inject(this);
 
-        mSimpleManager.onCreate();
+
+        mSoundPresenter.start();
+        mSerialPresenter.start();
+
 
         mHsOtgPresenter = new HsOtgPresenter(this);
         mHsOtgPresenter.start();
@@ -239,8 +243,6 @@ public class AuthenticationActivity extends BarBaseActivity implements
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        mSimpleManager.onStart();
-
         mFaceVerifPresenter.start();
         mHsOtgPresenter.onStart();
     }
@@ -248,13 +250,13 @@ public class AuthenticationActivity extends BarBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        mSimpleManager.onResume();
+        mSoundPresenter.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mSimpleManager.onPause();
+        mSoundPresenter.onPause();
         mCameraPresenter.closeCamera();
     }
 
@@ -271,14 +273,14 @@ public class AuthenticationActivity extends BarBaseActivity implements
         mHandler.removeCallbacks(testRun);
         super.onDestroy();
         mHsOtgPresenter.finish();
-        mSimpleManager.onDestroy();
+        mSoundPresenter.finish();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onResultEvent(ServiceToActivityEvent event) {
         if (event.isOk()) {
             SerialBean serialBean = event.getBean();
-            mSimpleManager.onDataReceiverd(serialBean);
+            mSerialPresenter.onDataReceiverd(serialBean);
         } else {
             Print.e("ReceiveEvent error");
         }
@@ -300,15 +302,15 @@ public class AuthenticationActivity extends BarBaseActivity implements
     }
 
     private void addSpeakAnswer(String messageContent) {
-        mSimpleManager.doAnswer(messageContent);
+        mSoundPresenter.doAnswer(messageContent);
     }
 
     private void addSpeakAnswer(int res) {
-        mSimpleManager.doAnswer(getResources().getString(res));
+        mSoundPresenter.doAnswer(getResources().getString(res));
     }
 
     private void sendOrder(int type, String motion) {
-        mSimpleManager.receiveMotion(type, motion);
+        mSerialPresenter.receiveMotion(type, motion);
     }
 
     @Override
@@ -525,7 +527,7 @@ public class AuthenticationActivity extends BarBaseActivity implements
     //**********************************************************************************************
     @Override
     public void spakeMove(SpecialType type, String result) {
-        mSimpleManager.onCompleted();
+        mSoundPresenter.onCompleted();
         switch (type) {
             case Forward:
                 sendOrder(SerialService.DEV_BAUDRATE, "A5038002AA");
@@ -545,11 +547,6 @@ public class AuthenticationActivity extends BarBaseActivity implements
     @Override
     public void openMap() {
         addSpeakAnswer(R.string.open_map);
-    }
-
-    @Override
-    public void stopListener() {
-        mSimpleManager.stopVoice();
     }
 
     @Override
@@ -585,8 +582,8 @@ public class AuthenticationActivity extends BarBaseActivity implements
     @Override
     public void stopAll() {
         super.stopAll();
-        mSimpleManager.stopVoice();
-        mSimpleManager.doAnswer(resFoFinal(R.array.wake_up));
+        mSoundPresenter.stopEvery();
+        mSoundPresenter.doAnswer(resFoFinal(R.array.wake_up));
     }
 
     @Override

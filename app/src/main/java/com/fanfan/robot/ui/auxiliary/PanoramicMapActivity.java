@@ -28,7 +28,8 @@ import butterknife.OnClick;
 /**
  * 全景地图页面
  */
-public class PanoramicMapActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView {
+public class PanoramicMapActivity extends BarBaseActivity implements
+        ILocalSoundPresenter.ILocalSoundView {
 
     @BindView(R.id.vr_panorama_view)
     VrPanoramaView mVrPanoramaView;
@@ -120,7 +121,7 @@ public class PanoramicMapActivity extends BarBaseActivity implements ILocalSound
         super.onResume();
         mVrPanoramaView.resumeRendering();
 
-        mSoundPresenter.buildTts();
+        mSoundPresenter.onResume();
 
         addSpeakAnswer("你好，这里是全景地图页面");
     }
@@ -130,9 +131,7 @@ public class PanoramicMapActivity extends BarBaseActivity implements ILocalSound
         super.onPause();
         mVrPanoramaView.pauseRendering();
 
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
     }
 
     @Override
@@ -193,13 +192,6 @@ public class PanoramicMapActivity extends BarBaseActivity implements ILocalSound
     @Override
     public void openMap() {
         addSpeakAnswer(R.string.open_map);
-    }
-
-    @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
     }
 
     @Override

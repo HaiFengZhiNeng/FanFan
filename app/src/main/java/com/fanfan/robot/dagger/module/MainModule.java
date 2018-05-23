@@ -3,11 +3,9 @@ package com.fanfan.robot.dagger.module;
 import com.fanfan.robot.app.common.presenter.BaseView;
 import com.fanfan.robot.presenter.ChatPresenter;
 import com.fanfan.robot.presenter.SerialPresenter;
-import com.fanfan.robot.presenter.SynthesizerPresenter;
 import com.fanfan.robot.presenter.ipersenter.IChatPresenter;
 import com.fanfan.robot.presenter.ipersenter.ISerialPresenter;
 import com.fanfan.robot.presenter.ipersenter.ISynthesizerPresenter;
-import com.fanfan.robot.dagger.manager.MainManager;
 import com.fanfan.robot.presenter.LineSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 
@@ -42,16 +40,16 @@ public class MainModule {
         return new SerialPresenter((ISerialPresenter.ISerialView) baseView);
     }
 
-    @Provides
-    public SynthesizerPresenter providerSynthesizer() {
-        return new SynthesizerPresenter((ISynthesizerPresenter.ITtsView) baseView);
-    }
+//    @Provides
+//    public SynthesizerPresenter providerSynthesizer() {
+//        return new SynthesizerPresenter((ISynthesizerPresenter.ITtsView) baseView);
+//    }
 
-    @Provides
-    public MainManager provideMainManager(ChatPresenter chatPresenter, SerialPresenter serialPresenter,
-                                          SynthesizerPresenter synthesizerPresenter,
-                                          LineSoundPresenter lineSoundPresenter) {
-        return new MainManager(chatPresenter, serialPresenter, synthesizerPresenter, lineSoundPresenter);
-    }
+//    @Provides
+//    public MainManager provideMainManager(ChatPresenter chatPresenter, SerialPresenter serialPresenter,
+//                                          SynthesizerPresenter synthesizerPresenter,
+//                                          LineSoundPresenter lineSoundPresenter) {
+//        return new MainManager(chatPresenter, serialPresenter, synthesizerPresenter, lineSoundPresenter);
+//    }
 
 }

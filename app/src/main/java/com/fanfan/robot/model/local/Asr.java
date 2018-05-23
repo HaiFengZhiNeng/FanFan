@@ -62,4 +62,13 @@ public class Asr {
     public int getSc() {
         return sc;
     }
+
+    @Override
+    public String toString() {
+        return "Asr{" +
+                "sn=" + sn +
+                ", ls=" + ls +
+                ", ws=" + ws +
+                '}';
+    }
 }

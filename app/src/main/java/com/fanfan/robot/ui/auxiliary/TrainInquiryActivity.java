@@ -51,7 +51,8 @@ import butterknife.OnClick;
  * Created by Administrator on 2018/3/7/007.
  */
 
-public class TrainInquiryActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
+public class TrainInquiryActivity extends BarBaseActivity implements
+        ILocalSoundPresenter.ILocalSoundView,
         ISerialPresenter.ISerialView {
     public static final DateFormat FORMATTER = SimpleDateFormat.getDateInstance();
     private static final int REQUEST_CODE_LEFT = 200;
@@ -429,7 +430,7 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
+        mSoundPresenter.onResume();
         addSpeakAnswer("你好，这里是列车查询页面");
     }
 
@@ -437,10 +438,7 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
     protected void onPause() {
         super.onPause();
         stopAction();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-
+        mSoundPresenter.onPause();
     }
 
 
@@ -503,9 +501,7 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
     public void stopAll() {
         super.stopAll();
         stopAction();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
     }
 
     @Override
@@ -526,13 +522,6 @@ public class TrainInquiryActivity extends BarBaseActivity implements ILocalSound
     @Override
     public void openMap() {
 
-    }
-
-    @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
     }
 
     @Override

@@ -5,11 +5,16 @@ import android.media.AudioManager;
 import android.os.Environment;
 import android.os.Handler;
 
-import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.enums.SpecialType;
+import com.fanfan.robot.listener.base.recog.AlarmListener;
+import com.fanfan.robot.listener.base.recog.IRecogListener;
+import com.fanfan.robot.listener.base.recog.local.MyRecognizerLocal;
+import com.fanfan.robot.listener.base.synthesizer.EarListener;
+import com.fanfan.robot.listener.base.synthesizer.ISynthListener;
+import com.fanfan.robot.listener.base.synthesizer.cloud.MySynthesizer;
+import com.fanfan.robot.listener.base.synthesizer.local.MySynthesizerLocal;
+import com.fanfan.robot.model.local.Asr;
 import com.fanfan.robot.presenter.ipersenter.ILocalSoundPresenter;
-import com.fanfan.robot.listener.base.IatListener;
-import com.fanfan.robot.listener.base.TtsListener;
 import com.fanfan.robot.other.stragry.TranficCalculator;
 import com.fanfan.robot.other.stragry.local.ArtificialStrategy;
 import com.fanfan.robot.other.stragry.local.BackStrategy;
@@ -20,7 +25,6 @@ import com.fanfan.robot.other.stragry.local.MapStrategy;
 import com.fanfan.robot.other.stragry.local.MoveStrategy;
 import com.fanfan.robot.other.stragry.local.StopStrategy;
 import com.fanfan.novel.utils.FucUtil;
-import com.fanfan.robot.R;
 import com.fanfan.robot.app.RobotInfo;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
@@ -30,168 +34,92 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
 
-import java.io.File;
 import java.util.Random;
 
 /**
  * Created by android on 2017/12/20.
  */
 
-public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsListener.SynListener, IatListener.RecognListener {
-
-    private static final String LOCAL_GRAMMAR_NAME = "local";
+public class LocalSoundPresenter extends ILocalSoundPresenter {
 
     private ILocalSoundPresenter.ILocalSoundView mSoundView;
 
-    private SpeechSynthesizer mTts;
-    private SpeechRecognizer mIat;
-
-    private TtsListener mTtsListener;
-    private IatListener mIatListener;
-
     private Handler mHandler = new Handler();
+
+    private MyRecognizerLocal myRecognizer;
+    private MySynthesizerLocal mySynthesizer;
 
     public LocalSoundPresenter(ILocalSoundView baseView) {
         super(baseView);
         mSoundView = baseView;
-
-        mTtsListener = new TtsListener(this);
-        mIatListener = new IatListener(this);
     }
 
     @Override
     public void start() {
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_LOCAL);
-        initTts();
-        initIat();
+
+        ISynthListener iSynthListener = new EarListener() {
+            @Override
+            public void onCompleted() {
+                super.onCompleted();
+                LocalSoundPresenter.this.onCompleted();
+            }
+        };
+        mySynthesizer = new MySynthesizerLocal(mSoundView.getContext(), iSynthListener);
+
+        IRecogListener iRecogListener = new AlarmListener() {
+
+            @Override
+            public void onAsrLocalFinalResult(String result) {
+                super.onAsrLocalFinalResult(result);
+                onRecognResult(result);
+            }
+
+            @Override
+            public void onAsrLocalDegreeLow(Asr local, int degree) {
+                super.onAsrLocalDegreeLow(local, degree);
+                onCompleted();
+            }
+
+            @Override
+            public void onAsrFinishError(int errorCode, String errorMessage) {
+                super.onAsrFinishError(errorCode, errorMessage);
+                onCompleted();
+            }
+        };
+        myRecognizer = new MyRecognizerLocal(mSoundView.getContext(), iRecogListener);
     }
 
     @Override
     public void finish() {
         RobotInfo.getInstance().setEngineType(SpeechConstant.TYPE_CLOUD);
-//        mIat.cancel();
-        mTts.destroy();
-        mTtsListener = null;
-        mIatListener = null;
-    }
-
-    @Override
-    public void initTts() {
-        if (mTts == null) {
-            mTts = SpeechSynthesizer.createSynthesizer(mSoundView.getContext(), new InitListener() {
-                @Override
-                public void onInit(int code) {
-                    if (code != ErrorCode.SUCCESS) {
-                        Print.e("初始化失败，错误码：" + code);
-                    }
-                    Print.e("local initTts success");
-                }
-            });
-        }
-    }
-
-    @Override
-    public void buildTts() {
-        if (mTts == null) {
-            throw new NullPointerException(" mTts is null");
-        }
-        mTts.setParameter(SpeechConstant.PARAMS, null);
-        mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
-        mTts.setParameter(ResourceUtil.TTS_RES_PATH, FucUtil.getResTtsPath(mSoundView.getContext(), RobotInfo.getInstance().getTtsLocalTalker()));
-        mTts.setParameter(SpeechConstant.VOICE_NAME, RobotInfo.getInstance().getTtsLocalTalker());
-        mTts.setParameter(SpeechConstant.SPEED, String.valueOf(RobotInfo.getInstance().getLineSpeed()));
-        mTts.setParameter(SpeechConstant.PITCH, "50");
-        mTts.setParameter(SpeechConstant.VOLUME, String.valueOf(RobotInfo.getInstance().getLineVolume()));
-        mTts.setParameter(SpeechConstant.STREAM_TYPE, "" + AudioManager.STREAM_VOICE_CALL);
-        mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "3");
-        mTts.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
-        mTts.setParameter(SpeechConstant.TTS_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/tts.wav");
-
-        //开启VAD
-        mTts.setParameter(SpeechConstant.VAD_ENABLE, "1");
-        //会话最长时间
-        mTts.setParameter(SpeechConstant.KEY_SPEECH_TIMEOUT, "100");
-
-        mTts.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
-    }
-
-    @Override
-    public void initIat() {
-        if (mIat == null) {
-            mIat = SpeechRecognizer.createRecognizer(mSoundView.getContext(), new InitListener() {
-                @Override
-                public void onInit(int code) {
-                    if (code != ErrorCode.SUCCESS) {
-                        Print.e("初始化失败，错误码：" + code);
-                    }
-                    Print.e("local initIat success");
-                }
-            });
-        }
-    }
-
-    @Override
-    public void buildIat() {
-        if (mIat == null) {
-            throw new NullPointerException(" mIat is null");
-        }
-        mIat.setParameter(SpeechConstant.PARAMS, null);
-        mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
-        mIat.setParameter(ResourceUtil.ASR_RES_PATH, FucUtil.getResAsrPath(mSoundView.getContext()));
-        mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
-        mIat.setParameter(SpeechConstant.LOCAL_GRAMMAR, LOCAL_GRAMMAR_NAME);
-        mIat.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
-        mIat.setParameter(SpeechConstant.RESULT_TYPE, "json");
-        mIat.setParameter(SpeechConstant.VAD_BOS, "9000");
-        mIat.setParameter(SpeechConstant.VAD_EOS, "1000");
-        mIat.setParameter(SpeechConstant.ASR_PTT, "0");
-        mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
-        mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Constants.GRM_PATH + File.separator + "iat.wav");
-        Print.e("initIat success ...");
-    }
-
-    @Override
-    public void stopTts() {
-        if (mTts.isSpeaking()) {
-            mTts.stopSpeaking();
-        }
+        mySynthesizer.release();
+        myRecognizer.onDestroy();
     }
 
     @Override
     public void doAnswer(String answer) {
-        stopTts();
-        stopRecognizerListener();
-        mTts.startSpeaking(answer, mTtsListener);
+        stopEvery();
+        mySynthesizer.speak(answer);
     }
 
     @Override
-    public void startRecognizerListener() {
-        mIat.startListening(mIatListener);
+    public void onResume() {
+        mySynthesizer.onResume();
+        myRecognizer.onResume();
     }
 
     @Override
-    public void stopRecognizerListener() {
-        mIat.startListening(null);
-        mIat.stopListening();
+    public void onPause() {
+        stopEvery();
     }
 
     @Override
-    public void stopAll() {
-        stopTts();
-        doAnswer(resFoFinal(R.array.wake_up));
+    public void stopEvery() {
+        mySynthesizer.stop();
+        myRecognizer.stop();
+        stopHandler();
     }
-
-    @Override
-    public void stopHandler() {
-        mHandler.removeCallbacks(runnable);
-    }
-
-    private String resFoFinal(int id) {
-        String[] arrResult = ((Activity) mSoundView).getResources().getStringArray(id);
-        return arrResult[new Random().nextInt(arrResult.length)];
-    }
-
-    //**********************************************************************************************
 
     @Override
     public void onCompleted() {
@@ -201,28 +129,19 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            Print.e("启动监听");
-            buildIat();
-            startRecognizerListener();
+            myRecognizer.start();
             mSoundView.onCompleted();
         }
     };
 
-    @Override
-    public void onSpeakBegin() {
-//        stopRecognizerListener();
+
+    private void stopHandler() {
+        mHandler.removeCallbacks(runnable);
     }
 
-    //**********************************************************************************************
-    @Override
-    public void onTranslate(String result) {
+    private void onRecognResult(String result) {
+        myRecognizer.stop();
 
-    }
-
-    @Override
-    public void onRecognResult(String result) {
-        stopRecognizerListener();
-        Print.e("停止监听");
         Print.e(result);
 
         TranficCalculator calculator = new TranficCalculator();
@@ -244,7 +163,8 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
         }
         myType = calculator.specialLocal(result, new StopStrategy());
         if (SpecialType.NoSpecial != myType) {
-            mSoundView.stopListener();
+
+            stopEvery();
             return;
         }
         myType = calculator.specialLocal(result, new BackStrategy());
@@ -268,45 +188,12 @@ public class LocalSoundPresenter extends ILocalSoundPresenter implements TtsList
             return;
         }
         mSoundView.refLocalPage(result);
-
     }
 
-    @Override
-    public void onErrInfo(int errorCode) {
-        Print.e("onRecognDown total error ：" + errorCode);
-//        switch (errorCode) {
-//            case 10118:
-//                startRecognizerListener();
-//                break;
-//            case 20006:
-//                startRecognizerListener();
-//                break;
-//            case 10114:
-//                startRecognizerListener();
-//                break;
-//            case 10108:
-//                Print.e("网络差");
-//                startRecognizerListener();
-//                break;
-//            case 20005:
-//                Print.e("本地暂无此命令词");
-//                startRecognizerListener();
-//                break;
-//            case 11201:
-//                Print.e("授权不足");
-//                mSoundView.showMsg("授权不足");
-//                break;
-//        }
-        startRecognizerListener();
+
+    private String resFoFinal(int id) {
+        String[] arrResult = ((Activity) mSoundView).getResources().getStringArray(id);
+        return arrResult[new Random().nextInt(arrResult.length)];
     }
 
-    @Override
-    public void onRecognDown() {
-        startRecognizerListener();
-    }
-
-    @Override
-    public void onLevelSmall() {
-        onCompleted();
-    }
 }

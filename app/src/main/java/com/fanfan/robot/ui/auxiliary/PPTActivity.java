@@ -46,7 +46,8 @@ import butterknife.BindView;
  * Created by android on 2018/1/16.
  */
 
-public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
+public class PPTActivity extends BarBaseActivity implements
+        ILocalSoundPresenter.ILocalSoundView,
         ISerialPresenter.ISerialView {
 
     @BindView(R.id.recycler_title)
@@ -149,7 +150,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
+        mSoundPresenter.onResume();
 
         addSpeakAnswer("请点击要播放的ppt", false);
     }
@@ -158,9 +159,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
     protected void onPause() {
         super.onPause();
         stopAction();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
 
     }
 
@@ -287,13 +286,6 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         finish();
     }
@@ -349,9 +341,7 @@ public class PPTActivity extends BarBaseActivity implements ILocalSoundPresenter
     public void stopAll() {
         super.stopAll();
         stopAction();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
     }
 
     @Override

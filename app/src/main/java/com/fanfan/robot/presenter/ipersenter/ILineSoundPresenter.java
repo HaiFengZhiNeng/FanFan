@@ -25,15 +25,15 @@ public abstract class ILineSoundPresenter implements BasePresenter {
         mBaseView = baseView;
     }
 
-    public abstract void initIat();
+//    public abstract void initIat();
 
     public abstract void initAiui();
 
-    public abstract void buildIat();
+//    public abstract void buildIat();
 
-    public abstract void startRecognizerListener(boolean focus);
+//    public abstract void startRecognizerListener(boolean focus);
 
-    public abstract void stopRecognizerListener();
+//    public abstract void stopRecognizerListener();
 
     public abstract void onlineResult(String result);
 
@@ -41,9 +41,9 @@ public abstract class ILineSoundPresenter implements BasePresenter {
 
     public abstract void stopVoice();
 
-    public abstract void setSpeech(boolean speech);
+//    public abstract void setSpeech(boolean speech);
 
-    public abstract void setOpening(boolean isOpen);
+//    public abstract void setOpening(boolean isOpen);
 
     public abstract void playVoice(String url);
 
@@ -91,6 +91,8 @@ public abstract class ILineSoundPresenter implements BasePresenter {
         void onCompleted();
 
         void noAnswer(String question);
+
+        void setSpeech(boolean b);
     }
 
 

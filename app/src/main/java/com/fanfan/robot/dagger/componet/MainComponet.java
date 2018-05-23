@@ -2,7 +2,6 @@ package com.fanfan.robot.dagger.componet;
 
 import com.fanfan.robot.dagger.module.MainModule;
 import com.fanfan.robot.ui.main.MainActivity;
-import com.fanfan.robot.ui.main.MainNewActivity;
 
 import dagger.Component;
 
@@ -15,5 +14,5 @@ public interface MainComponet {
 
     void inject(MainActivity activity);
 
-    void inject(MainNewActivity activity);
+//    void inject(MainNewActivity activity);
 }

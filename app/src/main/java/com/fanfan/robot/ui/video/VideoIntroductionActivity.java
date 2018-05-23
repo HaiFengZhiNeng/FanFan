@@ -52,7 +52,8 @@ import butterknife.OnClick;
  * Created by android on 2018/1/6.
  */
 
-public class VideoIntroductionActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
+public class VideoIntroductionActivity extends BarBaseActivity implements
+        ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
 
     @BindView(R.id.iv_list_hd)
     ImageView ivListHd;
@@ -132,7 +133,7 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
+        mSoundPresenter.onResume();
 
         addSpeakAnswer("你好，这里是视频介绍页面，点击上下方列表或说出视屏名称可播放视频");
     }
@@ -140,9 +141,7 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     @Override
     protected void onPause() {
         super.onPause();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
     }
 
     @Override
@@ -356,13 +355,6 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         finish();
     }
@@ -416,9 +408,7 @@ public class VideoIntroductionActivity extends BarBaseActivity implements ILocal
     @Override
     public void stopAll() {
         super.stopAll();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
         addSpeakAnswer("你好，这里是视频介绍页面，点击上下方列表或说出视屏名称可播放视频");
     }
 

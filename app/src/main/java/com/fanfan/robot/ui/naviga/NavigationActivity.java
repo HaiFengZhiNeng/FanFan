@@ -50,8 +50,10 @@ import butterknife.OnClick;
  * Created by android on 2018/1/6.
  */
 
-public class NavigationActivity extends BarBaseActivity implements ILocalSoundPresenter.ILocalSoundView,
-        ISerialPresenter.ISerialView, RangeClickImageView.OnResourceReadyListener, RangeClickImageView.OnRangeClickListener {
+public class NavigationActivity extends BarBaseActivity implements
+        ILocalSoundPresenter.ILocalSoundView,
+        ISerialPresenter.ISerialView, RangeClickImageView.OnResourceReadyListener,
+        RangeClickImageView.OnRangeClickListener {
 
     //    @BindView(R.id.iv_navigation)
     RangeClickImageView ivNavigation;
@@ -129,7 +131,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
+        mSoundPresenter.onResume();
 
         addSpeakAnswer("你好，这里是导航页面，点击地图上地点可到达指定区域");
     }
@@ -137,9 +139,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     @Override
     protected void onPause() {
         super.onPause();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
     }
 
     @Override
@@ -333,13 +333,6 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         if (isShow) {
             dismissImage();
@@ -353,7 +346,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     public void onBackPressed() {
         if (isShow) {
             dismissImage();
-            mSoundPresenter.stopRecognizerListener();
+            mSoundPresenter.stopEvery();
         } else {
             finish();
         }
@@ -405,9 +398,7 @@ public class NavigationActivity extends BarBaseActivity implements ILocalSoundPr
     @Override
     public void stopAll() {
         super.stopAll();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.stopEvery();
 //        addSpeakAnswer("你好，这里是导航页面，点击地图上地点可到达指定区域");
         addSpeakAnswer("您好");
     }

@@ -139,22 +139,18 @@ public class MultimediaActivity extends BarBaseActivity implements
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        mSoundPresenter.startRecognizerListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mSoundPresenter.buildTts();
-        mSoundPresenter.buildIat();
+        mSoundPresenter.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
+        mSoundPresenter.onPause();
     }
 
     @Override
@@ -447,13 +443,6 @@ public class MultimediaActivity extends BarBaseActivity implements
     }
 
     @Override
-    public void stopListener() {
-        mSoundPresenter.stopTts();
-        mSoundPresenter.stopRecognizerListener();
-        mSoundPresenter.stopHandler();
-    }
-
-    @Override
     public void back() {
         isFinish = true;
         if (songFragment != null && songFragment.isAdded()) {
@@ -500,5 +489,9 @@ public class MultimediaActivity extends BarBaseActivity implements
     @Override
     public void onAlarm(Alarm alarm) {
 
+    }
+
+    public void stopListener() {
+        mSoundPresenter.stopEvery();
     }
 }
