@@ -20,6 +20,7 @@ import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.app.enums.RobotType;
@@ -410,7 +411,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     public void startRecognizerListener(boolean focus) {
 //        if (isOpening) {
-            myRecognizer.start(focus);
+        myRecognizer.start(focus);
 //        }
     }
 
@@ -847,7 +848,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     private void loadImage(int load, int place) {
-        ImageLoader.loadImage(this, ivFanfan, load, false, place, 1000);
+        ImageLoader.loadImage(NovelApp.getInstance().getApplicationContext(), ivFanfan, load, false, place, 1000);
     }
 
 

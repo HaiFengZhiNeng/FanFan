@@ -36,8 +36,6 @@ public class MessageEvent extends Observable implements TIMMessageListener {
         //除非用户在OnNewMessages回调中返回true，此时将不再继续回调下一个消息监听器
         TIMManager.getInstance().addMessageListener(this);
 
-        //删除一个消息监听器，消息监听器被删除后，将不再被调用。
-//        TIMManager.getInstance().removeMessageListener();
     }
 
 
@@ -80,6 +78,9 @@ public class MessageEvent extends Observable implements TIMMessageListener {
      * 清理消息监听
      */
     public void clear() {
+
+        //删除一个消息监听器，消息监听器被删除后，将不再被调用。
+        TIMManager.getInstance().removeMessageListener(this);
         instance = null;
     }
 

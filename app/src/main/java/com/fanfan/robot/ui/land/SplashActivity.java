@@ -16,6 +16,7 @@ import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.app.common.base.BaseHandler;
@@ -305,7 +306,6 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
     @Override
     public void onSuccess() {
         loginSDK();
-
     }
 
     private void loginSDK() {
@@ -317,6 +317,8 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
                 PushUtil.getInstance();
                 //初始化消息监听
                 MessageEvent.getInstance();
+
+                RobotInfo.getInstance().setLoginTime(System.currentTimeMillis());
 
                 startService(new Intent(SplashActivity.this, UdpService.class));
                 startService(new Intent(SplashActivity.this, SerialService.class));

@@ -93,8 +93,8 @@ public class MyRecognizerLocal {
         mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
 
         //麦克风阵列开启远场识别
-        mIat.setParameter("domain", "fariat");
-        mIat.setParameter("aue", "speex-wb;10");
+        mIat.setParameter(SpeechConstant.DOMAIN, "fariat");
+        mIat.setParameter(SpeechConstant.AUDIO_FORMAT_AUE, "speex-wb;10");
 
         mIat.setParameter(ResourceUtil.ASR_RES_PATH, FucUtil.getResAsrPath(mContext));
         mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);

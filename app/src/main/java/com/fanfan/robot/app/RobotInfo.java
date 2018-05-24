@@ -47,6 +47,16 @@ public class RobotInfo {
         return getInstance();
     }
 
+    private long loginTime;
+
+    public long getLoginTime() {
+        return loginTime;
+    }
+
+    public void setLoginTime(long loginTime) {
+        this.loginTime = loginTime;
+    }
+
     //IAT_CLOUD_BUILD
     private boolean cloudBuild;
 

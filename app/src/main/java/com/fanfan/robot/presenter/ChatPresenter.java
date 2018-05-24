@@ -394,16 +394,17 @@ public class ChatPresenter extends IChatPresenter implements Observer {
         if (observable instanceof MessageEvent) {
             if (data instanceof TIMMessage || data == null) {
                 TIMMessage msg = (TIMMessage) data;
-                if (msg != null) {
-//                    Print.e(msg.getConversation().getPeer());
-//                    Print.e(conversation.getPeer());
+                if (msg == null) {
+                    return;
                 }
-                if (msg == null || msg.getConversation().getPeer().equals(conversation.getPeer())
+                Print.i(msg);
+                long timestamp = msg.timestamp();
+                if (timestamp * 1000 < RobotInfo.getInstance().getLoginTime()) {
+                    return;
+                }
+                if (msg.getConversation().getPeer().equals(conversation.getPeer())
                         && msg.getConversation().getType() == conversation.getType()) {
-
-                    if (msg == null) {
-                        return;
-                    }
+                    //手机
                     TIMElem elem = msg.getElement(0);
                     if (elem.getType() == TIMElemType.Text) {
                         TIMTextElem timTextElem = (TIMTextElem) elem;
@@ -419,26 +420,18 @@ public class ChatPresenter extends IChatPresenter implements Observer {
                         TIMFileElem timFileElem = (TIMFileElem) elem;
                         analysisFileMessage(timFileElem);
                     }
-
-                } else if (msg == null || msg.getConversation().getPeer().equals(conversationServer.getPeer())
+                } else if (msg.getConversation().getPeer().equals(conversationServer.getPeer())
                         && msg.getConversation().getType() == conversationServer.getType()) {
-                    if (msg == null || msg.getConversation().getPeer().equals(conversationServer.getPeer())
-                            && msg.getConversation().getType() == conversationServer.getType()) {
-                        if (msg == null) {
-                            return;
-                        }
-                        TIMElem elem = msg.getElement(0);
-                        if (elem.getType() == TIMElemType.Text) {
-                            TIMTextElem timTextElem = (TIMTextElem) elem;
-                            String txt = timTextElem.getText();
-                            mChatView.parseServerMsgcomplete(txt);
-                        }
+                    //客服
+                    TIMElem elem = msg.getElement(0);
+                    if (elem.getType() == TIMElemType.Text) {
+                        TIMTextElem timTextElem = (TIMTextElem) elem;
+                        String txt = timTextElem.getText();
+                        mChatView.parseServerMsgcomplete(txt);
                     }
-                } else if (msg == null || msg.getConversation().getPeer().equals(robotInfo.getRoomId())
+                } else if (msg.getConversation().getPeer().equals(robotInfo.getRoomId())
                         && msg.getConversation().getType() == TIMConversationType.Group) {
-                    if (msg == null) {
-                        return;
-                    }
+                    //多控一
                     TIMElem elem = msg.getElement(0);
                     if (elem.getType() == TIMElemType.Text) {
                         TIMTextElem timTextElem = (TIMTextElem) elem;
@@ -448,7 +441,6 @@ public class ChatPresenter extends IChatPresenter implements Observer {
                         analysisImageMessage(timImageElem);
                     } else if (elem.getType() == TIMElemType.Custom) {
                         TIMCustomElem timCustomElem = (TIMCustomElem) elem;
-                        Print.e(" 接受自定义消息 来自群聊 : " + msg.getConversation().getPeer());
                         analysisCustomMessage(timCustomElem);
                     } else if (elem.getType() == TIMElemType.File) {
                         TIMFileElem timFileElem = (TIMFileElem) elem;
