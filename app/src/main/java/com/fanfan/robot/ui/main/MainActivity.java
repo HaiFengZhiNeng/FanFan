@@ -869,7 +869,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-
+                    chatContent.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -895,7 +895,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-
+                    chatContent.setVisibility(View.VISIBLE);
                 }
 
                 @Override

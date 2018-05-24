@@ -84,6 +84,6 @@
         android:maxWidth="500dp"
         android:textColor="@color/black"
         android:textSize="@dimen/x8"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
 </RelativeLayout>
