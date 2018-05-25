@@ -20,6 +20,7 @@ import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.novel.utils.youdao.TranslateLanguage;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
@@ -104,6 +105,9 @@ import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
 import com.tencent.TIMCallBack;
 import com.tencent.TIMMessage;
+import com.youdao.sdk.ydonlinetranslate.TranslateErrorCode;
+import com.youdao.sdk.ydonlinetranslate.TranslateListener;
+import com.youdao.sdk.ydtranslate.Translate;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -215,6 +219,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private MySynthesizer mySynthesizer;
 
+    private TranslateLanguage translateLanguage;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main1;
@@ -283,6 +289,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
 
+        translateLanguage = new TranslateLanguage();
     }
 
     @Override
@@ -426,9 +433,38 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     public void doAnswer(String messageContent) {
-        stopSound();
-        mySynthesizer.speak(messageContent);
-        onSpeakBegin(messageContent);
+        boolean isTranslate = RobotInfo.getInstance().getLanguageType() == 1;
+        if (isTranslate) {
+            translateLanguage.queryZhtoEn(messageContent, new TranslateListener() {
+                @Override
+                public void onError(TranslateErrorCode translateErrorCode) {
+                    onCompleted();
+                }
+
+                @Override
+                public void onResult(Translate translate, String s) {
+                    int errorCode = translate.getErrorCode();
+                    if (errorCode == 0) {
+                        List<String> translations = translate.getTranslations();
+                        if (translations != null && translations.size() > 0) {
+                            String translation = translations.get(0);
+                            stopSound();
+                            mySynthesizer.speak(translation);
+                            onSpeakBegin(translation);
+                        } else {
+                            onCompleted();
+                        }
+                    } else {
+                        onCompleted();
+                    }
+                }
+            });
+        } else {
+            stopSound();
+            mySynthesizer.speak(messageContent);
+            onSpeakBegin(messageContent);
+        }
+
     }
 
     private String mInput;

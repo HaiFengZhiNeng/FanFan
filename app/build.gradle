@@ -87,6 +87,7 @@ repositories {
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     compile files('libs/Msc.jar')
+    implementation files('libs/AIUI.jar')
     compile files('libs/HSOTG2.0.jar')
     compile files('libs/poi-3.15.jar')
     compile files('libs/poi-scratchpad-3.15.jar')

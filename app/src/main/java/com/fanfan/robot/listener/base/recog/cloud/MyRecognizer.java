@@ -108,8 +108,8 @@ public class MyRecognizer {
         mIat.setParameter(SpeechConstant.ENGINE_TYPE, RobotInfo.getInstance().getEngineType());
 
         //麦克风阵列开启远场识别
-        mIat.setParameter("domain", "fariat");
-        mIat.setParameter("aue", "speex-wb;10");
+//        mIat.setParameter("domain", "fariat");
+//        mIat.setParameter("aue", "speex-wb;10");
 
         if (!RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_CLOUD)) {
             if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_LOCAL)) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 
 import com.fanfan.novel.utils.FucUtil;
+import com.fanfan.novel.utils.youdao.TranslateLanguage;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.listener.base.synthesizer.ISynthListener;
@@ -15,6 +16,9 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.util.ResourceUtil;
 import com.seabreeze.log.Print;
+import com.youdao.sdk.ydonlinetranslate.TranslateErrorCode;
+import com.youdao.sdk.ydonlinetranslate.TranslateListener;
+import com.youdao.sdk.ydtranslate.Translate;
 
 public class MySynthesizer {
 
@@ -65,6 +69,7 @@ public class MySynthesizer {
 
     public void speak(String answer) {
         if (mTts != null) {
+
             mTts.startSpeaking(answer, mListener);
         }
     }

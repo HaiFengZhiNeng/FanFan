@@ -1,5 +1,7 @@
 package com.fanfan.robot.listener.base.recog;
 
+import com.fanfan.novel.utils.youdao.TranslateLanguage;
+import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.model.local.Asr;
 import com.fanfan.robot.model.local.Trans;
 import com.seabreeze.log.Print;
@@ -38,12 +40,12 @@ public class AlarmListener implements IRecogListener, NulState {
     public void onAsrFinalResult(String result) {
         Print.e(TAG + "识别结束，结果是“" + result + "”");
         long diffTime = System.currentTimeMillis() - speechEndTime;
-        Print.e(TAG + "说话结束到识别结束耗时【" + diffTime + "ms】");
+        Print.i(TAG + "说话结束到识别结束耗时【" + diffTime + "ms】");
     }
 
     @Override
     public void onAsrEnd() {
-        Print.e(TAG + "检测到用户说话结束");
+        Print.i(TAG + "检测到用户说话结束");
     }
 
     @Override
@@ -70,5 +72,11 @@ public class AlarmListener implements IRecogListener, NulState {
     public void onAsrLocalDegreeLow(Asr local, int degree) {
 
         Print.e("本地识别置信度小 degree ： " + degree + " , local" + local);
+    }
+
+    @Override
+    public void onAsrTranslateError(int errorCode) {
+        Print.i("翻译出错 errorCode : " + errorCode);
+        onAsrFinishError(errorCode, "translate error");
     }
 }

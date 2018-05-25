@@ -24,4 +24,6 @@ public interface IRecogListener {
     void onAsrLocalFinalResult(String result);
 
     void onAsrLocalDegreeLow(Asr local, int degree);
+
+    void onAsrTranslateError(int errorCode);
 }

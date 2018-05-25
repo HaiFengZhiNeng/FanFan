@@ -262,8 +262,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements
     }
 
     @Override
-    public void onDoAnswer(String question, String
-            finalText, List<Train> trains, Train train0) {
+    public void onDoAnswer(String question, String finalText, List<Train> trains, Train train0) {
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
@@ -458,8 +457,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements
     }
 
     @Override
-    public void onDoAnswer(String question, String finalText, Stock
-            stock) {
+    public void onDoAnswer(String question, String finalText, Stock stock) {
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
@@ -501,8 +499,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements
     }
 
     @Override
-    public void onDoAnswer(String question, String
-            finalText, Riddle riddle) {
+    public void onDoAnswer(String question, String finalText, Riddle riddle) {
         if (RobotInfo.getInstance().isQueryLanage()) {
             if (isTrans) {
                 isTrans = false;
@@ -518,8 +515,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements
     }
 
     @Override
-    public void onDoAnswer(String question, String
-            finalText, WordFinding wordFinding) {
+    public void onDoAnswer(String question, String finalText, WordFinding wordFinding) {
         List<String> results;
         int count = 5;
         StringBuilder sb = new StringBuilder();
@@ -633,6 +629,7 @@ public class LineSoundPresenter extends ILineSoundPresenter implements
 
             @Override
             public void onError(TranslateErrorCode error) {
+                onCompleted();
             }
         });
     }

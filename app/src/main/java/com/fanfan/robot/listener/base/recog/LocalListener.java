@@ -71,4 +71,10 @@ public class LocalListener implements IRecogListener, NulState {
 
         Print.e("本地识别置信度小 degree ： " + degree + " , local" + local);
     }
+
+    @Override
+    public void onAsrTranslateError(int errorCode) {
+        Print.e("翻译出错 errorCode : " + errorCode);
+        onAsrFinishError(errorCode, "translate error");
+    }
 }

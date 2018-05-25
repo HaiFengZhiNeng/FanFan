@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.ArrayMap;
 import android.util.Log;
 
+import com.fanfan.novel.utils.youdao.TranslateLanguage;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.model.local.Asr;
 import com.fanfan.robot.model.local.Cw;
@@ -15,6 +16,9 @@ import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.seabreeze.log.Print;
+import com.youdao.sdk.ydonlinetranslate.TranslateErrorCode;
+import com.youdao.sdk.ydonlinetranslate.TranslateListener;
+import com.youdao.sdk.ydtranslate.Translate;
 
 import java.util.List;
 
@@ -24,9 +28,12 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
 
     private ArrayMap<Integer, String> mIatResults;
 
+    private TranslateLanguage translateLanguage;
+
     public RecogEventAdapter(IRecogListener listener) {
         this.listener = listener;
         mIatResults = new ArrayMap<>();
+        translateLanguage = new TranslateLanguage();
     }
 
 
@@ -50,11 +57,41 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
 
             Log.d("RecogEventAdapter", "onEndOfSpeech TYPE_CLOUD");
             if (mIatResults.size() > 0) {
-                StringBuffer sb = new StringBuffer();
+                final StringBuffer sb = new StringBuffer();
                 for (String result : mIatResults.values()) {
                     sb.append(result);
                 }
-                listener.onAsrFinalResult(sb.toString());
+
+                //手动翻译  是英文
+                boolean isTranslate = RobotInfo.getInstance().getLanguageType() == 1;
+
+                if (isTranslate) {
+                    translateLanguage.queryEntoZh(sb.toString(), new TranslateListener() {
+                        @Override
+                        public void onError(TranslateErrorCode translateErrorCode) {
+                            listener.onAsrTranslateError(translateErrorCode.getCode());
+                        }
+
+                        @Override
+                        public void onResult(Translate translate, String s) {
+                            int errorCode = translate.getErrorCode();
+                            if (errorCode == 0) {
+                                List<String> explains = translate.getExplains();
+                                if (explains != null && explains.size() > 0) {
+                                    String explain = explains.get(0);
+                                    listener.onAsrFinalResult(explain);
+                                } else {
+                                    listener.onAsrFinalResult(sb.toString());
+                                }
+                            } else {
+                                listener.onAsrTranslateError(errorCode);
+                            }
+                        }
+                    });
+                } else {
+
+                    listener.onAsrFinalResult(sb.toString());
+                }
             } else {
                 listener.onAsrOnlineNluResult(STATUS_END, null);
             }
@@ -150,6 +187,6 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
     @Override
     public void onEvent(int i, int i1, int i2, Bundle bundle) {
         Log.d("RecogEventAdapter", "onEvent");
-        Print.i("onEvent i : " + i + " , i1 : " +i1 + " , i2 : " + i2);
+        Print.i("onEvent i : " + i + " , i1 : " + i1 + " , i2 : " + i2);
     }
 }
