@@ -95,7 +95,7 @@ public class MyRecognizer {
             return;
         }
         mListener = null;
-        mIat.cancel();
+//        mIat.cancel();
 //        mIat.destroy();
         isInited = false;
     }
@@ -127,9 +127,16 @@ public class MyRecognizer {
             mIat.setParameter(SpeechConstant.TRS_SRC, "its");
         }
 
-        mIat.setParameter(SpeechConstant.LANGUAGE, RobotInfo.getInstance().getLineLanguage());
-        // 设置语言区域
-        mIat.setParameter(SpeechConstant.ACCENT, RobotInfo.getInstance().getIatLineLanguage());
+        //手动翻译  是英文
+        boolean isTranslate = RobotInfo.getInstance().getLanguageType() == 1;
+
+        if (isTranslate) {
+            mIat.setParameter(SpeechConstant.LANGUAGE, "en_us");
+            mIat.setParameter(SpeechConstant.ACCENT, null);
+        } else {
+            mIat.setParameter(SpeechConstant.LANGUAGE, RobotInfo.getInstance().getLineLanguage());
+            mIat.setParameter(SpeechConstant.ACCENT, RobotInfo.getInstance().getIatLineLanguage());
+        }
 
         //英语转中文     是中文不用转
         if (RobotInfo.getInstance().isTranslateEnable()) {

@@ -81,7 +81,7 @@ public class MyRecognizerLocal {
             return;
         }
         mListener = null;
-        mIat.cancel();
+//        mIat.cancel();
 //        mIat.destroy();
     }
 

@@ -19,8 +19,6 @@ import com.seabreeze.log.Print;
 
 public class MySynthesizerLocal {
 
-    private static boolean isInited = false;
-
     private Context mContext;
 
     private SpeechSynthesizer mTts;
@@ -32,10 +30,6 @@ public class MySynthesizerLocal {
     }
 
     public MySynthesizerLocal(Context context, SynthesizerListener recognizerListener) {
-        if (isInited) {
-            throw new RuntimeException("还未调用release()，请勿新建一个新类");
-        }
-        isInited = true;
         this.mContext = context;
         this.mListener = recognizerListener;
         initTts();
@@ -101,7 +95,6 @@ public class MySynthesizerLocal {
         }
         stop();
         destroy();
-        isInited = false;
     }
 
     public boolean isSpeaking() {

@@ -1,15 +1,10 @@
 package com.fanfan.robot.ui.face.act;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -18,34 +13,26 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.fanfan.robot.R;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.app.enums.SpecialType;
-import com.fanfan.robot.db.manager.FaceAuthDBManager;
 import com.fanfan.robot.model.Alarm;
-import com.fanfan.robot.model.FaceAuth;
 import com.fanfan.robot.model.SerialBean;
-import com.fanfan.robot.presenter.CameraPresenter;
-import com.fanfan.robot.presenter.LocalSoundPresenter;
-import com.fanfan.robot.presenter.SerialPresenter;
-import com.fanfan.robot.presenter.ipersenter.ICameraPresenter;
-import com.fanfan.robot.presenter.ipersenter.ILocalSoundPresenter;
-import com.fanfan.robot.presenter.ipersenter.ISerialPresenter;
-import com.fanfan.robot.service.SerialService;
 import com.fanfan.robot.other.event.ReceiveEvent;
 import com.fanfan.robot.other.event.ServiceToActivityEvent;
 import com.fanfan.robot.other.udp.SocketManager;
-import com.fanfan.novel.utils.TimeUtils;
-import com.fanfan.robot.R;
-import com.fanfan.robot.db.manager.CheckInDBManager;
-import com.fanfan.robot.model.CheckIn;
-import com.fanfan.robot.presenter.FaceCheckinPresenter;
-import com.fanfan.robot.presenter.ipersenter.IFaceCheckinPresenter;
-import com.fanfan.robot.ui.face.act.sign.SignAllActivity;
+import com.fanfan.robot.presenter.CameraPresenter;
+import com.fanfan.robot.presenter.DetectFacePresenter;
+import com.fanfan.robot.presenter.LocalSoundPresenter;
+import com.fanfan.robot.presenter.SerialPresenter;
+import com.fanfan.robot.presenter.ipersenter.ICameraPresenter;
+import com.fanfan.robot.presenter.ipersenter.IDetectFacePresenter;
+import com.fanfan.robot.presenter.ipersenter.ILocalSoundPresenter;
+import com.fanfan.robot.presenter.ipersenter.ISerialPresenter;
+import com.fanfan.robot.service.SerialService;
 import com.fanfan.robot.view.CircleImageView;
 import com.fanfan.robot.view.camera.DetectOpenFaceView;
 import com.fanfan.robot.view.camera.DetectionFaceView;
-import com.fanfan.youtu.api.face.bean.FaceIdentify;
-import com.fanfan.youtu.api.face.bean.GetInfo;
 import com.fanfan.youtu.api.face.bean.detectFace.Face;
 import com.seabreeze.log.Print;
 
@@ -54,6 +41,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
@@ -68,24 +56,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 import static com.fanfan.robot.app.common.Constants.unusual;
 
-/**
- * 人脸签到页面
- */
-public class FaceCheckinActivity extends BarBaseActivity implements
+public class DetectfaceActivity extends BarBaseActivity implements
         SurfaceHolder.Callback,
         ICameraPresenter.ICameraView,
-        IFaceCheckinPresenter.ICheckinView,
+        IDetectFacePresenter.IDetectFaceView,
         ILocalSoundPresenter.ILocalSoundView,
         ISerialPresenter.ISerialView {
+
 
     @BindView(R.id.camera_surfaceview)
     SurfaceView cameraSurfaceView;
@@ -93,43 +75,32 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     DetectionFaceView detectionFaceView;
     @BindView(R.id.opencv_face_view)
     DetectOpenFaceView opencvFaceView;
-    @BindView(R.id.tv_sign_info)
-    TextView tvSignInfo;
-    @BindView(R.id.tv_sign_all)
-    TextView tvSignAll;
-    @BindView(R.id.ic_head)
-    CircleImageView icHead;
-    @BindView(R.id.tv_confirm)
-    TextView tvConfirm;
-    @BindView(R.id.tv_again)
-    TextView tvAgain;
-    @BindView(R.id.confirm_layout)
-    LinearLayout confirmLayout;
-    @BindView(R.id.tv_name)
-    TextView tvName;
-    @BindView(R.id.tv_job)
-    TextView tvJob;
-    @BindView(R.id.tv_synopsis)
-    TextView tvSynopsis;
     @BindView(R.id.beauty_layout)
-    RelativeLayout beautyLayout;
-    @BindView(R.id.ic_beauty_head)
-    ImageView icBeautyHead;
+    LinearLayout beautyLayout;
+    @BindView(R.id.ic_head)
+    ImageView icHead;
     @BindView(R.id.tv_beauty)
     TextView tvBeauty;
     @BindView(R.id.tv_face)
     TextView tvFace;
-    @BindView(R.id.tv_checkin)
-    TextView tvCheckIn;
+    @BindView(R.id.tv_welcome)
+    TextView tvWelcome;
 
-    public static final int CHECK_REQUESTCODE = 232;
-    public static final int CHECK_RESULTCODE = 234;
+
+    static {
+        if (!OpenCVLoader.initDebug()) {
+            System.out.println("opencv 初始化失败！");
+        } else {
+            System.loadLibrary("detection_based_tracker");
+        }
+    }
 
     public static void newInstance(Activity context) {
-        Intent intent = new Intent(context, FaceCheckinActivity.class);
-        context.startActivityForResult(intent, CHECK_REQUESTCODE);
+        Intent intent = new Intent(context, DetectfaceActivity.class);
+        context.startActivity(intent);
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
+
 
     //opencv
     private Mat mRgba;
@@ -139,8 +110,6 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     private CascadeClassifier mJavaDetector;
     private DetectionBasedTracker mNativeDetector;
 
-    private LocalSoundPresenter mSoundPresenter;
-    private SerialPresenter mSerialPresenter;
 
     private int mAbsoluteFaceSize = 0;
     private float mRelativeFaceSize = 0.2f;
@@ -191,23 +160,22 @@ public class FaceCheckinActivity extends BarBaseActivity implements
         }
     };
 
+
     public enum State {
-        CONFIRM, BEAUTY, CAMERA
+        BEAUTY, CAMERA
     }
 
     private CameraPresenter mCameraPresenter;
-    private FaceCheckinPresenter mCheckinPresenter;
+    private DetectFacePresenter mDetectFacePresenter;
 
-    private FaceAuthDBManager mFaceAuthDBManager;
-    private CheckInDBManager mCheckInDBManager;
+    private LocalSoundPresenter mSoundPresenter;
+    private SerialPresenter mSerialPresenter;
 
     private State state = State.CAMERA;
 
-    private boolean isBacking;
-
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_check_in;
+        return R.layout.activity_detectface;
     }
 
     @Override
@@ -224,16 +192,11 @@ public class FaceCheckinActivity extends BarBaseActivity implements
 
         mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
 
-        mCheckinPresenter = new FaceCheckinPresenter(this);
-
-        confirmLayout.setVisibility(View.GONE);
+        mDetectFacePresenter = new DetectFacePresenter(this);
     }
 
     @Override
     protected void initData() {
-        mFaceAuthDBManager = new FaceAuthDBManager();
-        mCheckInDBManager = new CheckInDBManager();
-
         mSoundPresenter = new LocalSoundPresenter(this);
         mSoundPresenter.start();
         mSerialPresenter = new SerialPresenter(this);
@@ -243,7 +206,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        mCheckinPresenter.start();
+        mDetectFacePresenter.start();
         EventBus.getDefault().register(this);
     }
 
@@ -264,7 +227,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     @Override
     protected void onStop() {
         super.onStop();
-        mCheckinPresenter.finish();
+        mDetectFacePresenter.finish();
         EventBus.getDefault().unregister(this);
     }
 
@@ -278,57 +241,20 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     protected boolean setResult() {
         if (state != State.CAMERA) {
             changeCamera();
-            mCheckinPresenter.setFaceIdentify();
+            mDetectFacePresenter.setFaceDetect();
             return true;
         }
-       return super.setResult();
+        return super.setResult();
     }
 
     @Override
     public void onBackPressed() {
         if (state != State.CAMERA) {
             changeCamera();
-            mCheckinPresenter.setFaceIdentify();
+            mDetectFacePresenter.setFaceDetect();
             return;
         }
         super.onBackPressed();
-    }
-
-    @SuppressLint("NewApi")
-    @OnClick({R.id.tv_sign_info, R.id.tv_sign_all, R.id.tv_confirm, R.id.tv_again})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.tv_sign_info:
-                break;
-            case R.id.tv_sign_all:
-                SignAllActivity.newInstance(this);
-                break;
-            case R.id.tv_confirm:
-                mCheckinPresenter.confirmChinkIn();
-                break;
-            case R.id.tv_again:
-                confirmLayout.setVisibility(View.GONE);
-                mCheckinPresenter.setFaceIdentify();
-                break;
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.home_white, menu);
-        return true;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.home:
-                SignAllActivity.newInstance(this);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -366,22 +292,16 @@ public class FaceCheckinActivity extends BarBaseActivity implements
         mSoundPresenter.doAnswer(getResources().getString(res));
     }
 
-    private void changeConfirm() {
-        state = State.CONFIRM;
-        beautyLayout.setVisibility(View.GONE);
-        confirmLayout.setVisibility(View.VISIBLE);
-    }
-
     private void changeBeauty() {
         state = State.BEAUTY;
         beautyLayout.setVisibility(View.VISIBLE);
-        confirmLayout.setVisibility(View.GONE);
+        cameraSurfaceView.setVisibility(View.GONE);
     }
 
     private void changeCamera() {
         state = State.CAMERA;
         beautyLayout.setVisibility(View.GONE);
-        confirmLayout.setVisibility(View.GONE);
+        cameraSurfaceView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -453,16 +373,15 @@ public class FaceCheckinActivity extends BarBaseActivity implements
 
     @Override
     public void tranBitmap(Bitmap bitmap, int num) {
-
-        if (!isBacking) {
-
-            mCheckinPresenter.faceIdentifyFace(bitmap);
+        if (state == State.CAMERA) {
+            mDetectFacePresenter.detectFace(bitmap);
         }
 
         if (!unusual) {
             opencvDraw(bitmap);
         }
     }
+
 
     private void opencvDraw(Bitmap bitmap) {
         Utils.bitmapToMat(bitmap, mRgba);
@@ -499,144 +418,41 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     }
 
     @Override
-    public void compareFaceAuth(String person) {
-        FaceAuth faceAuth = mFaceAuthDBManager.queryByPersonId(person);
-        if (faceAuth != null) {
-            List<CheckIn> checkIns = mCheckInDBManager.queryByName(faceAuth.getAuthId());
-            if (checkIns == null || checkIns.size() == 0) {
-                mCheckinPresenter.setFaceAuth(faceAuth);
-                mCheckinPresenter.detectFace();
-                return;
-            }
-            Print.e(checkIns);
-            Collections.sort(checkIns);
+    public void showConfirm(Face face, Bitmap bitmap) {
+        changeBeauty();
 
-            CheckIn checkIn = checkIns.get(0);
-            if (TimeUtils.isToday(checkIn.getTime())) {
-                isToday();
-            } else {
-                mCheckinPresenter.setFaceAuth(faceAuth);
-                mCheckinPresenter.detectFace();
-            }
+        icHead.setImageBitmap(bitmap);
+
+        tvBeauty.setText(String.format("%d分", face.getBeauty()));
+
+        StringBuilder builder = new StringBuilder();
+        StringBuilder welCome = new StringBuilder();
+
+        builder.append("FAN FAN 识别报告 ： \n");
+        builder.append("您的年龄大约 ").append(face.getAge()).append(" , ");
+        if (face.getGender() > 50) {
+            builder.append("性别 男 , ");
+            welCome.append("欢迎您，先生");
         } else {
-            mCheckinPresenter.getPersonInfo(person);
+            builder.append("性别 女 , ");
+            welCome.append("欢迎您，女士");
         }
-    }
+        if (face.getGlasses() == 0) {
+            builder.append("不戴眼镜\n");
+        } else if (face.getGlasses() == 1) {
+            builder.append("佩戴眼镜\n");
+        } else if (face.getGlasses() == 2) {
+            builder.append("佩戴墨镜\n");
+        }
+        builder.append("微笑指数：").append(face.getExpression()).append(" , 请保持微笑");
+        tvFace.setText(builder.toString());
+        tvWelcome.setText(welCome.toString());
 
-    @Override
-    public void identifyNoFace() {
-        tvSignInfo.setText("请正对屏幕或您未注册个人信息");
-//        addSpeakAnswer("请正对屏幕或您未注册个人信息");
-        addSpeakAnswer("贵客您好，我是公司智能服务机器人，系统中未检测到您的身份信息，现在为您切换到服务系统并为您提供引导服务");
+        addSpeakAnswer(welCome.toString());
         mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8002AA");
-        isBacking = true;
     }
 
-    @Override
-    public void confidenceLow(FaceIdentify.IdentifyItem identifyItem) {
-
-        tvSignInfo.setText(String.format("识别度为 %s， 较低。请正对屏幕或您未注册个人信息", identifyItem.getConfidence()));
-        addSpeakAnswer("贵客您好，我是公司智能服务机器人，系统中未检测到您的身份信息，现在为您切换到服务系统并为您提供引导服务");
-        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8002AA");
-        isBacking = true;
-    }
-
-    @Override
-    public void showConfirm(Bitmap circleBitmap, FaceAuth faceAuth) {
-        CheckIn checkIn = new CheckIn();
-
-        checkIn.setName(faceAuth.getAuthId());
-        checkIn.setTime(System.currentTimeMillis());
-        addSpeakAnswer("欢迎您，" + checkIn.getName() + "。" + TimeUtils.getAPm());
-        mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, "A50C8002AA");
-        changeConfirm();
-        icHead.setImageBitmap(circleBitmap);
-        tvName.setText(faceAuth.getAuthId());
-        if (faceAuth.getJob() != null) {
-            tvJob.setText(faceAuth.getJob());
-            tvJob.setVisibility(View.VISIBLE);
-        } else {
-            tvJob.setVisibility(View.GONE);
-        }
-        if (faceAuth.getSynopsis() != null) {
-            tvSynopsis.setText(faceAuth.getSynopsis());
-            tvSynopsis.setVisibility(View.VISIBLE);
-        } else {
-            tvSynopsis.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public void confirmChinkIn(Bitmap bitmap, String authId, Face face) {
-
-        CheckIn checkIn = new CheckIn();
-        checkIn.setName(authId);
-        checkIn.setTime(System.currentTimeMillis());
-        boolean insert = mCheckInDBManager.insert(checkIn);
-        if (insert) {
-            tvSignInfo.setText(String.format("%s 签到成功", authId));
-   //         addSpeakAnswer("欢迎您，" + checkIn.getName() + "。" + TimeUtils.getAPm());
-            List<CheckIn> checkIns = mCheckInDBManager.queryByName(authId);
-            List<CheckIn> screenIns = new ArrayList<>();
-            for (CheckIn in : checkIns) {
-                if (TimeUtils.isToday(in.getTime())) {
-                    screenIns.add(in);
-                }
-            }
-            if (screenIns.size() > 0) {
-                Collections.sort(screenIns);
-                for (int i = 0; i < screenIns.size() - 1; i++) {
-                    mCheckInDBManager.delete(screenIns.get(i));
-                }
-            }
-            changeBeauty();
-            icBeautyHead.setImageBitmap(bitmap);
-            tvBeauty.setText(String.format("%d分", face.getBeauty()));
-            StringBuilder builder = new StringBuilder();
-            builder.append("FAN FAN 识别报告 ： \n");
-            builder.append("您的年龄大约 ").append(face.getAge()).append(" , ");
-            if (face.getGender() > 50) {
-                builder.append("性别 男 , ");
-            } else {
-                builder.append("性别 女 , ");
-            }
-            if (face.getGlasses() == 0) {
-                builder.append("不戴眼镜\n");
-            } else if (face.getGlasses() == 1) {
-                builder.append("佩戴眼镜\n");
-            } else if (face.getGlasses() == 2) {
-                builder.append("佩戴墨镜\n");
-            }
-            builder.append("微笑指数：").append(face.getExpression()).append(" , 请保持微笑");
-            tvFace.setText(builder.toString());
-
-            List<CheckIn> todayList = mCheckInDBManager.queryByToday();
-            if (todayList == null || todayList.size() == 0) {
-                tvCheckIn.setText(String.format("今日第 %d 位签到", 1));
-            } else {
-                tvCheckIn.setText(String.format("今日第 %d%d 位签到", todayList.size(), 1));
-            }
-        }
-    }
-
-    @Override
-    public void isToday() {
-        tvSignInfo.setText("今日您已签到");
-        mCheckinPresenter.setFaceIdentify();
-        addSpeakAnswer("今日您已签到");
-    }
-
-    @Override
-    public void fromCloud(GetInfo getInfo) {
-        FaceAuth faceAuth = new FaceAuth();
-        faceAuth.setAuthId(getInfo.getPerson_name());
-        faceAuth.setPersonId(getInfo.getPerson_id());
-        faceAuth.setFaceCount(1);
-        faceAuth.setSaveTime(System.currentTimeMillis());
-
-        mCheckinPresenter.setFaceAuth(faceAuth);
-        mCheckinPresenter.detectFace();
-    }
+    //*************************************************//
 
     @Override
     public void spakeMove(SpecialType type, String result) {
@@ -664,13 +480,7 @@ public class FaceCheckinActivity extends BarBaseActivity implements
 
     @Override
     public void back() {
-        if (state != State.CAMERA) {
-            changeCamera();
-            mCheckinPresenter.setFaceIdentify();
-            mSoundPresenter.onCompleted();
-            return;
-        }
-        finish();
+        setResult();
     }
 
     @Override
@@ -696,10 +506,6 @@ public class FaceCheckinActivity extends BarBaseActivity implements
     @Override
     public void onCompleted() {
 
-        if (isBacking) {
-            setResult(CHECK_RESULTCODE);
-            finish();
-        }
     }
 
     @Override

@@ -64,6 +64,9 @@ public class Constants {
     public static final String LINE_VOLUME = "line_volume";
 
     public static final String CITY_NAME = "city_name";
+
+    public static final String LANGUAGE_TYPE = "language_type";
+
     //udp
     public static String IP;
     public static int PORT = SocketManager.DEFAULT_UDPSERVER_PORT;

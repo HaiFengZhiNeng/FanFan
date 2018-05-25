@@ -2,6 +2,7 @@ package com.fanfan.robot.app;
 
 import android.content.Context;
 
+import com.fanfan.novel.utils.youdao.TranslateLanguage;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.novel.utils.system.PreferencesUtils;
 import com.iflytek.cloud.SpeechConstant;
@@ -44,6 +45,7 @@ public class RobotInfo {
         setLineVolume(PreferencesUtils.getInt(NovelApp.getInstance().getApplicationContext(), Constants.LINE_VOLUME, 100));
         setCityName(PreferencesUtils.getString(NovelApp.getInstance().getApplicationContext(), Constants.CITY_NAME, "北京"));
         isInitialization = PreferencesUtils.getBoolean(context, Constants.IS_INITIALIZATION, false);
+        setLanguageType(PreferencesUtils.getInt(context, Constants.LANGUAGE_TYPE, 0));
         return getInstance();
     }
 
@@ -299,10 +301,22 @@ public class RobotInfo {
 
     public void setCityName(String cityName) {
         this.cityName = cityName;
-        PreferencesUtils.putString(NovelApp.getInstance().getApplicationContext(), Constants.CITY_NAME, "北京");
+        PreferencesUtils.putString(NovelApp.getInstance().getApplicationContext(), Constants.CITY_NAME, cityName);
     }
 
     public String getCityName() {
         return cityName;
+    }
+
+    // int 0 中  1 英文
+    private int languageType;
+
+    public void setLanguageType(int languageType) {
+        this.languageType = languageType;
+        PreferencesUtils.putInt(NovelApp.getInstance().getApplicationContext(), Constants.LANGUAGE_TYPE, languageType);
+    }
+
+    public int getLanguageType() {
+        return languageType;
     }
 }

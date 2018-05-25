@@ -95,8 +95,9 @@ public class LoginActivity extends BarBaseActivity implements ILoginPresenter.IL
     }
 
     @Override
-    protected void setResult() {
+    protected boolean setResult() {
         setResult(SplashActivity.BACK_RESULTCODE);
+        return false;
     }
 
     @Override

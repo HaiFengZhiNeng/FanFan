@@ -40,6 +40,11 @@ public class XfFragment extends BaseDialogFragment implements SeekBar.OnSeekBarC
     SeekBar lineVolumeBar;
     @BindView(R.id.tv_line_volume)
     TextView tvLineVolume;
+    @BindView(R.id.line_translate_layout)
+    RelativeLayout lineTranslateLayout;
+    @BindView(R.id.tv_translate_hear)
+    TextView tvTranslateHear;
+
 
     public static XfFragment newInstance() {
         XfFragment xfFragment = new XfFragment();
@@ -74,6 +79,7 @@ public class XfFragment extends BaseDialogFragment implements SeekBar.OnSeekBarC
         tvLineVolume.setText(String.valueOf(RobotInfo.getInstance().getLineVolume()));
         lineVolumeBar.setProgress(RobotInfo.getInstance().getLineVolume());
 
+        tvTranslateHear.setText(RobotInfo.getInstance().getLanguageType() == 0 ? "中文" : "英文");
     }
 
     @Override
@@ -83,9 +89,13 @@ public class XfFragment extends BaseDialogFragment implements SeekBar.OnSeekBarC
     }
 
 
-    @OnClick({R.id.line_talker_layout, R.id.local_talker_layout, R.id.line_hear_layout})
+    @OnClick({R.id.line_talker_layout, R.id.local_talker_layout, R.id.line_hear_layout, R.id.line_translate_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.line_translate_layout:
+                RobotInfo.getInstance().setLanguageType(RobotInfo.getInstance().getLanguageType() == 0 ? 1 : 0);
+                tvTranslateHear.setText(RobotInfo.getInstance().getLanguageType() == 0 ? "中文" : "英文");
+                break;
             case R.id.line_hear_layout:
                 DialogUtils.showLongListDialog(getContext(), "选择在线监听语言", R.array.line_iat_language_show, new MaterialDialog.ListCallback() {
                     @Override

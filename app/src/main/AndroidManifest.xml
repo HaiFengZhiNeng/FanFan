@@ -44,7 +44,6 @@
     <!-- 屏保 -->
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
      
     <supports-screens
@@ -63,11 +62,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         tools:replace="android:icon">
-
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="b11de4341cd0acd1cb134240436a4d1a" />
-
         <meta-data
             android:name="com.fanfan.robot.app.common.glide.BaseGlideModule"
             android:value="GlideModule" />
@@ -81,37 +78,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.fanfan.novel.utils.permiss.PermissionActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/CustomTheme_Dialog"/>
-
+            android:theme="@style/CustomTheme_Dialog" />
         <activity
             android:name=".ui.auxiliary.SelectCtiyActivity"
             android:theme="@style/AppTheme" />
-
         <activity
             android:name=".ui.main.MainActivity"
             android:theme="@style/AppTheme" />
-
         <activity
             android:name=".ui.main.MainNewActivity"
             android:theme="@style/AppTheme" />
-
         <activity
             android:name=".ui.map.AMapActivity"
             android:theme="@style/AppThemeAction" />
-
         <activity
             android:name=".ui.auxiliary.LockActivity"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
-
         <activity
             android:name=".app.common.act.CrashActivity"
             android:theme="@style/AppTheme" />
-
         <activity
             android:name=".ui.land.LoginActivity"
             android:theme="@style/AppThemeAction" />
@@ -128,7 +117,6 @@
         <activity
             android:name=".ui.video.VideoDetailActivity"
             android:theme="@style/AppThemeAction" />
-
         <activity
             android:name=".ui.voice.ProblemConsultingActivity"
             android:theme="@style/AppThemeAction" />
@@ -192,6 +180,10 @@
         <activity
             android:name=".ui.face.act.FaceCheckinActivity"
             android:theme="@style/AppThemeAction" />
+
+        <activity
+            android:name=".ui.face.act.DetectfaceActivity"
+            android:theme="@style/AppThemeAction" />
         <activity
             android:name=".ui.face.act.sign.SignAllActivity"
             android:theme="@style/AppThemeAction" />
@@ -235,20 +227,13 @@
             android:name=".ui.setting.act.other.SettingPwdActivity"
             android:theme="@style/AppThemeAction" />
 
-        <service android:name=".service.SpeakService"/>
-
+        <service android:name=".service.SpeakService" />
         <service android:name=".service.UdpService" />
-
         <service android:name=".service.SerialService" />
-
         <service android:name=".service.PlayService" />
-
         <service android:name=".service.CameraSerivice" />
-
         <service android:name=".service.ScreenService" />
-
         <service android:name=".service.CallSerivice" />
-
         <service android:name=".service.LoadFileService" />
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" />

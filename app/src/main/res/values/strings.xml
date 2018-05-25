@@ -70,6 +70,7 @@
     <string name="title_face_check_in">人 脸 签 到</string>
     <string name="title_face_witness_contrast">人 证 对 比</string>
     <string name="title_face_extraction">人 脸 提 取</string>
+    <string name="title_face_detect_face">人 脸 识 别</string>
     <string name="title_sing_all">所 有 签 到</string>
     <string name="title_navigation_exhibition">导 航 展 示</string>
     <string name="title_fanfan_introduce">F A N F A N 介 绍</string>

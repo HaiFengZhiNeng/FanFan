@@ -132,10 +132,12 @@ public class PersonInfoDetailActivity extends BarBaseActivity {
     }
 
     @Override
-    protected void setResult() {
+    protected boolean setResult() {
         if (isModify) {
             setResult(RESULT_OK);
+            return false;
         }
+        return true;
     }
 
     @Override

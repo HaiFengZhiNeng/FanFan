@@ -79,6 +79,7 @@ import com.fanfan.robot.presenter.ipersenter.ILineSoundPresenter;
 import com.fanfan.robot.ui.auxiliary.PPTActivity;
 import com.fanfan.robot.ui.auxiliary.PanoramicMapActivity;
 import com.fanfan.robot.ui.face.FaceRecognitionActivity;
+import com.fanfan.robot.ui.face.act.DetectfaceActivity;
 import com.fanfan.robot.ui.map.AMapActivity;
 import com.fanfan.robot.ui.media.MultimediaActivity;
 import com.fanfan.robot.ui.media.act.DanceActivity;
@@ -97,6 +98,7 @@ import com.fanfan.youtu.api.hfrobot.event.CheckEvent;
 import com.fanfan.youtu.api.hfrobot.event.RequestProblemEvent;
 import com.fanfan.youtu.api.hfrobot.event.SetEvent;
 import com.fanfan.youtu.utils.GsonUtil;
+import com.github.florent37.viewanimator.AnimationListener;
 import com.github.florent37.viewanimator.ViewAnimator;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
@@ -394,7 +396,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 bindService(false);
                 break;
             case R.id.iv_face:
-                FaceRecognitionActivity.newInstance(this);
+//                FaceRecognitionActivity.newInstance(this);
+                DetectfaceActivity.newInstance(this);
                 break;
             case R.id.iv_seting_up:
                 clickSetting();
@@ -410,9 +413,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
 
     public void startRecognizerListener(boolean focus) {
-//        if (isOpening) {
         myRecognizer.start(focus);
-//        }
     }
 
     public void stopRecognizerListener() {
@@ -852,68 +853,46 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
 
-    private void setChatView(final boolean isShow) {
-//        if(chatContent.getMyText() != null) {
-//            if (chatContent.getMyText().equals("")){
-//                showMsg("chat null");
-//            }
-//        }else{
-//            showMsg("getMyText null");
-//        }
+    private void setChatView(boolean isShow) {
         if (isShow) {
-            AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
-            alphaAnimation.setDuration(1000);
-            alphaAnimation.setFillAfter(true);
-            chatContent.bringToFront();
-            chatContent.startAnimation(alphaAnimation);
-            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                    chatContent.setVisibility(View.GONE);
-                }
+            ViewAnimator
+                    .animate(chatContent)
+                    .alpha(0, 1)
+                    .interpolator(new LinearInterpolator())
+                    .duration(300)
+                    .onStart(new AnimationListener.Start() {
+                        @Override
+                        public void onStart() {
 
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    chatContent.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
+                        }
+                    })
+                    .onStop(new AnimationListener.Stop() {
+                        @Override
+                        public void onStop() {
+                            chatContent.setVisibility(View.VISIBLE);
+                        }
+                    })
+                    .start();
         } else {
-            if (TextUtils.isEmpty(chatContent.getMyText())) {
-                chatContent.setVisibility(View.GONE);
-                return;
-            }
-            AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
-            alphaAnimation.setDuration(1000);
-            alphaAnimation.setFillAfter(true);
-            chatContent.bringToFront();
-            chatContent.startAnimation(alphaAnimation);
-            alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                    chatContent.setVisibility(View.VISIBLE);
-                }
+            ViewAnimator
+                    .animate(chatContent)
+                    .alpha(1, 0)
+                    .interpolator(new LinearInterpolator())
+                    .duration(1000)
+                    .onStart(new AnimationListener.Start() {
+                        @Override
+                        public void onStart() {
 
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    chatContent.setVisibility(View.GONE);
-                    if (!TextUtils.isEmpty(chatContent.getMyText())) {
-                        setChatContent("");
-                    }
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
+                        }
+                    })
+                    .onStop(new AnimationListener.Stop() {
+                        @Override
+                        public void onStop() {
+                            chatContent.setVisibility(View.GONE);
+                        }
+                    })
+                    .start();
         }
-
-
     }
 
     //**********************************************************************************************

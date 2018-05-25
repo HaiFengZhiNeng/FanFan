@@ -23,8 +23,8 @@ public abstract class BarBaseActivity extends IMBaseActivity {
     }
 
     @Override
-    protected void setResult() {
-
+    protected boolean setResult() {
+        return false;
     }
 
     public void onError(int code, String msg) {

@@ -184,14 +184,17 @@ public abstract class BaseActivity extends AppCompatActivity implements IScreenP
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                setResult();
-                finish();
+                if (setResult()) {
+                    return true;
+                } else {
+                    finish();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    protected abstract void setResult();
+    protected abstract boolean setResult();
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

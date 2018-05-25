@@ -215,8 +215,8 @@ public class SimpleCallActivity extends BaseActivity implements
     }
 
     @Override
-    protected void setResult() {
-
+    protected boolean setResult() {
+        return false;
     }
 
     @Override

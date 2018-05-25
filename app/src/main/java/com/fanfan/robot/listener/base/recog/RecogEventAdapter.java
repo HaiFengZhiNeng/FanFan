@@ -67,7 +67,7 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
     public void onResult(RecognizerResult recognizerResult, boolean isLast) {
         Log.d("RecogEventAdapter", "onResult");
 
-        Print.e("onResult ++ : " + recognizerResult.getResultString());
+        Print.i("onResult ++ : " + recognizerResult.getResultString());
 
         String engineType = RobotInfo.getInstance().getEngineType();
         if (engineType.equals(SpeechConstant.TYPE_LOCAL)) {
@@ -150,6 +150,6 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
     @Override
     public void onEvent(int i, int i1, int i2, Bundle bundle) {
         Log.d("RecogEventAdapter", "onEvent");
-        Print.e("onEvent i : " + i + " , i1 : " +i1 + " , i2 : " + i2);
+        Print.i("onEvent i : " + i + " , i1 : " +i1 + " , i2 : " + i2);
     }
 }
