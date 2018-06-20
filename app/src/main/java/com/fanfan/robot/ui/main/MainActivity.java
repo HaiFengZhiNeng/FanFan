@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -48,6 +49,7 @@ import com.fanfan.robot.model.xf.radio.Radio;
 import com.fanfan.robot.model.xf.train.Train;
 import com.fanfan.novel.pointdown.db.DownloadDBDao;
 import com.fanfan.novel.pointdown.model.Progress;
+import com.fanfan.robot.presenter.CameraPresenter;
 import com.fanfan.robot.presenter.ChatPresenter;
 import com.fanfan.robot.presenter.LineSoundPresenter;
 import com.fanfan.robot.presenter.SerialPresenter;
@@ -147,6 +149,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     ImageView ivNavigation;
     @BindView(R.id.chat_content)
     ChatTextView chatContent;
+    @BindView(R.id.surface_view)
+    SurfaceView surfaceView;
 
     private boolean quit;
 

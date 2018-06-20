@@ -401,19 +401,22 @@ public class AddVoiceActivity extends BarBaseActivity {
         if (keywordList != null && keywordList.size() > 0) {
             Print.e(keywordList);
 
-            for (int j = 0; j < keywordList.size(); j++) {
-                String key = keywordList.get(j);
-                if (j == 0) {
-                    voiceBean.setKey1(key);
-                } else if (j == 1) {
-                    voiceBean.setKey2(key);
-                } else if (j == 2) {
-                    voiceBean.setKey3(key);
-                } else if (j == 4) {
-                    voiceBean.setKey4(key);
+            if (keywordList.size() == 1) {
+                voiceBean.setKey1(question);
+            } else {
+                for (int j = 0; j < keywordList.size(); j++) {
+                    String key = keywordList.get(j);
+                    if (j == 0) {
+                        voiceBean.setKey1(key);
+                    } else if (j == 1) {
+                        voiceBean.setKey2(key);
+                    } else if (j == 2) {
+                        voiceBean.setKey3(key);
+                    } else if (j == 4) {
+                        voiceBean.setKey4(key);
+                    }
                 }
             }
-
         } else {
             voiceBean.setKey1(question);
         }

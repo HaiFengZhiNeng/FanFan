@@ -159,18 +159,21 @@ public class LoadDataUtils {
             List<String> keywordList = HanLP.extractKeyword(localVoiceQuestion[i], 5);
             if (keywordList != null && keywordList.size() > 0) {
                 Print.i(keywordList);
-//                voiceBean.setKeyword(GsonUtil.GsonString(keywordList));
 
-                for (int j = 0; j < keywordList.size(); j++) {
-                    String key = keywordList.get(j);
-                    if (j == 0) {
-                        voiceBean.setKey1(key);
-                    } else if (j == 1) {
-                        voiceBean.setKey2(key);
-                    } else if (j == 2) {
-                        voiceBean.setKey3(key);
-                    } else if (j == 4) {
-                        voiceBean.setKey4(key);
+                if (keywordList.size() == 1) {
+                    voiceBean.setKey1(showTitle);
+                } else {
+                    for (int j = 0; j < keywordList.size(); j++) {
+                        String key = keywordList.get(j);
+                        if (j == 0) {
+                            voiceBean.setKey1(key);
+                        } else if (j == 1) {
+                            voiceBean.setKey2(key);
+                        } else if (j == 2) {
+                            voiceBean.setKey3(key);
+                        } else if (j == 4) {
+                            voiceBean.setKey4(key);
+                        }
                     }
                 }
             } else {
@@ -340,19 +343,22 @@ public class LoadDataUtils {
             if (keywordList != null && keywordList.size() > 0) {
                 Print.i(keywordList);
 
-                for (int j = 0; j < keywordList.size(); j++) {
-                    String key = keywordList.get(j);
-                    if (j == 0) {
-                        bean.setKey1(key);
-                    } else if (j == 1) {
-                        bean.setKey2(key);
-                    } else if (j == 2) {
-                        bean.setKey3(key);
-                    } else if (j == 4) {
-                        bean.setKey4(key);
+                if (keywordList.size() == 1) {
+                    bean.setKey1(showTitle);
+                } else {
+                    for (int j = 0; j < keywordList.size(); j++) {
+                        String key = keywordList.get(j);
+                        if (j == 0) {
+                            bean.setKey1(key);
+                        } else if (j == 1) {
+                            bean.setKey2(key);
+                        } else if (j == 2) {
+                            bean.setKey3(key);
+                        } else if (j == 4) {
+                            bean.setKey4(key);
+                        }
                     }
                 }
-
             } else {
                 bean.setKey1(showTitle);
             }

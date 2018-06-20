@@ -33,8 +33,11 @@ import static com.fanfan.robot.app.common.Constants.unusual;
  */
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-public class CameraPresenter extends ICameraPresenter implements Camera.PreviewCallback, Camera.PictureCallback,
-        Camera.ShutterCallback, Camera.FaceDetectionListener {
+public class CameraPresenter extends ICameraPresenter implements
+        Camera.PreviewCallback,
+        Camera.PictureCallback,
+        Camera.ShutterCallback,
+        Camera.FaceDetectionListener {
 
     private ICameraView mCameraView;
 
