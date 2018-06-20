@@ -11,8 +11,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.novel.utils.system.PreferencesUtils;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.novel.pointdown.model.Progress;
@@ -34,6 +36,8 @@ import com.fanfan.robot.ui.setting.act.other.SettingPwdActivity;
 import com.fanfan.robot.ui.setting.act.site.DataSiteActivity;
 import com.fanfan.robot.ui.setting.act.video.DataVideoActivity;
 import com.fanfan.robot.ui.setting.act.voice.DataVoiceActivity;
+import com.fanfan.robot.ui.setting.act.voice.FileImportActivity;
+import com.fanfan.robot.ui.setting.act.voice.ImportActivity;
 import com.fanfan.robot.ui.setting.fragment.ImportFragment;
 import com.fanfan.robot.ui.setting.fragment.XfFragment;
 import com.fanfan.youtu.Youtucode;
@@ -90,6 +94,10 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
     RelativeLayout rlSetpwd;
     @BindView(R.id.tv_cur_code)
     TextView tvCurCode;
+    @BindView(R.id.tb_media)
+    ToggleButton tbMedia;
+    @BindView(R.id.file_layout)
+    RelativeLayout fileLayout;
 
     private Youtucode youtucode;
 
@@ -155,7 +163,7 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
 
     @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.add_site, R.id.import_layout,
             R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout, R.id.rl_city, R.id.tv_vr,
-            R.id.tv_map, R.id.rl_update, R.id.rl_setpwd})
+            R.id.tv_map, R.id.rl_update, R.id.rl_setpwd, R.id.tb_media, R.id.file_layout})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.add_video:
@@ -171,9 +179,7 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
                 DataSiteActivity.newInstance(this);
                 break;
             case R.id.import_layout:
-                showLoading();
-                ImportFragment importFragment = ImportFragment.newInstance();
-                importFragment.show(getSupportFragmentManager(), "IMPORT");
+                ImportActivity.newInstance(this);
                 break;
             case R.id.rl_face:
                 FaceDataActivity.newInstance(this);
@@ -203,6 +209,17 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
                 break;
             case R.id.rl_setpwd:
                 SettingPwdActivity.newInstance(this);
+                break;
+            case R.id.tb_media:
+                if (tbMedia.isChecked()) {
+                    PreferencesUtils.putBoolean(SettingActivity.this, "media_check", true);
+                } else {
+                    PreferencesUtils.putBoolean(SettingActivity.this, "media_check", false);
+                }
+                // SettingPwdActivity.newInstance(this);
+                break;
+            case R.id.file_layout:
+                FileImportActivity.newInstance(this);
                 break;
         }
     }

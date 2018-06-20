@@ -116,11 +116,7 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
         Intent bindIntent = new Intent(this, CameraSerivice.class);
         bindService(bindIntent, connection, BIND_AUTO_CREATE);
 
-        if (Constants.isTrain) {
-            ImageLoader.loadImage(this, ivSplashBack, R.mipmap.train_splash_bg, false, 2000);
-        } else {
-            ImageLoader.loadImage(this, ivSplashBack, R.mipmap.splash_bg, false, 2000);
-        }
+        ImageLoader.loadImage(this, ivSplashBack, R.mipmap.splash_bg, false, 2000);
     }
 
     @Override

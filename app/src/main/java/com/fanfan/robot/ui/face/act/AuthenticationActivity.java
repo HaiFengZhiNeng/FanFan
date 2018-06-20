@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.fanfan.novel.utils.system.AppUtil;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.app.enums.SpecialType;
 import com.fanfan.robot.app.common.glide.GlideRoundTransform;
@@ -576,6 +577,11 @@ public class AuthenticationActivity extends BarBaseActivity implements
 
     @Override
     public void onCompleted() {
+        addSpeakAnswer(R.string.open_local);
+    }
+
+    @Override
+    public void refLocalPage(String key1, String key2, String key3, String key4) {
 
     }
 
@@ -583,7 +589,7 @@ public class AuthenticationActivity extends BarBaseActivity implements
     public void stopAll() {
         super.stopAll();
         mSoundPresenter.stopEvery();
-        mSoundPresenter.doAnswer(resFoFinal(R.array.wake_up));
+        mSoundPresenter.doAnswer(AppUtil.resFoFinal(R.array.wake_up));
     }
 
     @Override

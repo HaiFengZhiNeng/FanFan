@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.fanfan.novel.utils.system.AppUtil;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.app.enums.SpecialType;
 import com.fanfan.robot.db.manager.VideoDBManager;
@@ -53,7 +54,8 @@ import butterknife.OnClick;
  */
 
 public class VideoIntroductionActivity extends BarBaseActivity implements
-        ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
+        ILocalSoundPresenter.ILocalSoundView,
+        ISerialPresenter.ISerialView {
 
     @BindView(R.id.iv_list_hd)
     ImageView ivListHd;
@@ -393,9 +395,9 @@ public class VideoIntroductionActivity extends BarBaseActivity implements
             }
         } else {
             if (new Random().nextBoolean()) {
-                addSpeakAnswer(resFoFinal(R.array.no_result));
+                addSpeakAnswer(AppUtil.resFoFinal(R.array.no_result));
             } else {
-                addSpeakAnswer(resFoFinal(R.array.no_voice));
+                addSpeakAnswer(AppUtil.resFoFinal(R.array.no_voice));
             }
         }
     }
@@ -403,6 +405,11 @@ public class VideoIntroductionActivity extends BarBaseActivity implements
     @Override
     public void onCompleted() {
 
+    }
+
+    @Override
+    public void refLocalPage(String key1, String key2, String key3, String key4) {
+        refLocalPage(key1);
     }
 
     @Override

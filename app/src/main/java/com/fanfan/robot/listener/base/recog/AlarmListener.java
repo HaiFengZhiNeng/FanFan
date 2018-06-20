@@ -64,9 +64,14 @@ public class AlarmListener implements IRecogListener, NulState {
     }
 
     @Override
-    public void onAsrLocalFinalResult(String result) {
-        Print.e("本地语音识别结果 ： " + result);
+    public void onAsrLocalFinalResult(String key1, String key2, String key3, String key4) {
+        Print.e("本地语音识别结果 ： " + key1 + " " + key2 + " " + key3 + " " + key4);
     }
+
+//    @Override
+//    public void onAsrLocalFinalResult(String result) {
+//        Print.e("本地语音识别结果 ： " + result);
+//    }
 
     @Override
     public void onAsrLocalDegreeLow(Asr local, int degree) {

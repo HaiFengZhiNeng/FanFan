@@ -158,6 +158,27 @@
                     android:src="@mipmap/icon_arrow" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/file_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/y5"
+                android:background="@color/white"
+                android:padding="@dimen/y8">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="文件导入"
+                    android:textSize="@dimen/x8" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:src="@mipmap/icon_arrow" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -200,6 +221,31 @@
                     android:padding="@dimen/y8"
                     android:text="娱乐"
                     android:textStyle="bold" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/floralwhite"
+                    android:padding="@dimen/y8">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical"
+                        android:text="多媒体状态："
+                        android:textSize="@dimen/x8" />
+
+                    <ToggleButton
+                        android:id="@+id/tb_media"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:background="@color/seaShell" />
+                </RelativeLayout>
 
                 <RelativeLayout
                     android:id="@+id/rl_dance"

@@ -50,6 +50,7 @@ import butterknife.OnClick;
 /**
  * 一键导入页面
  */
+@Deprecated
 public class ImportFragment extends BaseDialogFragment {
 
     //    @BindView(R.id.voice_view)

@@ -53,7 +53,7 @@ android {
 
     greendao {
         //版本号，升级时可配置
-        schemaVersion 1
+        schemaVersion 2
         daoPackage 'com.fanfan.robot.db'  //设置DaoMaster、DaoSession、Dao包名
         targetGenDir 'src/main/java' //设置DaoMaster、DaoSession、Dao目录
     }
@@ -85,63 +85,67 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    compile files('libs/Msc.jar')
+    implementation files('libs/Msc.jar')
     implementation files('libs/AIUI.jar')
-    compile files('libs/HSOTG2.0.jar')
-    compile files('libs/poi-3.15.jar')
-    compile files('libs/poi-scratchpad-3.15.jar')
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':print')
-    compile project(':lib_zxing')
+    implementation files('libs/HSOTG2.0.jar')
+    implementation files('libs/poi-3.15.jar')
+    implementation files('libs/poi-scratchpad-3.15.jar')
+    implementation files('libs/hanlp-portable-1.6.2.jar')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation project(':print')
+    implementation project(':lib_zxing')
+
     testImplementation 'junit:junit:4.12'
-    compile rootProject.ext.dependencies["multidex"]
-    compile rootProject.ext.dependencies["callsdk"]
-    compile rootProject.ext.dependencies["ilivesdk"]
-    compile rootProject.ext.dependencies["livesdk"]
-    compile rootProject.ext.dependencies["support-v4"]
-    compile rootProject.ext.dependencies["appcompat-v7"]
-    compile rootProject.ext.dependencies["design"]
-    compile rootProject.ext.dependencies["recyclerview"]
-    compile rootProject.ext.dependencies["cardview"]
-    compile rootProject.ext.dependencies["customtabs"]
-    compile rootProject.ext.dependencies["support-annotations"]
+    implementation rootProject.ext.dependencies["multidex"]
+    implementation rootProject.ext.dependencies["callsdk"]
+    implementation rootProject.ext.dependencies["ilivesdk"]
+    implementation rootProject.ext.dependencies["livesdk"]
+    implementation rootProject.ext.dependencies["support-v4"]
+    implementation rootProject.ext.dependencies["appcompat-v7"]
+    implementation rootProject.ext.dependencies["design"]
+    implementation rootProject.ext.dependencies["recyclerview"]
+    implementation rootProject.ext.dependencies["cardview"]
+    implementation rootProject.ext.dependencies["customtabs"]
+    implementation rootProject.ext.dependencies["support-annotations"]
     androidTestImplementation rootProject.ext.dependencies["runner"]
     androidTestImplementation rootProject.ext.dependencies["espresso-core"]
-    debugCompile rootProject.ext.dependencies["leakcanary"]
-    releaseCompile rootProject.ext.dependencies["leakcanary-no-op"]
-    testCompile rootProject.ext.dependencies["leakcanary-no-op"]
-    compile rootProject.ext.dependencies["stetho"]
-    compile rootProject.ext.dependencies["stetho-okhttp3"]
-    compile rootProject.ext.dependencies["greendao"]
-    compile rootProject.ext.dependencies["eventbus"]
-    compile rootProject.ext.dependencies["glide"]
+    debugImplementation rootProject.ext.dependencies["leakcanary"]
+    releaseImplementation rootProject.ext.dependencies["leakcanary-no-op"]
+    testImplementation rootProject.ext.dependencies["leakcanary-no-op"]
+    implementation rootProject.ext.dependencies["stetho"]
+    implementation rootProject.ext.dependencies["stetho-okhttp3"]
+    implementation rootProject.ext.dependencies["greendao"]
+    implementation rootProject.ext.dependencies["eventbus"]
+    implementation rootProject.ext.dependencies["glide"]
     annotationProcessor rootProject.ext.dependencies["glide-compiler"]
-    compile rootProject.ext.dependencies["gson"]
-    compile rootProject.ext.dependencies["butterknife"]
+    implementation rootProject.ext.dependencies["gson"]
+    implementation rootProject.ext.dependencies["butterknife"]
     annotationProcessor rootProject.ext.dependencies["butterknife-compiler"]
-    compile rootProject.ext.dependencies["retrofit2"]
-    compile rootProject.ext.dependencies["converter-gson"]
-    compile rootProject.ext.dependencies["okhttp"]
-    compile rootProject.ext.dependencies["logging-interceptor"]
-    compile rootProject.ext.dependencies["constraint-layout"]
-    compile rootProject.ext.dependencies["BaseAdapterHelper"]
-    compile rootProject.ext.dependencies["material-core"]
-    compile rootProject.ext.dependencies["material-commons"]
-    compile rootProject.ext.dependencies["rollviewpager"]
-    compile rootProject.ext.dependencies["ultra-ptr"]
-    compile rootProject.ext.dependencies["kenburnsview"]
-    compile rootProject.ext.dependencies["materialtabstrip"]
-    compile rootProject.ext.dependencies["swipebacklayout"]
-    compile rootProject.ext.dependencies["flowlayout"]
-    compile rootProject.ext.dependencies["viewanimator"]
-    compile rootProject.ext.dependencies["nineoldandroids"]
-    compile rootProject.ext.dependencies["gms"]
-    compile rootProject.ext.dependencies["3dmap"]
-    compile rootProject.ext.dependencies["location"]
-    compile rootProject.ext.dependencies["search"]
-    compile rootProject.ext.dependencies["panowidget"]
-    compile rootProject.ext.dependencies["dagger"]
+    implementation rootProject.ext.dependencies["retrofit2"]
+    implementation rootProject.ext.dependencies["converter-gson"]
+    implementation rootProject.ext.dependencies["okhttp"]
+    implementation rootProject.ext.dependencies["logging-interceptor"]
+    implementation rootProject.ext.dependencies["constraint-layout"]
+    implementation rootProject.ext.dependencies["BaseAdapterHelper"]
+    implementation rootProject.ext.dependencies["material-core"]
+    implementation rootProject.ext.dependencies["material-commons"]
+    implementation rootProject.ext.dependencies["rollviewpager"]
+    implementation rootProject.ext.dependencies["ultra-ptr"]
+    implementation rootProject.ext.dependencies["kenburnsview"]
+    implementation rootProject.ext.dependencies["materialtabstrip"]
+    implementation rootProject.ext.dependencies["swipebacklayout"]
+    implementation rootProject.ext.dependencies["flowlayout"]
+    implementation rootProject.ext.dependencies["viewanimator"]
+    implementation rootProject.ext.dependencies["nineoldandroids"]
+    implementation rootProject.ext.dependencies["gms"]
+    implementation rootProject.ext.dependencies["3dmap"]
+    implementation rootProject.ext.dependencies["location"]
+    implementation rootProject.ext.dependencies["search"]
+    implementation rootProject.ext.dependencies["panowidget"]
+    implementation rootProject.ext.dependencies["dagger"]
     annotationProcessor rootProject.ext.dependencies["dagger-compiler"]
-    compile rootProject.ext.dependencies["exoplayer"]
+    implementation rootProject.ext.dependencies["exoplayer"]
+    implementation rootProject.ext.dependencies["rxjava"]
+    implementation rootProject.ext.dependencies["rxandroid"]
 }

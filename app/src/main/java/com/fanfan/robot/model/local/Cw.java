@@ -1,10 +1,12 @@
 package com.fanfan.robot.model.local;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by zhangyuanyuan on 2017/12/5.
  */
 
-public class Cw {
+public class Cw implements Comparable<Cw> {
 
     private int id;
     private int sc;
@@ -44,9 +46,29 @@ public class Cw {
     }
 
     @Override
+    public int compareTo(@NonNull Cw o) {
+        return o.getW().compareTo(this.getW());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Cw) {
+            Cw cw = (Cw) obj;
+            return cw.w.equals(this.getW());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return w.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "Cw{" +
-                "w='" + w + '\'' +
+                "sc=" + sc +
+                ", w='" + w + '\'' +
                 '}';
     }
 }

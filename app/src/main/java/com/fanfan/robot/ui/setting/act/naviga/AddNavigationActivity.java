@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.novel.utils.grammer.GrammerUtils;
+import com.fanfan.novel.utils.grammer.LoadDataUtils;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.db.manager.NavigationDBManager;
@@ -34,6 +36,7 @@ import com.fanfan.novel.utils.bitmap.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.GrammarListener;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.LexiconListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -48,6 +51,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by android on 2018/1/8.
@@ -116,10 +125,7 @@ public class AddNavigationActivity extends BarBaseActivity {
 
     private boolean isClick;
 
-    private SpeechRecognizer mIat;
-    private VideoDBManager mVideoDBManager;
-    private VoiceDBManager mVoiceDBManager;
-    private SiteDBManager mSiteDBManager;
+    private SpeechRecognizer recognizer;
 
     @Override
     protected int getLayoutId() {
@@ -139,7 +145,7 @@ public class AddNavigationActivity extends BarBaseActivity {
             etTitle.setText(navigationBean.getTitle());
             etGuide.setText(navigationBean.getGuide());
             etDatail.setText(navigationBean.getDatail());
-            curNavigation = valueForArray(R.array.navigation, navigationBean.getNavigation());
+            curNavigation = AppUtil.valueForArray(R.array.navigation, navigationBean.getNavigation());
             String savePath = navigationBean.getImgUrl();
             if (savePath != null) {
                 if (new File(savePath).exists()) {
@@ -150,27 +156,22 @@ public class AddNavigationActivity extends BarBaseActivity {
         if (curNavigation < 0)
             curNavigation = 0;
 
-        tvNavigation.setText(resArray(R.array.navigation)[curNavigation]);
+        tvNavigation.setText(AppUtil.resArray(R.array.navigation)[curNavigation]);
     }
 
     @Override
     protected void onDestroy() {
-        if (mIat != null) {
-            mIat.cancel();
+        if (recognizer != null) {
+            recognizer.cancel();
         }
-//        if(aw.g != null) {
-//            aw.g = null;
-//        }
-        listener = null;
         super.onDestroy();
-        System.gc();
     }
 
     @OnClick({R.id.tv_img, R.id.tv_navigation})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_img:
-                if (isEmpty(etTitle)) {
+                if (AppUtil.isEmpty(etTitle)) {
                     showToast("地点不能为空!");
                 } else {
                     selectFromAlbum();//打开相册
@@ -204,15 +205,15 @@ public class AddNavigationActivity extends BarBaseActivity {
                     break;
                 }
                 isClick = true;
-                if (isEmpty(etTitle)) {
+                if (AppUtil.isEmpty(etTitle)) {
                     showToast("地点不能为空!");
                     break;
                 }
-                if (isEmpty(etDatail)) {
+                if (AppUtil.isEmpty(etDatail)) {
                     showToast("地点详情不能为空!");
                     break;
                 }
-                if (isEmpty(etGuide)) {
+                if (AppUtil.isEmpty(etGuide)) {
                     showToast("引导语不能为空!");
                     break;
                 }
@@ -311,15 +312,62 @@ public class AddNavigationActivity extends BarBaseActivity {
 
 
     private void navigationIsexit() {
+
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> e) throws Exception {
+
+                insertNavigationBean();
+
+                String lexiconContents = LoadDataUtils.getLexiconContents();
+
+                e.onNext(lexiconContents);
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+
+                        recognizer = GrammerUtils.getRecognizer(AddNavigationActivity.this, recognizer);
+
+                        Print.e(s);
+                        recognizer.buildGrammar(GrammerUtils.GRAMMAR_BNF, s, new GrammarListener() {
+                            @Override
+                            public void onBuildFinish(String s, SpeechError speechError) {
+                                if (speechError == null) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra(RESULT_CODE, saveLocalId);
+                                    setResult(RESULT_OK, intent);
+                                    finish();
+                                } else {
+                                    showToast(speechError.getErrorDescription());
+                                }
+                            }
+                        });
+                    }
+                });
+    }
+
+    private void insertNavigationBean() {
+
         if (navigationBean == null) {
             navigationBean = new NavigationBean();
         }
+
+        String title = AppUtil.getText(etTitle);
+        String guide = AppUtil.getText(etGuide);
+        String detail = AppUtil.getText(etDatail);
+        String[] navigation = AppUtil.resArray(R.array.navigation);
+        String[] navigationData = AppUtil.resArray(R.array.navigation_data);
+
         navigationBean.setSaveTime(System.currentTimeMillis());
-        navigationBean.setTitle(getText(etTitle));
-        navigationBean.setGuide(getText(etGuide));
-        navigationBean.setDatail(getText(etDatail));
-        navigationBean.setNavigation(resArray(R.array.navigation)[curNavigation]);
-        navigationBean.setNavigationData(resArray(R.array.navigation_data)[curNavigation]);
+        navigationBean.setTitle(title);
+        navigationBean.setGuide(guide);
+        navigationBean.setDatail(detail);
+        navigationBean.setNavigation(navigation[curNavigation]);
+        navigationBean.setNavigationData(navigationData[curNavigation]);
         setNavigationimg(navigationBean);
 
         if (saveLocalId == -1) {//直接添加
@@ -327,16 +375,6 @@ public class AddNavigationActivity extends BarBaseActivity {
         } else {//更新
             navigationBean.setId(saveLocalId);
             mNavigationDBManager.update(navigationBean);
-        }
-
-        if (saveLocalId == -1) {
-            throw new IllegalArgumentException("DB error");
-        } else {
-            mVideoDBManager = new VideoDBManager();
-            mVoiceDBManager = new VoiceDBManager();
-            mSiteDBManager = new SiteDBManager();
-
-            updateContents();
         }
     }
 
@@ -350,111 +388,5 @@ public class AddNavigationActivity extends BarBaseActivity {
                 bean.setImgUrl(noOutputPath);
             }
         }
-    }
-
-    private int valueForArray(int resId, String compare) {
-        String[] arrays = resArray(resId);
-        return Arrays.binarySearch(arrays, compare);
-    }
-
-    private boolean isEmpty(TextView textView) {
-        return textView.getText().toString().trim().equals("") || textView.getText().toString().trim().equals("");
-    }
-
-    private String[] resArray(int resId) {
-        return getResources().getStringArray(resId);
-    }
-
-    private String getText(TextView textView) {
-        return textView.getText().toString().trim();
-    }
-
-
-    /**
-     * 更新所有
-     */
-    public void updateContents() {
-        if (mVideoDBManager == null || mVoiceDBManager == null || mNavigationDBManager == null) {
-            throw new NullPointerException("local loxicon unll");
-        }
-        StringBuilder lexiconContents = new StringBuilder();
-        //本地语音
-        List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
-        for (VoiceBean voiceBean : voiceBeanList) {
-            lexiconContents.append(voiceBean.getShowTitle()).append("\n");
-        }
-        //本地视频
-        List<VideoBean> videoBeanList = mVideoDBManager.loadAll();
-        for (VideoBean videoBean : videoBeanList) {
-            lexiconContents.append(videoBean.getShowTitle()).append("\n");
-        }
-        //本地导航
-        List<NavigationBean> navigationBeanList = mNavigationDBManager.loadAll();
-        for (NavigationBean navigationBean : navigationBeanList) {
-            lexiconContents.append(navigationBean.getTitle()).append("\n");
-        }
-        //本地网址
-        List<SiteBean> siteBeanList = mSiteDBManager.loadAll();
-        for (SiteBean siteBean : siteBeanList) {
-            lexiconContents.append(siteBean.getName()).append("\n");
-        }
-
-        lexiconContents.append(AppUtil.words2Contents());
-        updateLocation(lexiconContents.toString());
-    }
-
-    public void updateLocation(String lexiconContents) {
-        mIat = SpeechRecognizer.createRecognizer(this, new InitListener() {
-            @Override
-            public void onInit(int code) {
-                if (code != ErrorCode.SUCCESS) {
-                    Print.e("初始化失败，错误码：" + code);
-                }
-                Print.e("local initIat success");
-            }
-        });
-        mIat.setParameter(SpeechConstant.PARAMS, null);
-        // 设置引擎类型
-        mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
-        // 指定资源路径
-        mIat.setParameter(ResourceUtil.ASR_RES_PATH,
-                ResourceUtil.generateResourcePath(NovelApp.getInstance().getApplicationContext(),
-                        ResourceUtil.RESOURCE_TYPE.assets, "asr/common.jet"));
-        // 指定语法路径
-        mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
-        // 指定语法名字
-        mIat.setParameter(SpeechConstant.GRAMMAR_LIST, "local");
-        // 设置文本编码格式
-        mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8");
-        // lexiconName 为词典名字，lexiconContents 为词典内容，lexiconListener 为回调监听器
-        int ret = mIat.updateLexicon("voice", lexiconContents, listener);
-        if (ret != ErrorCode.SUCCESS) {
-            Print.e("更新词典失败,错误码：" + ret);
-        }
-    }
-
-    private LexiconListener listener = new LexiconListener() {
-        @Override
-        public void onLexiconUpdated(String lexiconId, SpeechError error) {
-            if (error == null) {
-                Print.e("词典更新成功");
-                onLexiconSuccess();
-            } else {
-                Print.e("词典更新失败,错误码：" + error.getErrorCode());
-                onLexiconError(error.getErrorDescription());
-            }
-        }
-    };
-
-
-    public void onLexiconSuccess() {
-        Intent intent = new Intent();
-        intent.putExtra(RESULT_CODE, saveLocalId);
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-
-    public void onLexiconError(String error) {
-        showToast(error);
     }
 }

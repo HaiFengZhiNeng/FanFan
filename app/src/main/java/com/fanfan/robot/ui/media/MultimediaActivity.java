@@ -48,7 +48,8 @@ import butterknife.OnClick;
  */
 
 public class MultimediaActivity extends BarBaseActivity implements
-        OnPlayerEventListener, ViewPager.OnPageChangeListener,
+        OnPlayerEventListener,
+        ViewPager.OnPageChangeListener,
         ILocalSoundPresenter.ILocalSoundView,
         ISerialPresenter.ISerialView {
 
@@ -474,6 +475,11 @@ public class MultimediaActivity extends BarBaseActivity implements
     @Override
     public void onCompleted() {
 
+    }
+
+    @Override
+    public void refLocalPage(String key1, String key2, String key3, String key4) {
+        addSpeakAnswer(R.string.open_local);
     }
 
     @Override

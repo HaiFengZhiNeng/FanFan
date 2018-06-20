@@ -35,11 +35,20 @@ public class VoiceBean extends BaseItemData {
     private String actionData;
     @Property(nameInDb = "expressionData")
     private String expressionData;
+    @Property(nameInDb = "key1")
+    private String key1;
+    @Property(nameInDb = "key2")
+    private String key2;
+    @Property(nameInDb = "key3")
+    private String key3;
+    @Property(nameInDb = "key4")
+    private String key4;
 
-    @Generated(hash = 8230440)
+    @Generated(hash = 804894326)
     public VoiceBean(Long id, int localType, long saveTime, String showTitle,
                      String voiceAnswer, String imgUrl, String action, String expression,
-                     String actionData, String expressionData) {
+                     String actionData, String expressionData, String key1, String key2,
+                     String key3, String key4) {
         this.id = id;
         this.localType = localType;
         this.saveTime = saveTime;
@@ -50,6 +59,10 @@ public class VoiceBean extends BaseItemData {
         this.expression = expression;
         this.actionData = actionData;
         this.expressionData = expressionData;
+        this.key1 = key1;
+        this.key2 = key2;
+        this.key3 = key3;
+        this.key4 = key4;
     }
 
     @Generated(hash = 1719036352)
@@ -136,10 +149,43 @@ public class VoiceBean extends BaseItemData {
         this.expressionData = expressionData;
     }
 
+    public String getKey1() {
+        return this.key1;
+    }
+
+    public void setKey1(String key1) {
+        this.key1 = key1;
+    }
+
+    public String getKey2() {
+        return this.key2;
+    }
+
+    public void setKey2(String key2) {
+        this.key2 = key2;
+    }
+
+    public String getKey3() {
+        return this.key3;
+    }
+
+    public void setKey3(String key3) {
+        this.key3 = key3;
+    }
+
+    public String getKey4() {
+        return this.key4;
+    }
+
+    public void setKey4(String key4) {
+        this.key4 = key4;
+    }
+
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof VoiceBean) {
-            VoiceBean voiceBean= (VoiceBean) obj;
+            VoiceBean voiceBean = (VoiceBean) obj;
             return voiceBean.showTitle.equals(getShowTitle());
         }
         return false;

@@ -25,11 +25,17 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission
+        android:name="android.permission.READ_LOGS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission
+        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.USB_PERMISSION" />
 
     <uses-feature android:name="android.hardware.usb.host" />
@@ -44,7 +50,9 @@
     <!-- 屏保 -->
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <uses-permission
+        android:name="android.permission.CHANGE_CONFIGURATION"
+        tools:ignore="ProtectedPermissions" />
      
     <supports-screens
         android:anyDensity="true"
@@ -71,7 +79,7 @@
 
         <activity
             android:name=".ui.land.SplashActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/splashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -88,9 +96,6 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.main.MainActivity"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".ui.main.MainNewActivity"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.map.AMapActivity"
@@ -215,9 +220,6 @@
             android:name=".ui.map.act.BusRouteDetailActivity"
             android:theme="@style/AppThemeAction" />
         <activity
-            android:name=".ui.auxiliary.TrainInquiryActivity"
-            android:theme="@style/AppThemeAction" />
-        <activity
             android:name=".ui.auxiliary.PanoramicMapActivity"
             android:theme="@style/AppThemeAction" />
         <activity
@@ -226,6 +228,12 @@
         <activity
             android:name=".ui.setting.act.other.SettingPwdActivity"
             android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.voice.ImportActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.setting.act.voice.FileImportActivity"
+            android:theme="@style/AppTheme" />
 
         <service android:name=".service.SpeakService" />
         <service android:name=".service.UdpService" />

@@ -105,14 +105,17 @@ public class RobotInfo {
     }
 
     //IAT_LOCAL_UPDATELEXICON
+    @Deprecated
     private boolean localUpdatelexicon;
 
+    @Deprecated
     public boolean isLocalUpdatelexicon() {
         if (localUpdatelexicon)
             return true;
         return PreferencesUtils.getBoolean(NovelApp.getInstance().getApplicationContext(), Constants.IAT_LOCAL_UPDATELEXICON, false);
     }
 
+    @Deprecated
     public void setLocalUpdatelexicon() {
         Print.e("本地词典更新成功");
         this.localUpdatelexicon = true;

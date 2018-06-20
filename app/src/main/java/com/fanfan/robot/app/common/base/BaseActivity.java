@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,13 +27,27 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.fanfan.novel.im.event.MessageEvent;
+import com.fanfan.novel.im.init.StatusObservable;
+import com.fanfan.novel.im.init.TlsBusiness;
+import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.novel.utils.system.PhoneUtil;
 import com.fanfan.robot.R;
+import com.fanfan.robot.model.UserInfo;
+import com.fanfan.robot.other.cache.UserInfoCache;
 import com.fanfan.robot.presenter.ScreenPresenter;
 import com.fanfan.robot.presenter.ipersenter.IScreenPresenter;
 import com.fanfan.robot.service.ScreenService;
 import com.fanfan.robot.ui.auxiliary.LockActivity;
+import com.fanfan.robot.ui.call.SimpleCallActivity;
+import com.fanfan.robot.ui.land.SplashActivity;
+import com.seabreeze.log.Print;
+import com.tencent.TIMUserStatusListener;
+import com.tencent.callsdk.ILVCallConfig;
+import com.tencent.callsdk.ILVCallManager;
+import com.tencent.callsdk.ILVIncomingListener;
+import com.tencent.callsdk.ILVIncomingNotification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +57,10 @@ import butterknife.ButterKnife;
 import static com.fanfan.robot.app.common.Constants.unusual;
 
 
-public abstract class BaseActivity extends AppCompatActivity implements IScreenPresenter.ISreenView {
+public abstract class BaseActivity extends AppCompatActivity implements
+        IScreenPresenter.ISreenView,
+        ILVIncomingListener,
+        TIMUserStatusListener {
 
     protected Context mContext;
     protected Handler mHandler = new Handler();
@@ -66,6 +84,13 @@ public abstract class BaseActivity extends AppCompatActivity implements IScreenP
             setContentView(getLayoutId());
         }
         ButterKnife.bind(this);
+
+        StatusObservable.getInstance().addObserver(this);
+
+        ILVCallManager.getInstance().init(new ILVCallConfig()
+                .setAutoBusy(true));
+        ILVCallManager.getInstance().addIncomingListener(this);//添加来电回调
+
         initView();
         initDb();
         initData();
@@ -176,6 +201,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IScreenP
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        ILVCallManager.getInstance().removeIncomingListener(this);
+        StatusObservable.getInstance().deleteObserver(this);
         this.unregisterReceiver(this.finishAppReceiver);
         BaseApplication.removeActivity(this);
     }
@@ -286,6 +314,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IScreenP
     @Override
     public void finish() {
         super.finish();
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         ActivityCollector.finishActivity(this);
     }
 
@@ -307,4 +336,59 @@ public abstract class BaseActivity extends AppCompatActivity implements IScreenP
 
         void onDenied(List<String> deniedPermissions);
     }
+
+    @Override
+    public void onNewIncomingCall(final int callId, final int callType, final ILVIncomingNotification notification) {
+        Print.e("视频来电 新的来电 : " + notification);
+        callStop();
+
+//            Intent intent = new Intent(this, CallSerivice.class);
+//            intent.putExtra(CallSerivice.CALL_ID, callId);
+//            intent.putExtra(CallSerivice.CALL_TYPE, callType);
+//            intent.putExtra(CallSerivice.SENDER, notification.getSender());
+//            startService(intent);
+
+        SimpleCallActivity.newInstance(this, callId, callType, notification.getSender());
+    }
+
+    protected void callStop() {
+
+    }
+
+    @Override
+    public void onForceOffline() {
+        DialogUtils.showBasicIconDialog(BaseActivity.this, R.mipmap.ic_logo, "登陆提示",
+                "您的帐号已在其它地方登陆", "退出", "重新登陆",
+                new DialogUtils.OnNiftyDialogListener() {
+                    @Override
+                    public void onClickLeft() {
+                        LocalBroadcastManager.getInstance(BaseActivity.this).sendBroadcast(new Intent(Constants.NET_LOONGGG_EXITAPP));
+                    }
+
+                    @Override
+                    public void onClickRight() {
+                        logout();
+                    }
+                });
+    }
+
+    @Override
+    public void onUserSigExpired() {
+
+    }
+
+
+    public void logout() {
+        TlsBusiness.logout(UserInfo.getInstance().getIdentifier());
+        UserInfoCache.clearCache(this);
+        UserInfo.getInstance().setIdentifier(null);
+        MessageEvent.getInstance().clear();
+//        FriendshipInfo.getInstance().clear();
+//        GroupInfo.getInstance().clear();
+        Intent intent = new Intent(BaseActivity.this, SplashActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+
 }

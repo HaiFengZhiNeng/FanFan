@@ -77,11 +77,7 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
             mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, dance.getOrderData());
         }
 
-        if (Constants.isTrain) {
-            ImageLoader.loadImage(this, ivSplashBack, R.mipmap.train_splash_bg, false, 2000);
-        } else {
-            ImageLoader.loadImage(this, ivSplashBack, R.mipmap.splash_bg, false, 2000);
-        }
+        ImageLoader.loadImage(this, ivSplashBack, R.mipmap.splash_bg, false, 2000);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

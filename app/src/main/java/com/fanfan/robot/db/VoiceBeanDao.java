@@ -34,6 +34,10 @@ public class VoiceBeanDao extends AbstractDao<VoiceBean, Long> {
         public final static Property Expression = new Property(7, String.class, "expression", false, "expression");
         public final static Property ActionData = new Property(8, String.class, "actionData", false, "actionData");
         public final static Property ExpressionData = new Property(9, String.class, "expressionData", false, "expressionData");
+        public final static Property Key1 = new Property(10, String.class, "key1", false, "key1");
+        public final static Property Key2 = new Property(11, String.class, "key2", false, "key2");
+        public final static Property Key3 = new Property(12, String.class, "key3", false, "key3");
+        public final static Property Key4 = new Property(13, String.class, "key4", false, "key4");
     }
 
 
@@ -58,7 +62,11 @@ public class VoiceBeanDao extends AbstractDao<VoiceBean, Long> {
                 "\"action\" TEXT," + // 6: action
                 "\"expression\" TEXT," + // 7: expression
                 "\"actionData\" TEXT," + // 8: actionData
-                "\"expressionData\" TEXT);"); // 9: expressionData
+                "\"expressionData\" TEXT," + // 9: expressionData
+                "\"key1\" TEXT," + // 10: key1
+                "\"key2\" TEXT," + // 11: key2
+                "\"key3\" TEXT," + // 12: key3
+                "\"key4\" TEXT);"); // 13: key4
     }
 
     /** Drops the underlying database table. */
@@ -112,6 +120,26 @@ public class VoiceBeanDao extends AbstractDao<VoiceBean, Long> {
         if (expressionData != null) {
             stmt.bindString(10, expressionData);
         }
+ 
+        String key1 = entity.getKey1();
+        if (key1 != null) {
+            stmt.bindString(11, key1);
+        }
+ 
+        String key2 = entity.getKey2();
+        if (key2 != null) {
+            stmt.bindString(12, key2);
+        }
+ 
+        String key3 = entity.getKey3();
+        if (key3 != null) {
+            stmt.bindString(13, key3);
+        }
+ 
+        String key4 = entity.getKey4();
+        if (key4 != null) {
+            stmt.bindString(14, key4);
+        }
     }
 
     @Override
@@ -159,6 +187,26 @@ public class VoiceBeanDao extends AbstractDao<VoiceBean, Long> {
         if (expressionData != null) {
             stmt.bindString(10, expressionData);
         }
+ 
+        String key1 = entity.getKey1();
+        if (key1 != null) {
+            stmt.bindString(11, key1);
+        }
+ 
+        String key2 = entity.getKey2();
+        if (key2 != null) {
+            stmt.bindString(12, key2);
+        }
+ 
+        String key3 = entity.getKey3();
+        if (key3 != null) {
+            stmt.bindString(13, key3);
+        }
+ 
+        String key4 = entity.getKey4();
+        if (key4 != null) {
+            stmt.bindString(14, key4);
+        }
     }
 
     @Override
@@ -178,7 +226,11 @@ public class VoiceBeanDao extends AbstractDao<VoiceBean, Long> {
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // action
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // expression
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // actionData
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9) // expressionData
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // expressionData
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // key1
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // key2
+            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // key3
+            cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13) // key4
         );
         return entity;
     }
@@ -195,6 +247,10 @@ public class VoiceBeanDao extends AbstractDao<VoiceBean, Long> {
         entity.setExpression(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
         entity.setActionData(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
         entity.setExpressionData(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setKey1(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setKey2(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setKey3(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
+        entity.setKey4(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
      }
     
     @Override

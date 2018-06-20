@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.fanfan.novel.utils.system.AppUtil;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.app.enums.SpecialType;
 import com.fanfan.robot.model.Alarm;
@@ -384,10 +385,15 @@ public class InstagramPhotoActivity extends BarBaseActivity implements
     }
 
     @Override
+    public void refLocalPage(String key1, String key2, String key3, String key4) {
+        addSpeakAnswer(R.string.open_local);
+    }
+
+    @Override
     public void stopAll() {
         super.stopAll();
         mSoundPresenter.stopEvery();
-        mSoundPresenter.doAnswer(resFoFinal(R.array.wake_up));
+        mSoundPresenter.doAnswer(AppUtil.resFoFinal(R.array.wake_up));
     }
 
     @Override

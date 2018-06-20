@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.ArrayMap;
 import android.util.Log;
 
+import com.fanfan.novel.utils.grammer.GrammerUtils;
 import com.fanfan.novel.utils.youdao.TranslateLanguage;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.model.local.Asr;
@@ -20,7 +21,9 @@ import com.youdao.sdk.ydonlinetranslate.TranslateErrorCode;
 import com.youdao.sdk.ydonlinetranslate.TranslateListener;
 import com.youdao.sdk.ydtranslate.Translate;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RecogEventAdapter implements RecognizerListener, NulState {
 
@@ -30,10 +33,20 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
 
     private TranslateLanguage translateLanguage;
 
+    private StringBuilder sbL1;
+    private StringBuilder sbL2;
+    private StringBuilder sbL3;
+    private StringBuilder sbL4;
+
     public RecogEventAdapter(IRecogListener listener) {
         this.listener = listener;
         mIatResults = new ArrayMap<>();
         translateLanguage = new TranslateLanguage();
+
+        sbL1 = new StringBuilder();
+        sbL2 = new StringBuilder();
+        sbL3 = new StringBuilder();
+        sbL4 = new StringBuilder();
     }
 
 
@@ -109,26 +122,54 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
         String engineType = RobotInfo.getInstance().getEngineType();
         if (engineType.equals(SpeechConstant.TYPE_LOCAL)) {
 
+//            Asr local = GsonUtil.GsonToBean(recognizerResult.getResultString(), Asr.class);
+//
+//            if (local.getSc() > 30) {
+//
+//                List<Ws> wsList = local.getWs();
+//
+//                StringBuilder sbLocal = new StringBuilder();
+//
+//                for (int i = 0; i < wsList.size(); i++) {
+//                    Ws ws = wsList.get(i);
+//                    List<Cw> cwList = ws.getCw();
+//                    for (int j = 0; j < cwList.size(); j++) {
+//                        Cw cw = cwList.get(j);
+//                        if (!sbLocal.equals(cw.getW())) {
+//                            sbLocal.append(cw.getW());
+//                        }
+//                    }
+//                }
+//
+//                listener.onAsrLocalFinalResult(sbLocal.toString());
+//            } else {
+//                listener.onAsrLocalDegreeLow(local, local.getSc());
+//            }
             Asr local = GsonUtil.GsonToBean(recognizerResult.getResultString(), Asr.class);
 
-            if (local.getSc() > 30) {
+            if (local.getSc() > GrammerUtils.THRESHOLD) {
+
+                sbL1.delete(0, sbL1.length());
+                sbL2.delete(0, sbL2.length());
+                sbL3.delete(0, sbL3.length());
+                sbL4.delete(0, sbL4.length());
 
                 List<Ws> wsList = local.getWs();
-
-                StringBuilder sbLocal = new StringBuilder();
-
                 for (int i = 0; i < wsList.size(); i++) {
-                    Ws ws = wsList.get(i);
-                    List<Cw> cwList = ws.getCw();
-                    for (int j = 0; j < cwList.size(); j++) {
-                        Cw cw = cwList.get(j);
-                        if (!sbLocal.equals(cw.getW())) {
-                            sbLocal.append(cw.getW());
-                        }
+
+                    if (i == 0) {
+                        getKeyword(wsList, i, sbL1);
+                    } else if (i == 1) {
+                        getKeyword(wsList, i, sbL2);
+                    } else if (i == 2) {
+                        getKeyword(wsList, i, sbL3);
+                    } else if (i == 3) {
+                        getKeyword(wsList, i, sbL4);
                     }
+
                 }
 
-                listener.onAsrLocalFinalResult(sbLocal.toString());
+                listener.onAsrLocalFinalResult(sbL1.toString(), sbL2.toString(), sbL3.toString(), sbL4.toString());
             } else {
                 listener.onAsrLocalDegreeLow(local, local.getSc());
             }
@@ -176,6 +217,20 @@ public class RecogEventAdapter implements RecognizerListener, NulState {
             }
         }
 
+    }
+
+    private void getKeyword(List<Ws> wsList, int i, StringBuilder sb) {
+
+        Ws ws = wsList.get(i);
+        List<Cw> cwList = ws.getCw();
+
+        Set<Cw> cwSet = new HashSet<>(cwList);
+
+        for (Cw cw : cwSet) {
+            if (cw.getSc() > GrammerUtils.THRESHOLD) {
+                sb.append(cw.getW());
+            }
+        }
     }
 
     @Override

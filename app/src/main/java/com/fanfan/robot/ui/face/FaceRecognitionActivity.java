@@ -50,7 +50,8 @@ import butterknife.OnClick;
  * 人脸模块开始
  */
 public class FaceRecognitionActivity extends BarBaseActivity implements
-        ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
+        ILocalSoundPresenter.ILocalSoundView,
+        ISerialPresenter.ISerialView {
 
     @BindView(R.id.iv_face_check_in)
     ImageView ivFaceCheckIn;
@@ -384,6 +385,11 @@ public class FaceRecognitionActivity extends BarBaseActivity implements
     @Override
     public void onCompleted() {
 
+    }
+
+    @Override
+    public void refLocalPage(String key1, String key2, String key3, String key4) {
+        addSpeakAnswer(R.string.open_local);
     }
 
     @Override

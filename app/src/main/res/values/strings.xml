@@ -14,13 +14,13 @@
     <string name="settings">设置</string>
     <string name="help">帮助</string>
     <string name="string_help_text">当前应用缺少必要权限。\n\n请点击\"设置\"-\"权限\"-打开所需权限。\n\n最后点击两次后退按钮，即可返回。</string>
-    <string name="quit">退出</string>
-
     <string name="title_setting_pwd">请输入密码</string>
     <string name="input_hint_pwd">请输入密码</string>
 
     <string name="confirm">确定</string>
     <string name="cancel">取消</string>
+    <string name="quit">退出</string>
+
     <string name="tip_close_camera">关闭摄像头</string>
     <string name="tip_open_camera">打开摄像头</string>
     <string name="tip_switch_camera">切换摄像头</string>
@@ -79,6 +79,8 @@
     <string name="title_train_inquiry">列 车 查 询</string>
     <string name="title_panorama_detail">全 景 地 图</string>
     <string name="title_amap_detail">驾车路线详情</string>
+    <string name="title_import">一 键 导 入</string>
+    <string name="title_import_file">文 件 导 入</string>
 
     <string name="open_map">此页面暂不支持打开地图</string>
     <string name="open_artificial">此页面暂不支持人工客服</string>
@@ -143,5 +145,7 @@
 
     <string name="tts_toast_format_buffer" formatted="false">缓冲进度为%d%%</string>
     <string name="tts_toast_format_speak" formatted="false">播放进度为%d%%</string>
+
+    <string name="excel_log">请前往海风智能科技官网下载标准批量EXCEL导入模板，否则将导入失败！将模板放置于SD卡中Donload目录下。</string>
 
 </resources>

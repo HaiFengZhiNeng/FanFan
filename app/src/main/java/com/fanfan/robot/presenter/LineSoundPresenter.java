@@ -268,9 +268,6 @@ public class LineSoundPresenter extends ILineSoundPresenter implements
                 isTrans = false;
                 mSoundView.doAiuiAnwer(question, finalText);
                 mSoundView.refHomePage(question, finalText);
-                if (Constants.isTrain) {
-                    mSoundView.train(trains);
-                }
                 for (int i = 0; i < trains.size(); i++) {
                     Train train = trains.get(i);
                     mSoundView.refHomePage(null, train.getEndtime_for_voice() + "的" + train.getTrainType() + " " + train.getTrainNo() + "" +
@@ -283,9 +280,6 @@ public class LineSoundPresenter extends ILineSoundPresenter implements
         } else {
             mSoundView.doAiuiAnwer(question, finalText);
             mSoundView.refHomePage(question, finalText);
-            if (Constants.isTrain) {
-                mSoundView.train(trains);
-            }
             for (int i = 0; i < trains.size(); i++) {
                 Train train = trains.get(i);
                 mSoundView.refHomePage(null, train.getEndtime_for_voice() + "的" + train.getTrainType() + " " + train.getTrainNo() + "" +

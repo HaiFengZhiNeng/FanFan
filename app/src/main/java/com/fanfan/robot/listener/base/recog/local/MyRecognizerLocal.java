@@ -3,6 +3,7 @@ package com.fanfan.robot.listener.base.recog.local;
 import android.content.Context;
 
 import com.fanfan.novel.utils.FucUtil;
+import com.fanfan.novel.utils.grammer.GrammerUtils;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.listener.base.recog.IRecogListener;
 import com.fanfan.robot.listener.base.recog.RecogEventAdapter;
@@ -17,8 +18,6 @@ import com.seabreeze.log.Print;
 import java.io.File;
 
 public class MyRecognizerLocal {
-
-    private static final String LOCAL_GRAMMAR_NAME = "local";
 
     private Context mContext;
 
@@ -86,6 +85,7 @@ public class MyRecognizerLocal {
     }
 
     private void setIatparameter() {
+
         if (mIat == null) {
             return;
         }
@@ -98,10 +98,10 @@ public class MyRecognizerLocal {
 
         mIat.setParameter(ResourceUtil.ASR_RES_PATH, FucUtil.getResAsrPath(mContext));
         mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
-        mIat.setParameter(SpeechConstant.LOCAL_GRAMMAR, LOCAL_GRAMMAR_NAME);
-        mIat.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
+        mIat.setParameter(SpeechConstant.LOCAL_GRAMMAR, GrammerUtils.LOCAL_GRAMMAR_NAME);
+        mIat.setParameter(SpeechConstant.MIXED_THRESHOLD, GrammerUtils.THRESHOLD + "");
 
-        mIat.setParameter(SpeechConstant.RESULT_TYPE, "json");
+        mIat.setParameter(SpeechConstant.RESULT_TYPE, GrammerUtils.RESULT_TYPE);
 
         // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
         mIat.setParameter(SpeechConstant.VAD_BOS, "9000");
@@ -110,9 +110,9 @@ public class MyRecognizerLocal {
         // 设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
         mIat.setParameter(SpeechConstant.ASR_PTT, "0");
         // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
-        mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
+        mIat.setParameter(SpeechConstant.AUDIO_FORMAT, GrammerUtils.AUDIO_FORMAT);
         mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Constants.GRM_PATH + File.separator + "iat.wav");
-
+//        mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/iat.wav");
     }
 
 

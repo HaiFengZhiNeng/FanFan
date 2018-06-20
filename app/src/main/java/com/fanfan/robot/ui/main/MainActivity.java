@@ -403,8 +403,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 bindService(false);
                 break;
             case R.id.iv_face:
-//                FaceRecognitionActivity.newInstance(this);
-                DetectfaceActivity.newInstance(this);
+                FaceRecognitionActivity.newInstance(this);
+//                DetectfaceActivity.newInstance(this);
                 break;
             case R.id.iv_seting_up:
                 clickSetting();
@@ -1143,7 +1143,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         sendOrder(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
         mSoundPresenter.stopVoice();
         stopRecognizerListener();
-        String wakeUp = resFoFinal(R.array.wake_up);
+        String wakeUp = AppUtil.resFoFinal(R.array.wake_up);
         mySynthesizer.stop();
         mySynthesizer.speak(wakeUp);
     }
@@ -1256,11 +1256,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-    }
-
-    @Override
-    public void train(List<Train> trains) {
-
     }
 
     @Override

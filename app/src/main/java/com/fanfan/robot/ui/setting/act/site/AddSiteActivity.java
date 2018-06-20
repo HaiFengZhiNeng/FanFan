@@ -7,6 +7,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.fanfan.novel.utils.grammer.GrammerUtils;
+import com.fanfan.novel.utils.grammer.LoadDataUtils;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.db.manager.NavigationDBManager;
@@ -21,6 +23,7 @@ import com.fanfan.novel.utils.system.AppUtil;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.GrammarListener;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.LexiconListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -32,6 +35,12 @@ import com.seabreeze.log.Print;
 import java.util.List;
 
 import butterknife.BindView;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by android on 2018/2/23.
@@ -68,11 +77,7 @@ public class AddSiteActivity extends BarBaseActivity {
 
     private SiteBean siteBean;
 
-    private SpeechRecognizer mIat;
-
-    private VideoDBManager mVideoDBManager;
-    private VoiceDBManager mVoiceDBManager;
-    private NavigationDBManager mNavigationDBManager;
+    private SpeechRecognizer recognizer;
 
     @Override
     protected int getLayoutId() {
@@ -97,12 +102,10 @@ public class AddSiteActivity extends BarBaseActivity {
 
     @Override
     protected void onDestroy() {
-        if (mIat != null) {
-            mIat.cancel();
+        if (recognizer != null) {
+            recognizer.cancel();
         }
-        listener = null;
         super.onDestroy();
-        System.gc();
     }
 
     @Override
@@ -121,11 +124,11 @@ public class AddSiteActivity extends BarBaseActivity {
                     showToast("error！");
                     break;
                 }
-                if (isEmpty(etSiteName)) {
+                if (AppUtil.isEmpty(etSiteName)) {
                     showToast("名称不能为空！");
                     break;
                 }
-                if (isEmpty(etSiteUrl)) {
+                if (AppUtil.isEmpty(etSiteUrl)) {
                     showToast("链接不能为空！");
                     break;
                 }
@@ -133,7 +136,7 @@ public class AddSiteActivity extends BarBaseActivity {
                     showToast("输入 20 字以内");
                     break;
                 }
-                if (!AppUtil.matcherUrl(getText(etSiteUrl))) {
+                if (!AppUtil.matcherUrl(AppUtil.getText(etSiteUrl))) {
                     showToast("输入的网址不合法");
                     break;
                 }
@@ -152,8 +155,50 @@ public class AddSiteActivity extends BarBaseActivity {
     }
 
     private void videoIsexit() {
-        siteBean.setName(getText(etSiteName));
-        siteBean.setUrl(getText(etSiteUrl));
+
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> e) throws Exception {
+
+                insertSiteBean();
+
+                String lexiconContents = LoadDataUtils.getLexiconContents();
+
+                e.onNext(lexiconContents);
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+
+                        recognizer = GrammerUtils.getRecognizer(AddSiteActivity.this, recognizer);
+
+                        Print.e(s);
+                        recognizer.buildGrammar(GrammerUtils.GRAMMAR_BNF, s, new GrammarListener() {
+                            @Override
+                            public void onBuildFinish(String s, SpeechError speechError) {
+                                if (speechError == null) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra(RESULT_CODE, saveLocalId);
+                                    setResult(RESULT_OK, intent);
+                                    finish();
+                                } else {
+                                    showToast(speechError.getErrorDescription());
+                                }
+                            }
+                        });
+                    }
+                });
+    }
+
+    private void insertSiteBean() {
+        String name = AppUtil.getText(etSiteName);
+        String url = AppUtil.getText(etSiteUrl);
+
+        siteBean.setName(name);
+        siteBean.setUrl(url);
         siteBean.setSaveTime(System.currentTimeMillis());
         if (saveLocalId == -1) {
             saveLocalId = mSiteDBManager.insertForId(siteBean);
@@ -161,110 +206,7 @@ public class AddSiteActivity extends BarBaseActivity {
             siteBean.setId(saveLocalId);
             mSiteDBManager.update(siteBean);
         }
-
-        if (saveLocalId == -1) {
-            throw new IllegalArgumentException("DB error");
-        } else {
-            mNavigationDBManager = new NavigationDBManager();
-            mVideoDBManager = new VideoDBManager();
-            mVoiceDBManager = new VoiceDBManager();
-
-            updateContents();
-        }
     }
 
-    private boolean isEmpty(TextView textView) {
-        return textView.getText().toString().trim().equals("") || textView.getText().toString().trim().equals("");
-    }
 
-    private String getText(TextView textView) {
-        return textView.getText().toString().trim();
-    }
-
-    /**
-     * 更新所有
-     */
-    public void updateContents() {
-        if (mVideoDBManager == null || mVoiceDBManager == null || mNavigationDBManager == null) {
-            throw new NullPointerException("local loxicon unll");
-        }
-        StringBuilder lexiconContents = new StringBuilder();
-        //本地语音
-        List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
-        for (VoiceBean voiceBean : voiceBeanList) {
-            lexiconContents.append(voiceBean.getShowTitle()).append("\n");
-        }
-        //本地视频
-        List<VideoBean> videoBeanList = mVideoDBManager.loadAll();
-        for (VideoBean videoBean : videoBeanList) {
-            lexiconContents.append(videoBean.getShowTitle()).append("\n");
-        }
-        //本地导航
-        List<NavigationBean> navigationBeanList = mNavigationDBManager.loadAll();
-        for (NavigationBean navigationBean : navigationBeanList) {
-            lexiconContents.append(navigationBean.getTitle()).append("\n");
-        }
-        //本地网址
-        List<SiteBean> siteBeanList = mSiteDBManager.loadAll();
-        for (SiteBean siteBean : siteBeanList) {
-            lexiconContents.append(siteBean.getName()).append("\n");
-        }
-
-        lexiconContents.append(AppUtil.words2Contents());
-        updateLocation(lexiconContents.toString());
-    }
-
-    public void updateLocation(String lexiconContents) {
-        mIat = SpeechRecognizer.createRecognizer(this, new InitListener() {
-            @Override
-            public void onInit(int code) {
-                if (code != ErrorCode.SUCCESS) {
-                    Print.e("初始化失败，错误码：" + code);
-                }
-                Print.e("local initIat success");
-            }
-        });
-        mIat.setParameter(SpeechConstant.PARAMS, null);
-        // 设置引擎类型
-        mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
-        // 指定资源路径
-        mIat.setParameter(ResourceUtil.ASR_RES_PATH,
-                ResourceUtil.generateResourcePath(NovelApp.getInstance().getApplicationContext(),
-                        ResourceUtil.RESOURCE_TYPE.assets, "asr/common.jet"));
-        // 指定语法路径
-        mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
-        // 指定语法名字
-        mIat.setParameter(SpeechConstant.GRAMMAR_LIST, "local");
-        // 设置文本编码格式
-        mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8");
-        // lexiconName 为词典名字，lexiconContents 为词典内容，lexiconListener 为回调监听器
-        int ret = mIat.updateLexicon("voice", lexiconContents, listener);
-        if (ret != ErrorCode.SUCCESS) {
-            Print.e("更新词典失败,错误码：" + ret);
-        }
-    }
-
-    private LexiconListener listener = new LexiconListener() {
-        @Override
-        public void onLexiconUpdated(String lexiconId, SpeechError error) {
-            if (error == null) {
-                Print.e("词典更新成功");
-                onLexiconSuccess();
-            } else {
-                Print.e("词典更新失败,错误码：" + error.getErrorCode());
-                onLexiconError(error.getErrorDescription());
-            }
-        }
-    };
-
-    public void onLexiconSuccess() {
-        Intent intent = new Intent();
-        intent.putExtra(RESULT_CODE, saveLocalId);
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-
-    public void onLexiconError(String error) {
-        showToast(error);
-    }
 }

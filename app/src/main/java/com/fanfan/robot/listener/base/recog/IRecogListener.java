@@ -21,7 +21,7 @@ public interface IRecogListener {
 
     void onTrans(Trans trans);
 
-    void onAsrLocalFinalResult(String result);
+    void onAsrLocalFinalResult(String key1, String key2, String key3, String key4);
 
     void onAsrLocalDegreeLow(Asr local, int degree);
 

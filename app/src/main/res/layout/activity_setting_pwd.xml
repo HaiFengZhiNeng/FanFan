@@ -5,7 +5,7 @@
     android:id="@+id/backdrop"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.land.ForgetActivity">
+    tools:context=".ui.setting.act.other.SettingPwdActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

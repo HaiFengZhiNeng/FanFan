@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.fanfan.novel.utils.system.AppUtil;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.app.enums.SpecialType;
@@ -47,7 +48,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 public class ProblemConsultingActivity extends BarBaseActivity implements
-        ILocalSoundPresenter.ILocalSoundView, ISerialPresenter.ISerialView {
+        ILocalSoundPresenter.ILocalSoundView,
+        ISerialPresenter.ISerialView {
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerVoice;
@@ -248,13 +250,11 @@ public class ProblemConsultingActivity extends BarBaseActivity implements
         recyclerVoice.scrollToPosition(mCurrentPos);
         speakText = itemData.getVoiceAnswer();
         addSpeakAnswer(speakText);
-        if (!Constants.isTrain) {
-            if (itemData.getActionData() != null) {
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getActionData());
-            }
-            if (itemData.getExpressionData() != null) {
-                mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getExpressionData());
-            }
+        if (itemData.getActionData() != null) {
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getActionData());
+        }
+        if (itemData.getExpressionData() != null) {
+            mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, itemData.getExpressionData());
         }
 
         ImageLoader.loadLargeImage(mContext, ivVoiceImage, itemData.getImgUrl(), R.mipmap.load_image);
@@ -352,7 +352,7 @@ public class ProblemConsultingActivity extends BarBaseActivity implements
     @Override
     public void refLocalPage(String result) {
         dismissImage();
-        List<VoiceBean> voiceBeans = mVoiceDBManager.queryLikeVoiceByQuestion(result);
+        List<VoiceBean> voiceBeans = mVoiceDBManager.queryWhereOr(result);
         if (voiceBeans != null && voiceBeans.size() > 0) {
             VoiceBean itemData = null;
             if (voiceBeans.size() == 1) {
@@ -368,9 +368,9 @@ public class ProblemConsultingActivity extends BarBaseActivity implements
             }
         } else {
             if (new Random().nextBoolean()) {
-                addSpeakAnswer(resFoFinal(R.array.no_result));
+                addSpeakAnswer(AppUtil.resFoFinal(R.array.no_result));
             } else {
-                addSpeakAnswer(resFoFinal(R.array.no_voice));
+                addSpeakAnswer(AppUtil.resFoFinal(R.array.no_voice));
             }
         }
     }
@@ -378,6 +378,31 @@ public class ProblemConsultingActivity extends BarBaseActivity implements
     @Override
     public void onCompleted() {
 
+    }
+
+    @Override
+    public void refLocalPage(String key1, String key2, String key3, String key4) {
+        List<VoiceBean> voiceBeans = mVoiceDBManager.queryWhereOr(key1, key2, key3, key4);
+        if (voiceBeans != null && voiceBeans.size() > 0) {
+            VoiceBean itemData = null;
+            if (voiceBeans.size() == 1) {
+                itemData = voiceBeans.get(voiceBeans.size() - 1);
+            } else {
+                itemData = voiceBeans.get(new Random().nextInt(voiceBeans.size()));
+            }
+            int index = voiceBeanList.indexOf(itemData);
+            if (index != -1) {
+                refVoice(itemData, index);
+            } else {
+                showMsg("数据有误");
+            }
+        } else {
+            if (new Random().nextBoolean()) {
+                addSpeakAnswer(AppUtil.resFoFinal(R.array.no_result));
+            } else {
+                addSpeakAnswer(AppUtil.resFoFinal(R.array.no_voice));
+            }
+        }
     }
 
     @Override

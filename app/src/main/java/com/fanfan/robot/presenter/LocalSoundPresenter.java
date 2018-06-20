@@ -71,9 +71,9 @@ public class LocalSoundPresenter extends ILocalSoundPresenter {
         IRecogListener iRecogListener = new LocalListener() {
 
             @Override
-            public void onAsrLocalFinalResult(String result) {
-                super.onAsrLocalFinalResult(result);
-                onRecognResult(result);
+            public void onAsrLocalFinalResult(String key1, String key2, String key3, String key4) {
+                super.onAsrLocalFinalResult(key1, key2, key3, key4);
+                onRecognResult(key1, key2, key3, key4);
             }
 
             @Override
@@ -139,55 +139,53 @@ public class LocalSoundPresenter extends ILocalSoundPresenter {
         mHandler.removeCallbacks(runnable);
     }
 
-    private void onRecognResult(String result) {
+    private void onRecognResult(String key1, String key2, String key3, String key4) {
         myRecognizer.stop();
-
-        Print.e(result);
 
         TranficCalculator calculator = new TranficCalculator();
 
-        SpecialType myType = calculator.specialLocal(result, new MoveStrategy());
+        SpecialType myType = calculator.specialLocal(key1, new MoveStrategy());
         if (SpecialType.NoSpecial != myType) {
-            mSoundView.spakeMove(myType, result);
+            mSoundView.spakeMove(myType, key1);
             return;
         }
-        myType = calculator.specialLocal(result, new LogoutStrategy());
+        myType = calculator.specialLocal(key1, new LogoutStrategy());
         if (SpecialType.NoSpecial != myType) {
             mSoundView.logout();
             return;
         }
-        myType = calculator.specialLocal(result, new MapStrategy());
+        myType = calculator.specialLocal(key1, new MapStrategy());
         if (SpecialType.NoSpecial != myType) {
             mSoundView.openMap();
             return;
         }
-        myType = calculator.specialLocal(result, new StopStrategy());
+        myType = calculator.specialLocal(key1, new StopStrategy());
         if (SpecialType.NoSpecial != myType) {
 
             stopEvery();
             return;
         }
-        myType = calculator.specialLocal(result, new BackStrategy());
+        myType = calculator.specialLocal(key1, new BackStrategy());
         if (SpecialType.NoSpecial != myType) {
             mSoundView.back();
             return;
         }
-        myType = calculator.specialLocal(result, new ArtificialStrategy());
+        myType = calculator.specialLocal(key1, new ArtificialStrategy());
         if (SpecialType.NoSpecial != myType) {
             mSoundView.artificial();
             return;
         }
-        myType = calculator.specialLocal(result, new FaceStrategy());
+        myType = calculator.specialLocal(key1, new FaceStrategy());
         if (SpecialType.NoSpecial != myType) {
-            mSoundView.face(myType, result);
+            mSoundView.face(myType, key1);
             return;
         }
-        myType = calculator.specialLocal(result, new ControlStrategy());
+        myType = calculator.specialLocal(key1, new ControlStrategy());
         if (SpecialType.NoSpecial != myType) {
-            mSoundView.control(myType, result);
+            mSoundView.control(myType, key1);
             return;
         }
-        mSoundView.refLocalPage(result);
+        mSoundView.refLocalPage(key1, key2, key3, key4);
     }
 
 

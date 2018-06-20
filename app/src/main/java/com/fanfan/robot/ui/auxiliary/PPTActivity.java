@@ -326,6 +326,11 @@ public class PPTActivity extends BarBaseActivity implements
         }
     }
 
+    @Override
+    public void refLocalPage(String key1, String key2, String key3, String key4) {
+        addSpeakAnswer(R.string.open_local);
+    }
+
     Runnable runnable = new Runnable() {
         @Override
         public void run() {

@@ -63,12 +63,16 @@ public class Asr {
         return sc;
     }
 
+
     @Override
     public String toString() {
         return "Asr{" +
                 "sn=" + sn +
                 ", ls=" + ls +
+                ", bg=" + bg +
+                ", ed=" + ed +
                 ", ws=" + ws +
+                ", sc=" + sc +
                 '}';
     }
 }

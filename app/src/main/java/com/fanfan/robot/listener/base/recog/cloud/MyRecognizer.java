@@ -3,6 +3,7 @@ package com.fanfan.robot.listener.base.recog.cloud;
 import android.content.Context;
 
 import com.fanfan.novel.utils.FucUtil;
+import com.fanfan.novel.utils.grammer.GrammerUtils;
 import com.fanfan.robot.app.RobotInfo;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.listener.base.recog.IRecogListener;
@@ -115,11 +116,11 @@ public class MyRecognizer {
             if (RobotInfo.getInstance().getEngineType().equals(SpeechConstant.TYPE_LOCAL)) {
                 mIat.setParameter(ResourceUtil.ASR_RES_PATH, FucUtil.getResAsrPath(mContext));
                 mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
-                mIat.setParameter(SpeechConstant.LOCAL_GRAMMAR, GrammerEventManager.LOCAL_GRAMMAR_NAME);
+                mIat.setParameter(SpeechConstant.LOCAL_GRAMMAR, GrammerUtils.GRAMMAR_LOCAL_FILE_NAME);
                 mIat.setParameter(SpeechConstant.MIXED_THRESHOLD, "30");
             }
         }
-        mIat.setParameter(SpeechConstant.RESULT_TYPE, "json");
+        mIat.setParameter(SpeechConstant.RESULT_TYPE, GrammerUtils.RESULT_TYPE);
 
         if (RobotInfo.getInstance().isTranslateEnable()) {
             mIat.setParameter(SpeechConstant.ASR_SCH, "1");
@@ -151,7 +152,7 @@ public class MyRecognizer {
         // 设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
         mIat.setParameter(SpeechConstant.ASR_PTT, "0");
         // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
-        mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
+        mIat.setParameter(SpeechConstant.AUDIO_FORMAT, GrammerUtils.AUDIO_FORMAT);
         mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Constants.GRM_PATH + File.separator + "iat.wav");
         mIat.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, String.valueOf(focus));
     }

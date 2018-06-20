@@ -5,6 +5,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fanfan.robot.R;
+import com.fanfan.robot.app.common.base.BaseActivity;
 import com.fanfan.youtu.api.base.event.BaseEvent;
 import com.fanfan.youtu.utils.ErrorMsg;
 import com.seabreeze.log.Print;
@@ -15,7 +16,7 @@ import java.util.Random;
  * Created by zhangyuanyuan on 2017/12/15.
  */
 
-public abstract class BarBaseActivity extends IMBaseActivity {
+public abstract class BarBaseActivity extends BaseActivity {
 
     @Override
     protected int setBackgroundGlide() {
@@ -33,15 +34,6 @@ public abstract class BarBaseActivity extends IMBaseActivity {
 
     public void onError(BaseEvent event) {
         Print.e("onError : " + event.getCode() + "  " + event.getCodeDescribe());
-    }
-
-    public String resFoFinal(int id) {
-        String[] arrResult = getResources().getStringArray(id);
-        return arrResult[new Random().nextInt(arrResult.length)];
-    }
-
-    public int resFoInter(String[] res) {
-        return new Random().nextInt(res.length);
     }
 
     protected void stopAll() {
@@ -66,9 +58,4 @@ public abstract class BarBaseActivity extends IMBaseActivity {
         }
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-    }
 }

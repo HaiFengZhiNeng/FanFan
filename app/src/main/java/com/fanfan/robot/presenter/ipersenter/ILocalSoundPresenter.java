@@ -88,5 +88,16 @@ public abstract class ILocalSoundPresenter implements BasePresenter {
          * 说话完成
          */
         void onCompleted();
+        
+        /**
+         * 关键词
+         *
+         * @param key1
+         * @param key2
+         * @param key3
+         * @param key4
+         */
+        void refLocalPage(String key1, String key2, String key3, String key4);
+
     }
 }

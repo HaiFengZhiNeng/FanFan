@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.novel.utils.grammer.GrammerUtils;
+import com.fanfan.novel.utils.grammer.LoadDataUtils;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.db.manager.NavigationDBManager;
@@ -34,7 +36,9 @@ import com.fanfan.novel.utils.DialogUtils;
 import com.fanfan.novel.utils.bitmap.ImageLoader;
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
+import com.hankcs.hanlp.HanLP;
 import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.GrammarListener;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.LexiconListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -49,6 +53,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by android on 2018/1/8.
@@ -108,10 +118,7 @@ public class AddVoiceActivity extends BarBaseActivity {
 
     private VoiceBean voiceBean;
 
-    private SpeechRecognizer mIat;
-    private VideoDBManager mVideoDBManager;
-    private NavigationDBManager mNavigationDBManager;
-    private SiteDBManager mSiteDBManager;
+    private SpeechRecognizer recognizer;
 
     @Override
     protected int getLayoutId() {
@@ -129,8 +136,8 @@ public class AddVoiceActivity extends BarBaseActivity {
             voiceBean = mVoiceDBManager.selectByPrimaryKey(saveLocalId);
             etQuestion.setText(voiceBean.getShowTitle());
             etContent.setText(voiceBean.getVoiceAnswer());
-            curExpression = valueForArray(R.array.expression_data, voiceBean.getExpressionData());
-            curAction = valueForArray(R.array.action_order, voiceBean.getActionData());
+            curExpression = AppUtil.valueForArray(R.array.expression_data, voiceBean.getExpressionData());
+            curAction = AppUtil.valueForArray(R.array.action_order, voiceBean.getActionData());
             String savePath = voiceBean.getImgUrl();
             if (savePath != null) {
                 if (new File(savePath).exists()) {
@@ -155,19 +162,17 @@ public class AddVoiceActivity extends BarBaseActivity {
 
     @Override
     protected void onDestroy() {
-        if (mIat != null) {
-            mIat.cancel();
+        if (recognizer != null) {
+            recognizer.cancel();
         }
-        listener = null;
         super.onDestroy();
-        System.gc();
     }
 
     @OnClick({R.id.tv_img, R.id.tv_expression, R.id.tv_action})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_img:
-                if (isEmpty(etQuestion)) {
+                if (AppUtil.isEmpty(etQuestion)) {
                     showToast("输入不能为空！");
                 } else {
                     selectFromAlbum();//打开相册
@@ -208,11 +213,11 @@ public class AddVoiceActivity extends BarBaseActivity {
         switch (item.getItemId()) {
             case R.id.finish:
 
-                if (isEmpty(etQuestion)) {
+                if (AppUtil.isEmpty(etQuestion)) {
                     showToast("问题不能为空！");
                     break;
                 }
-                if (isEmpty(etContent)) {
+                if (AppUtil.isEmpty(etContent)) {
                     showToast("答案不能为空！");
                     break;
                 }
@@ -339,31 +344,88 @@ public class AddVoiceActivity extends BarBaseActivity {
 
 
     private void voiceIsexit() {
+
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> e) throws Exception {
+
+                insertVoiceBean();
+
+                String lexiconContents = LoadDataUtils.getLexiconContents();
+
+                e.onNext(lexiconContents);
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+
+                        recognizer = GrammerUtils.getRecognizer(AddVoiceActivity.this, recognizer);
+
+                        Print.e(s);
+                        recognizer.buildGrammar(GrammerUtils.GRAMMAR_BNF, s, new GrammarListener() {
+                            @Override
+                            public void onBuildFinish(String s, SpeechError speechError) {
+                                if (speechError == null) {
+                                    Intent intent = new Intent();
+                                    intent.putExtra(RESULT_CODE, saveLocalId);
+                                    setResult(RESULT_OK, intent);
+                                    finish();
+                                } else {
+                                    showToast(speechError.getErrorDescription());
+                                }
+                            }
+                        });
+                    }
+                });
+
+    }
+
+    private void insertVoiceBean() {
+
+        String question = AppUtil.getText(etQuestion);
+        String content = AppUtil.getText(etContent);
+
         voiceBean.setSaveTime(System.currentTimeMillis());
-        voiceBean.setShowTitle(getText(etQuestion));
-        voiceBean.setVoiceAnswer(getText(etContent));
-        voiceBean.setExpression(resArray(R.array.expression)[curExpression]);
-        voiceBean.setExpressionData(resArray(R.array.expression_data)[curExpression]);
-        voiceBean.setAction(resArray(R.array.action)[curAction]);
-        voiceBean.setActionData(resArray(R.array.action_order)[curAction]);
+        voiceBean.setShowTitle(question);
+        voiceBean.setVoiceAnswer(content);
+        voiceBean.setExpression(AppUtil.resArray(R.array.expression)[curExpression]);
+        voiceBean.setExpressionData(AppUtil.resArray(R.array.expression_data)[curExpression]);
+        voiceBean.setAction(AppUtil.resArray(R.array.action)[curAction]);
+        voiceBean.setActionData(AppUtil.resArray(R.array.action_order)[curAction]);
         setVoiceimg(voiceBean);
+
+        List<String> keywordList = HanLP.extractKeyword(question, 5);
+        if (keywordList != null && keywordList.size() > 0) {
+            Print.e(keywordList);
+
+            for (int j = 0; j < keywordList.size(); j++) {
+                String key = keywordList.get(j);
+                if (j == 0) {
+                    voiceBean.setKey1(key);
+                } else if (j == 1) {
+                    voiceBean.setKey2(key);
+                } else if (j == 2) {
+                    voiceBean.setKey3(key);
+                } else if (j == 4) {
+                    voiceBean.setKey4(key);
+                }
+            }
+
+        } else {
+            voiceBean.setKey1(question);
+        }
+
         if (saveLocalId == -1) {//直接添加
             saveLocalId = mVoiceDBManager.insertForId(voiceBean);
         } else {//更新
             voiceBean.setId(saveLocalId);
             mVoiceDBManager.update(voiceBean);
         }
-
-        if (saveLocalId == -1) {
-            throw new IllegalArgumentException("DB error");
-        } else {
-            mVideoDBManager = new VideoDBManager();
-            mNavigationDBManager = new NavigationDBManager();
-            mSiteDBManager = new SiteDBManager();
-
-            updateContents();
-        }
     }
+
 
     private void setVoiceimg(VoiceBean bean) {
         if (outputUri != null) {
@@ -377,109 +439,4 @@ public class AddVoiceActivity extends BarBaseActivity {
         }
     }
 
-
-    private int valueForArray(int resId, String compare) {
-        String[] arrays = resArray(resId);
-        return Arrays.binarySearch(arrays, compare);
-    }
-
-    private boolean isEmpty(TextView textView) {
-        return textView.getText().toString().trim().equals("") || textView.getText().toString().trim().equals("");
-    }
-
-    private String[] resArray(int resId) {
-        return getResources().getStringArray(resId);
-    }
-
-    private String getText(TextView textView) {
-        return textView.getText().toString().trim();
-    }
-
-
-    /**
-     * 更新所有
-     */
-    public void updateContents() {
-        if (mVideoDBManager == null || mVoiceDBManager == null || mNavigationDBManager == null) {
-            throw new NullPointerException("local loxicon unll");
-        }
-        StringBuilder lexiconContents = new StringBuilder();
-        //本地语音
-        List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
-        for (VoiceBean voiceBean : voiceBeanList) {
-            lexiconContents.append(voiceBean.getShowTitle()).append("\n");
-        }
-        //本地视频
-        List<VideoBean> videoBeanList = mVideoDBManager.loadAll();
-        for (VideoBean videoBean : videoBeanList) {
-            lexiconContents.append(videoBean.getShowTitle()).append("\n");
-        }
-        //本地导航
-        List<NavigationBean> navigationBeanList = mNavigationDBManager.loadAll();
-        for (NavigationBean navigationBean : navigationBeanList) {
-            lexiconContents.append(navigationBean.getTitle()).append("\n");
-        }
-        //本地网址
-        List<SiteBean> siteBeanList = mSiteDBManager.loadAll();
-        for (SiteBean siteBean : siteBeanList) {
-            lexiconContents.append(siteBean.getName()).append("\n");
-        }
-
-        lexiconContents.append(AppUtil.words2Contents());
-        updateLocation(lexiconContents.toString());
-    }
-
-    public void updateLocation(String lexiconContents) {
-        mIat = SpeechRecognizer.createRecognizer(this, new InitListener() {
-            @Override
-            public void onInit(int code) {
-                if (code != ErrorCode.SUCCESS) {
-                    Print.e("初始化失败，错误码：" + code);
-                }
-                Print.e("local initIat success");
-            }
-        });
-        mIat.setParameter(SpeechConstant.PARAMS, null);
-        // 设置引擎类型
-        mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_LOCAL);
-        // 指定资源路径
-        mIat.setParameter(ResourceUtil.ASR_RES_PATH,
-                ResourceUtil.generateResourcePath(NovelApp.getInstance().getApplicationContext(),
-                        ResourceUtil.RESOURCE_TYPE.assets, "asr/common.jet"));
-        // 指定语法路径
-        mIat.setParameter(ResourceUtil.GRM_BUILD_PATH, Constants.GRM_PATH);
-        // 指定语法名字
-        mIat.setParameter(SpeechConstant.GRAMMAR_LIST, "local");
-        // 设置文本编码格式
-        mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8");
-        // lexiconName 为词典名字，lexiconContents 为词典内容，lexiconListener 为回调监听器
-        int ret = mIat.updateLexicon("voice", lexiconContents, listener);
-        if (ret != ErrorCode.SUCCESS) {
-            Print.e("更新词典失败,错误码：" + ret);
-        }
-    }
-
-    private LexiconListener listener = new LexiconListener() {
-        @Override
-        public void onLexiconUpdated(String lexiconId, SpeechError error) {
-            if (error == null) {
-                Print.e("词典更新成功");
-                onLexiconSuccess();
-            } else {
-                Print.e("词典更新失败,错误码：" + error.getErrorCode());
-                onLexiconError(error.getErrorDescription());
-            }
-        }
-    };
-
-    public void onLexiconSuccess() {
-        Intent intent = new Intent();
-        intent.putExtra(RESULT_CODE, saveLocalId);
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-
-    public void onLexiconError(String error) {
-        showToast(error);
-    }
 }

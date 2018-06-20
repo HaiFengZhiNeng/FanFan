@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.fanfan.novel.utils.system.AppUtil;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.app.enums.SpecialType;
 import com.fanfan.robot.db.manager.SiteDBManager;
@@ -286,13 +287,18 @@ public class PublicNumberActivity extends BarBaseActivity implements
             int index = siteBeanList.indexOf(itemData);
             refSite(itemData, index);
         } else {
-            addSpeakAnswer(resFoFinal(R.array.no_result));
+            addSpeakAnswer(AppUtil.resFoFinal(R.array.no_result));
         }
     }
 
     @Override
     public void onCompleted() {
 
+    }
+
+    @Override
+    public void refLocalPage(String key1, String key2, String key3, String key4) {
+        refLocalPage(key1);
     }
 
     @Override

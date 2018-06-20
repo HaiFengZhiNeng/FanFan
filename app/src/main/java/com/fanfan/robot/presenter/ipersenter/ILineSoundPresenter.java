@@ -76,8 +76,6 @@ public abstract class ILineSoundPresenter implements BasePresenter {
 
         void doCallPhone(String value);
 
-        void train(List<Train> trains);
-
         void startPage(SpecialType specialType);
 
         void spakeMove(SpecialType specialType, String result);

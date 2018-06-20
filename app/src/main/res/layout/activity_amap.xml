@@ -120,8 +120,8 @@
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:text="导航"
-                    android:textSize="@dimen/x10"
-                    android:textColor="@color/gray" />
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/x10" />
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>
@@ -141,8 +141,8 @@
             android:id="@+id/firstline"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/y15"
-            android:gravity="center"
             android:layout_marginLeft="@dimen/y5"
+            android:gravity="center"
             android:singleLine="true"
             android:textColor="#333333"
             android:textSize="@dimen/x8" />

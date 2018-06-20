@@ -52,7 +52,8 @@ import butterknife.OnClick;
 
 public class NavigationActivity extends BarBaseActivity implements
         ILocalSoundPresenter.ILocalSoundView,
-        ISerialPresenter.ISerialView, RangeClickImageView.OnResourceReadyListener,
+        ISerialPresenter.ISerialView,
+        RangeClickImageView.OnResourceReadyListener,
         RangeClickImageView.OnRangeClickListener {
 
     //    @BindView(R.id.iv_navigation)
@@ -393,6 +394,11 @@ public class NavigationActivity extends BarBaseActivity implements
     @Override
     public void onCompleted() {
         mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.STOP_DANCE);
+    }
+
+    @Override
+    public void refLocalPage(String key1, String key2, String key3, String key4) {
+        refLocalPage(key1);
     }
 
     @Override

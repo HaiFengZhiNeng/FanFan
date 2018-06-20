@@ -95,11 +95,7 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
 
         presenter = new SplashPresenter(this);
 
-        if (Constants.isTrain) {
-            ImageLoader.loadImage(this, ivSplash, R.mipmap.train_splash_bg, false, 2000);
-        } else {
-            ImageLoader.loadImage(this, ivSplash, R.mipmap.splash_bg, false, 2000);
-        }
+        ImageLoader.loadImage(this, ivSplash, R.mipmap.splash_bg, false, 500);
 
         @SuppressLint("WrongConstant") WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 
@@ -326,7 +322,7 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
 //                if (Constants.isTrain) {
 //                    intent = new Intent(SplashActivity.this, MainNewActivity.class);
 //                } else {
-                    intent = new Intent(SplashActivity.this, MainActivity.class);
+                intent = new Intent(SplashActivity.this, MainActivity.class);
 //                }
                 startActivity(intent);
 

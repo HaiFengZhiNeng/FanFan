@@ -35,13 +35,16 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.fanfan.robot.R;
 import com.fanfan.robot.app.NovelApp;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 public class AppUtil {
@@ -210,5 +213,28 @@ public class AppUtil {
             intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
         }
         context.startActivity(intent);
+    }
+
+
+    public static int valueForArray(int resId, String compare) {
+        String[] arrays = resArray(resId);
+        return Arrays.binarySearch(arrays, compare);
+    }
+
+    public static boolean isEmpty(TextView textView) {
+        return textView.getText().toString().trim().equals("") || textView.getText().toString().trim().equals("");
+    }
+
+    public static String[] resArray(int resId) {
+        return NovelApp.getInstance().getApplicationContext().getResources().getStringArray(resId);
+    }
+
+    public static String getText(TextView textView) {
+        return textView.getText().toString().trim();
+    }
+
+    public static String resFoFinal(int id) {
+        String[] arrResult = resArray(id);
+        return arrResult[new Random().nextInt(arrResult.length)];
     }
 }
