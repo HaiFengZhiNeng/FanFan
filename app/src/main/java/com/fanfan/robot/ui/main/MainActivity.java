@@ -6,12 +6,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Matrix;
+import android.graphics.YuvImage;
+import android.hardware.Camera;
+import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.ArrayMap;
 import android.view.KeyEvent;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -21,12 +30,16 @@ import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fanfan.novel.utils.TimeUtils;
+import com.fanfan.novel.utils.camera.CameraUtils;
 import com.fanfan.novel.utils.youdao.TranslateLanguage;
 import com.fanfan.robot.app.NovelApp;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.app.enums.RobotType;
 import com.fanfan.robot.app.enums.SpecialType;
+import com.fanfan.robot.db.manager.CheckInDBManager;
+import com.fanfan.robot.db.manager.FaceAuthDBManager;
 import com.fanfan.robot.db.manager.VoiceDBManager;
 import com.fanfan.novel.im.init.LoginBusiness;
 import com.fanfan.robot.listener.base.recog.AlarmListener;
@@ -36,6 +49,8 @@ import com.fanfan.robot.listener.base.synthesizer.EarListener;
 import com.fanfan.robot.listener.base.synthesizer.ISynthListener;
 import com.fanfan.robot.listener.base.synthesizer.cloud.MySynthesizer;
 import com.fanfan.robot.model.Alarm;
+import com.fanfan.robot.model.CheckIn;
+import com.fanfan.robot.model.FaceAuth;
 import com.fanfan.robot.model.RobotBean;
 import com.fanfan.robot.model.SerialBean;
 import com.fanfan.robot.model.SpeakBean;
@@ -94,6 +109,10 @@ import com.fanfan.robot.ui.voice.ProblemConsultingActivity;
 import com.fanfan.robot.view.ChatTextView;
 import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.base.Constant;
+import com.fanfan.youtu.api.face.bean.FaceIdentify;
+import com.fanfan.youtu.api.face.bean.GetInfo;
+import com.fanfan.youtu.api.face.event.FaceIdentifyEvent;
+import com.fanfan.youtu.api.face.event.GetInfoEvent;
 import com.fanfan.youtu.api.hfrobot.bean.Check;
 import com.fanfan.youtu.api.hfrobot.bean.RequestProblem;
 import com.fanfan.youtu.api.hfrobot.bean.SetBean;
@@ -116,10 +135,15 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -129,7 +153,9 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 public class MainActivity extends BarBaseActivity implements ISynthesizerPresenter.ITtsView, IChatPresenter.IChatView,
-        ISerialPresenter.ISerialView, ILineSoundPresenter.ILineSoundView {
+        ISerialPresenter.ISerialView, ILineSoundPresenter.ILineSoundView, SurfaceHolder.Callback, Camera.PreviewCallback {
+
+    public static final int DELAY_MILLIS = 10 * 1000;
 
     @BindView(R.id.iv_fanfan)
     ImageView ivFanfan;
@@ -225,6 +251,44 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private TranslateLanguage translateLanguage;
 
+    //camera
+    private Camera mCamera;
+
+    private SurfaceHolder mHolder;
+
+    private int mCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+
+    private int previewWidth = 320;
+    private int previewHeight = 240;
+
+    private boolean isPreviewing = false;
+
+    private int orientionOfCamera;
+
+    //解决人脸识别中完全无人脸但时不时检测到人脸
+    private int count;
+    private boolean isPreviewFrame;
+
+    Runnable countRunnable = new Runnable() {
+        @Override
+        public void run() {
+            count = 0;
+            mHandler.postDelayed(countRunnable, 2000);
+        }
+    };
+
+    Runnable previewRunnable = new Runnable() {
+        @Override
+        public void run() {
+            eliminate();
+        }
+    };
+
+    //人脸识别
+    private boolean isFaceIdentify;
+
+    private FaceAuthDBManager mFaceAuthDBManager;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main1;
@@ -285,11 +349,19 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             }
         };
         mySynthesizer = new MySynthesizer(this, iSynthListener);
+
+        //camera
+        surfaceView.setVisibility(View.GONE);
+        mHolder = surfaceView.getHolder();
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        mHolder.addCallback(this);
+
     }
 
     @Override
     protected void initData() {
         mVoiceDBManager = new VoiceDBManager();
+        mFaceAuthDBManager = new FaceAuthDBManager();
 
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
 
@@ -322,6 +394,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         mySynthesizer.onResume();
 
         myRecognizer.onResume();
+
+        mHandler.post(countRunnable);
+        mHandler.postDelayed(previewRunnable, DELAY_MILLIS);
     }
 
     @Override
@@ -336,6 +411,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         mySynthesizer.onPause();
 
+        surfaceView.setVisibility(View.GONE);
+        mHandler.removeCallbacks(countRunnable);
+        mHandler.removeCallbacks(previewRunnable);
 
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
@@ -356,6 +434,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     protected void onDestroy() {
+
+        closeCamera();
+
         if (mPlayServiceConnection != null) {
             unbindService(mPlayServiceConnection);
         }
@@ -370,6 +451,15 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         myRecognizer.release();
         mySynthesizer.release();
+    }
+
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+        surfaceView.setVisibility(View.GONE);
+
+        mHandler.removeCallbacks(previewRunnable);
+        mHandler.postDelayed(previewRunnable, DELAY_MILLIS);
     }
 
     @Override
@@ -428,7 +518,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     public void stopRecognizerListener() {
-//        myRecognizer.stop();
+        myRecognizer.stop();
     }
 
     public void doUrl(String url) {
@@ -696,6 +786,10 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     //**********************************************************************************************
 
     private void addSpeakAnswer(String problem, String messageContent, boolean isAction, boolean isUrl) {
+
+        mHandler.removeCallbacks(previewRunnable);
+        mHandler.postDelayed(previewRunnable, DELAY_MILLIS);
+
         mSoundPresenter.stopVoice();
         stopRecognizerListener();
 //        doAnswer(messageContent);
@@ -1397,6 +1491,302 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             onCompleted();
         }
     }
+
+    @Override
+    public void onPreviewFrame(byte[] bytes, Camera camera) {
+        Camera.Size size = camera.getParameters().getPreviewSize();
+        YuvImage yuvImage = new YuvImage(bytes, ImageFormat.NV21, size.width, size.height, null);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        yuvImage.compressToJpeg(new android.graphics.Rect(0, 0, size.width, size.height), 80, baos);
+        byte[] byteArray = baos.toByteArray();
+
+        Bitmap previewBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        int width = previewBitmap.getWidth();
+        int height = previewBitmap.getHeight();
+
+        Matrix matrix = new Matrix();
+
+        FaceDetector detector = null;
+        Bitmap faceBitmap = null;
+
+        detector = new FaceDetector(previewBitmap.getWidth(), previewBitmap.getHeight(), 10);
+        int oriention = 360 - orientionOfCamera;
+        if (oriention == 360) {
+            oriention = 0;
+        }
+        switch (oriention) {
+            case 0:
+                detector = new FaceDetector(width, height, 10);
+                matrix.postRotate(0.0f, width / 2, height / 2);
+                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
+                break;
+            case 90:
+                detector = new FaceDetector(height, width, 1);
+                matrix.postRotate(-270.0f, height / 2, width / 2);
+                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
+                break;
+            case 180:
+                detector = new FaceDetector(width, height, 1);
+                matrix.postRotate(-180.0f, width / 2, height / 2);
+                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
+                break;
+            case 270:
+                detector = new FaceDetector(height, width, 1);
+                matrix.postRotate(-90.0f, height / 2, width / 2);
+                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
+                break;
+        }
+
+        Bitmap copyBitmap = faceBitmap.copy(Bitmap.Config.RGB_565, true);
+
+        FaceDetector.Face[] faces = new FaceDetector.Face[10];
+        int faceNumber = detector.findFaces(copyBitmap, faces);
+        if (faceNumber > 0) {
+
+            Print.e("isPreviewFrame " + isPreviewFrame + "   count :" + count);
+            if (!isPreviewFrame) {
+                return;
+            }
+
+            count++;
+            if (count == 2) {
+                isPreviewFrame = false;
+                distinguish(copyBitmap);
+            }
+        } else {
+            Print.i("camera no face");
+        }
+
+        copyBitmap.recycle();
+        faceBitmap.recycle();
+        previewBitmap.recycle();
+    }
+
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        openCamera();
+        doStartPreview();
+        mHandler.postDelayed(previewRunnable, DELAY_MILLIS);
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        closeCamera();
+    }
+
+    private void openCamera() {
+        if (Camera.getNumberOfCameras() == 1) {
+            mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+        }
+        try {
+            mCamera = Camera.open(mCameraId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            closeCamera();
+        }
+    }
+
+    private void closeCamera() {
+        if (mCamera != null) {
+            mCamera.setPreviewCallback(null);
+            mCamera.stopPreview();
+            isPreviewing = false;
+            mCamera.release();
+            mCamera = null;
+        }
+        Print.e("相机关闭...");
+    }
+
+    private void doStartPreview() {
+        if (isPreviewing) {
+            mCamera.stopPreview();
+        }
+
+        Camera.Parameters parameters = mCamera.getParameters();
+
+        parameters.setPreviewFormat(ImageFormat.NV21);
+        parameters.setPreviewSize(previewWidth, previewHeight);
+        mCamera.setParameters(parameters);
+
+        orientionOfCamera = CameraUtils.getInstance().getCameraDisplayOrientation(this, mCameraId);
+        mCamera.setDisplayOrientation(orientionOfCamera);
+
+        mCamera.startPreview();
+        mCamera.setPreviewCallback(this);
+
+        try {
+            mCamera.setPreviewDisplay(mHolder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mCamera.startPreview();
+        isPreviewing = true;
+        Print.i("相机已经打开...");
+    }
+
+    public void eliminate() {
+        Print.i("相机准备打开...");
+        surfaceView.setVisibility(View.VISIBLE);
+        count = 0;
+        isPreviewFrame = true;
+        againIdentify();
+    }
+
+    private void distinguish(Bitmap bitmap) {
+        faceIdentifyFace(bitmap);
+    }
+
+    public void faceIdentifyFace(Bitmap bitmap) {
+        if (isFaceIdentify)
+            return;
+
+        Print.e("从云端获取人脸信息详情 ... ");
+        isFaceIdentify = true;
+        youtucode.faceIdentify(bitmap);
+    }
+
+    @SuppressLint("NewApi")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(FaceIdentifyEvent event) {
+        if (event.isOk()) {
+            FaceIdentify faceIdentify = event.getBean();
+            Print.e(faceIdentify);
+            if (faceIdentify.getErrorcode() == 0) {
+
+                compareFace(faceIdentify);
+            } else {
+                againIdentify();
+                onError(faceIdentify.getErrorcode(), faceIdentify.getErrormsg());
+            }
+        } else {
+            againIdentify();
+            onError(event);
+        }
+    }
+
+    private void compareFace(FaceIdentify faceIdentify) {
+        Print.e("云端获取成功后取得相似度最佳的一个");
+        ArrayMap<FaceIdentify.IdentifyItem, Integer> countMap = new ArrayMap<>();
+
+        ArrayList<FaceIdentify.IdentifyItem> identifyItems = faceIdentify.getCandidates();
+        if (identifyItems != null && identifyItems.size() > 0) {
+            for (int i = 0; i < identifyItems.size(); i++) {
+                FaceIdentify.IdentifyItem identifyItem = identifyItems.get(i);
+
+                if (countMap.containsKey(identifyItem)) {
+                    countMap.put(identifyItem, countMap.get(identifyItem) + 1);
+                } else {
+                    countMap.put(identifyItem, 1);
+                }
+            }
+
+            ArrayMap<Integer, List<FaceIdentify.IdentifyItem>> resultMap = new ArrayMap<>();
+            List<Integer> tempList = new ArrayList<Integer>();
+
+            Iterator iterator = countMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<FaceIdentify.IdentifyItem, Integer> entry = (Map.Entry<FaceIdentify.IdentifyItem, Integer>) iterator.next();
+
+                FaceIdentify.IdentifyItem key = entry.getKey();
+                int value = entry.getValue();
+
+                if (resultMap.containsKey(value)) {
+                    List list = resultMap.get(value);
+                    list.add(key);
+                } else {
+                    List<FaceIdentify.IdentifyItem> list = new ArrayList<>();
+                    list.add(key);
+                    resultMap.put(value, list);
+                    tempList.add(value);
+                }
+            }
+            //对多个人脸进行排序
+            Collections.sort(tempList);
+
+            int size = tempList.size();
+            List<FaceIdentify.IdentifyItem> list = resultMap.get(tempList.get(size - 1));
+            //防止人脸都是 1 时，取辨识度最大
+            Collections.sort(list);
+            FaceIdentify.IdentifyItem identifyItem = list.get(0);
+
+            if (identifyItem.getConfidence() >= 70) {
+                String person = identifyItem.getPerson_id();
+                compareFaceAuth(person);
+            } else {
+                confidenceLow(identifyItem);
+                againIdentify();
+            }
+        } else {
+            identifyNoFace();
+            againIdentify();
+        }
+    }
+
+    private void compareFaceAuth(String person) {
+        FaceAuth faceAuth = mFaceAuthDBManager.queryByPersonId(person);
+        if (faceAuth != null) {
+            sayHello(faceAuth.getAuthId());
+        } else {
+            getPersonInfo(person);
+        }
+    }
+
+    public void getPersonInfo(String person) {
+        youtucode.getInfo(person);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(GetInfoEvent event) {
+        if (event.isOk()) {
+            GetInfo getInfo = event.getBean();
+            Print.e(getInfo);
+            if (getInfo.getErrorcode() == 0) {
+                fromCloud(getInfo);
+            } else {
+                againIdentify();
+                onError(getInfo.getErrorcode(), getInfo.getErrormsg());
+            }
+        } else {
+            againIdentify();
+            onError(event);
+        }
+    }
+
+    private void fromCloud(GetInfo getInfo) {
+        sayHello(getInfo.getPerson_name());
+    }
+
+    private void confidenceLow(FaceIdentify.IdentifyItem identifyItem) {
+        Print.e(String.format("识别度为 %s， 较低。请正对屏幕或您未注册个人信息", identifyItem.getConfidence()));
+        sayHello("");
+    }
+
+    private void identifyNoFace() {
+        Print.e("没有返回人脸信息或者服务器未注册任何人信息");
+        sayHello("");
+    }
+
+    private void againIdentify() {
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                isFaceIdentify = false;
+            }
+        }, 500);
+    }
+
+    private void sayHello(String userName) {
+        surfaceView.setVisibility(View.GONE);
+        addSpeakAnswer("CameraMsg", "您好" + userName + ", 欢迎光临", true, false);
+    }
+
 
     private class PlayServiceConnection implements ServiceConnection {
         @Override
