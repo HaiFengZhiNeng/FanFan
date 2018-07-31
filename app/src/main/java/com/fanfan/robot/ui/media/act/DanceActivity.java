@@ -54,6 +54,10 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
 
     private SerialPresenter mSerialPresenter;
 
+    @Override
+    protected boolean whetherNotReturn() {
+        return true;
+    }
 
     @Override
     protected int getLayoutId() {
@@ -155,6 +159,11 @@ public class DanceActivity extends BarBaseActivity implements ISerialPresenter.I
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onMoveSpeak() {
 
     }
 

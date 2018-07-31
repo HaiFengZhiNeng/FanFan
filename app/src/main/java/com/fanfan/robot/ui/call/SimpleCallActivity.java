@@ -194,6 +194,11 @@ public class SimpleCallActivity extends BaseActivity implements
         glowPadView.setShowTargetsOnIdle(true);
     }
 
+    @Override
+    protected boolean whetherNotReturn() {
+        return true;
+    }
+
 
     @Override
     protected void onResume() {

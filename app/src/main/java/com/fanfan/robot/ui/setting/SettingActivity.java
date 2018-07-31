@@ -32,7 +32,9 @@ import com.fanfan.robot.ui.map.AMapActivity;
 import com.fanfan.robot.ui.setting.act.dance.DanceAddActivity;
 import com.fanfan.robot.ui.setting.act.face.FaceDataActivity;
 import com.fanfan.robot.ui.setting.act.naviga.DataNavigationActivity;
+import com.fanfan.robot.ui.setting.act.other.GreetingActivity;
 import com.fanfan.robot.ui.setting.act.other.SettingPwdActivity;
+import com.fanfan.robot.ui.setting.act.other.XFSetActivity;
 import com.fanfan.robot.ui.setting.act.site.DataSiteActivity;
 import com.fanfan.robot.ui.setting.act.video.DataVideoActivity;
 import com.fanfan.robot.ui.setting.act.voice.DataVoiceActivity;
@@ -61,6 +63,8 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
 
     public static final int LOGOUT_TO_MAIN_REQUESTCODE = 102;
     public static final int LOGOUT_TO_MAIN_RESULTCODE = 202;
+
+    public static final String MEDIA_CHECK = "media_check";
 
     @BindView(R.id.add_video)
     RelativeLayout addVideo;
@@ -98,6 +102,8 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
     ToggleButton tbMedia;
     @BindView(R.id.file_layout)
     RelativeLayout fileLayout;
+    @BindView(R.id.rl_gf)
+    RelativeLayout rlGreeting;
 
     private Youtucode youtucode;
 
@@ -141,6 +147,8 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
 
         tvCurCode.setText(String.format("当前版本 v %s", AppUtil.getVersionName(this)));
 
+        tbMedia.setChecked(PreferencesUtils.getBoolean(this, MEDIA_CHECK, false));
+
         LoadFileService loadFileService = LoadFileCache.get().getFileService();
         if (loadFileService != null) {
             loadFileService.setOnLoadEventListener(this);
@@ -163,7 +171,7 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
 
     @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.add_site, R.id.import_layout,
             R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout, R.id.rl_city, R.id.tv_vr,
-            R.id.tv_map, R.id.rl_update, R.id.rl_setpwd, R.id.tb_media, R.id.file_layout})
+            R.id.tv_map, R.id.rl_update, R.id.rl_setpwd, R.id.tb_media, R.id.file_layout, R.id.rl_gf})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.add_video:
@@ -188,8 +196,9 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
                 DanceAddActivity.newInstance(this);
                 break;
             case R.id.tv_xf:
-                XfFragment xfFragment = XfFragment.newInstance();
-                xfFragment.show(getSupportFragmentManager(), "CHANNEL");
+//                XfFragment xfFragment = XfFragment.newInstance();
+//                xfFragment.show(getSupportFragmentManager(), "CHANNEL");
+                XFSetActivity.newInstance(this);
                 break;
             case R.id.logout:
                 setResult(LOGOUT_TO_MAIN_RESULTCODE);
@@ -212,14 +221,16 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
                 break;
             case R.id.tb_media:
                 if (tbMedia.isChecked()) {
-                    PreferencesUtils.putBoolean(SettingActivity.this, "media_check", true);
+                    PreferencesUtils.putBoolean(SettingActivity.this, MEDIA_CHECK, true);
                 } else {
-                    PreferencesUtils.putBoolean(SettingActivity.this, "media_check", false);
+                    PreferencesUtils.putBoolean(SettingActivity.this, MEDIA_CHECK, false);
                 }
-                // SettingPwdActivity.newInstance(this);
                 break;
             case R.id.file_layout:
                 FileImportActivity.newInstance(this);
+                break;
+            case R.id.rl_gf:
+                GreetingActivity.newInstance(this);
                 break;
         }
     }

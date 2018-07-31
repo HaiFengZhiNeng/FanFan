@@ -32,7 +32,7 @@ public interface RobotService {
 
     @Headers({H_NAME + ":" + ROBOT_NAME})
     @GET("robot/request_problem.php")
-    Call<RequestProblem> requestProblem(@Query("identifier") String identifier, @Query("problem") String problem, @Query("id") int id);
+    Call<RequestProblem> requestProblem(@Query("identifier") String identifier, @Query("problem") String problem, @Query("id") int id, @Query("type") int type);
 
     @Headers({H_NAME + ":" + ROBOT_NAME})
     @POST("robot/user_data.php")

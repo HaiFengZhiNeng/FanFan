@@ -234,6 +234,12 @@
         <activity
             android:name=".ui.setting.act.voice.FileImportActivity"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.setting.act.other.GreetingActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.other.XFSetActivity"
+            android:theme="@style/AppThemeAction" />
 
         <service android:name=".service.SpeakService" />
         <service android:name=".service.UdpService" />

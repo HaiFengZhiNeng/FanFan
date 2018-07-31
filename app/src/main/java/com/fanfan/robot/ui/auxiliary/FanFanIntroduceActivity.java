@@ -225,6 +225,11 @@ public class FanFanIntroduceActivity extends BarBaseActivity implements
     }
 
     @Override
+    public void onMoveSpeak() {
+
+    }
+
+    @Override
     public void onAlarm(Alarm alarm) {
 
     }

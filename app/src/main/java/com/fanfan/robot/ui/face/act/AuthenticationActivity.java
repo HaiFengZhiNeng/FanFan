@@ -598,6 +598,11 @@ public class AuthenticationActivity extends BarBaseActivity implements
     }
 
     @Override
+    public void onMoveSpeak() {
+
+    }
+
+    @Override
     public void onAlarm(Alarm alarm) {
 
     }

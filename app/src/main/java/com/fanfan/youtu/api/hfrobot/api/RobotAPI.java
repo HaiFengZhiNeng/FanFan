@@ -13,11 +13,11 @@ public interface RobotAPI {
 
     String downloadFileWithDynamicUrlSync(@Url String fileUrl);
 
-    String requestProblem(@Query("identifier") String identifier, @Query("problem") String problem, @Query("id") int id);
+    String requestProblem(String identifier, String problem, int id, int type);
 
-    String addSet( String user_name,  String set_pwd );
+    String addSet(String user_name, String set_pwd);
 
-    String updateSet( String user_name, String set_pwd );
+    String updateSet(String user_name, String set_pwd);
 
-    String selectSet( String user_name );
+    String selectSet(String user_name);
 }

@@ -493,6 +493,11 @@ public class MultimediaActivity extends BarBaseActivity implements
     }
 
     @Override
+    public void onMoveSpeak() {
+
+    }
+
+    @Override
     public void onAlarm(Alarm alarm) {
 
     }

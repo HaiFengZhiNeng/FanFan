@@ -190,6 +190,11 @@ public class FaceRegisterActivity extends BarBaseActivity implements
     private String mInput;
 
     @Override
+    protected boolean whetherNotReturn() {
+        return true;
+    }
+
+    @Override
     protected int getLayoutId() {
         return R.layout.activity_face_register;
     }
@@ -612,6 +617,11 @@ public class FaceRegisterActivity extends BarBaseActivity implements
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onMoveSpeak() {
 
     }
 

@@ -38,7 +38,6 @@ public class LoginActivity extends BarBaseActivity implements ILoginPresenter.IL
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
-
     @BindView(R.id.usernameWrapper)
     TextInputLayout usernameWrapper;
     @BindView(R.id.passwordWrapper)
@@ -55,6 +54,11 @@ public class LoginActivity extends BarBaseActivity implements ILoginPresenter.IL
     View span2;
 
     private LoginPresenter mLoginPresenter;
+
+    @Override
+    protected boolean whetherNotReturn() {
+        return true;
+    }
 
     @Override
     protected int getLayoutId() {

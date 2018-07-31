@@ -18,6 +18,7 @@ import butterknife.OnClick;
 /**
  * 讯飞设置页面
  */
+@Deprecated
 public class XfFragment extends BaseDialogFragment implements SeekBar.OnSeekBarChangeListener {
 
     @BindView(R.id.tv_line_talker)

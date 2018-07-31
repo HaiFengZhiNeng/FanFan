@@ -29,7 +29,7 @@ public enum SpecialType {
 
     Back,
 
-    Forward, Backoff, Turnleft, Turnright,
+    Forward, Backoff, Turnleft, Turnright, StartMove, StopMove,
 
     Artificial,
     Face_check_in,

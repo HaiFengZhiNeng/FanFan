@@ -24,7 +24,7 @@ public class SpecialUtils {
             return SpecialType.Music;
         } else if (txtInArray(speakTxt, DanceArray)) {
             return SpecialType.Dance;
-        }else if(txtInArray(speakTxt, HandArray)){
+        } else if (txtInArray(speakTxt, HandArray)) {
             return SpecialType.Hand;
         } else if (txtInArray(speakTxt, StoryArray) || Arrays.asList(resFoFinal(resources, R.array.other_story)).contains(speakTxt)) {
             return SpecialType.Story;
@@ -38,6 +38,10 @@ public class SpecialUtils {
             return SpecialType.Turnleft;
         } else if (txtInTxt(resources, speakTxt, R.string.Turnright)) {
             return SpecialType.Turnright;
+        } else if (txtInTxt(resources, speakTxt, R.string.StartMove)) {
+            return SpecialType.StartMove;
+        } else if (txtInTxt(resources, speakTxt, R.string.StopMove)) {
+            return SpecialType.StopMove;
         } else if (txtInTxt(resources, speakTxt, R.string.Logout)) {
             return SpecialType.Logout;
         } else if (txtInTxt(resources, speakTxt, R.string.Map)) {

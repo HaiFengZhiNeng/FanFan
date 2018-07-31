@@ -88,7 +88,7 @@ public class Constants {
     //true 是手机端的
     public static boolean unusual = true;
 
-    public static String DOWNLOAD_FILENAME = "files/robot.apk";
+    public static String DOWNLOAD_FILENAME = "files" + File.separator;
 
     public static boolean isDance;
 

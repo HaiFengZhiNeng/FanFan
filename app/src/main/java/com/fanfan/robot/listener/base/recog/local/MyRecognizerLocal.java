@@ -1,6 +1,7 @@
 package com.fanfan.robot.listener.base.recog.local;
 
 import android.content.Context;
+import android.speech.RecognizerIntent;
 
 import com.fanfan.novel.utils.FucUtil;
 import com.fanfan.novel.utils.grammer.GrammerUtils;

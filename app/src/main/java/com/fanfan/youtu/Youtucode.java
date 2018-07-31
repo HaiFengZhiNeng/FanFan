@@ -160,8 +160,8 @@ public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
     }
 
     @Override
-    public String requestProblem(String identifier, String problem, int id) {
-        return sRobotImplement.requestProblem(identifier, problem, id);
+    public String requestProblem(String identifier, String problem, int id, int type) {
+        return sRobotImplement.requestProblem(identifier, problem, id, type);
     }
 
     @Override

@@ -465,6 +465,8 @@
     <string name="Backoff">后退</string>
     <string name="Turnleft">左转</string>
     <string name="Turnright">右转</string>
+    <string name="StartMove">自由运动</string>
+    <string name="StopMove">停止</string>
     <string name="Back">返回</string>
     <string name="Artificial">人工客服</string>
     <string name="Face_check_in">人脸签到</string>
@@ -480,5 +482,17 @@
     <string name="StationService">车站服务</string>
     <string name="InternalNavigation">站内导航</string>
     <string name="TrafficTravel">交通出行</string>
+
+    <string-array name="camera_speak">
+        <item>领导您好，很高兴见到您，我是机器人芳芳</item>
+        <item>您好啊，我叫芳芳，有什么能帮您的么</item>
+        <item>不要一直盯着我看嘛，我有什么能帮您的嘛</item>
+    </string-array>
+
+    <string-array name="navigation_move">
+        <item>麻烦您让一让!</item>
+        <item>请您让一让!</item>
+        <item>您能让一让么!</item>
+    </string-array>
 
 </resources>

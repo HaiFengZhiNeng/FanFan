@@ -41,9 +41,9 @@ public class RobotImpl extends BaseImpl<RobotService> implements RobotAPI {
     }
 
     @Override
-    public String requestProblem(String identifier, String problem, int id) {
+    public String requestProblem(String identifier, String problem, int id, int type) {
         String uuid = UUIDGenerator.getUUID();
-        mService.requestProblem(identifier, problem, id)
+        mService.requestProblem(identifier, problem, id, type)
                 .enqueue(new BaseCallback<>(new RequestProblemEvent(uuid)));
         return uuid;
     }@Override

@@ -278,6 +278,11 @@ public class LockActivity extends Activity implements ISerialPresenter.ISerialVi
     }
 
     @Override
+    public void onMoveSpeak() {
+
+    }
+
+    @Override
     public void onAlarm(Alarm alarm) {
 
     }

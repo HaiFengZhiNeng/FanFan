@@ -1,5 +1,6 @@
 package com.fanfan.robot.app.common.base;
 
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +43,7 @@ import com.fanfan.robot.service.ScreenService;
 import com.fanfan.robot.ui.auxiliary.LockActivity;
 import com.fanfan.robot.ui.call.SimpleCallActivity;
 import com.fanfan.robot.ui.land.SplashActivity;
+import com.fanfan.robot.ui.main.MainActivity;
 import com.seabreeze.log.Print;
 import com.tencent.TIMUserStatusListener;
 import com.tencent.callsdk.ILVCallConfig;
@@ -64,11 +66,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     protected Context mContext;
     protected Handler mHandler = new Handler();
+    protected Handler mainHandler = new Handler();
 
     protected RelativeLayout backdrop;
     protected Toolbar toolbar;
 
-    private ScreenPresenter mScreenPresenter;
+//    private ScreenPresenter mScreenPresenter;
 
     private static OnPermissionCallback callback;
 
@@ -96,12 +99,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
         initData();
         setListener();
 
-        if (unusual) {
-            Intent intent = new Intent(this, ScreenService.class);
-            startService(intent);
-        } else {
-            mScreenPresenter = new ScreenPresenter(this);
-        }
+//        if (unusual) {
+//            Intent intent = new Intent(this, ScreenService.class);
+//            startService(intent);
+//        } else {
+//            mScreenPresenter = new ScreenPresenter(this);
+//        }
     }
 
 
@@ -148,16 +151,25 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     }
 
+    /**
+     * @return true 不返回
+     */
+    protected abstract boolean whetherNotReturn();
+
+
     @Override
     protected void onResume() {
         super.onResume();
+
+        postInteraction();
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.NET_LOONGGG_EXITAPP);
         this.registerReceiver(this.finishAppReceiver, filter);
 
-        if (mScreenPresenter != null) {
-            mScreenPresenter.startTipsTimer();
-        }
+//        if (mScreenPresenter != null) {
+//            mScreenPresenter.startTipsTimer();
+//        }
     }
 
     /**
@@ -193,13 +205,18 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
-        if (mScreenPresenter != null) {
-            mScreenPresenter.endTipsTimer();
-        }
+        removeToMain();
+
+//        if (mScreenPresenter != null) {
+//            mScreenPresenter.endTipsTimer();
+//        }
     }
 
     @Override
     protected void onDestroy() {
+
+        removeToMain();
+
         super.onDestroy();
 
         ILVCallManager.getInstance().removeIncomingListener(this);
@@ -212,11 +229,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (setResult()) {
-                    return true;
-                } else {
-                    finish();
-                }
+                setResult();
+                finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -321,14 +335,57 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        if (mScreenPresenter != null) {
-            mScreenPresenter.resetTipsTimer();
+//        if (mScreenPresenter != null) {
+//            mScreenPresenter.resetTipsTimer();
+//        }
+        postInteraction();
+    }
+
+
+    public static final int BACK_MAIN_DELAY_MILLIS = 50 * 1000;
+
+    private void removeToMain() {
+        if (!whetherNotReturn()) {
+            mainHandler.removeCallbacks(toMainRunnable);
         }
     }
 
+    private void postToMain() {
+        if (!whetherNotReturn()) {
+            mainHandler.postDelayed(toMainRunnable, BACK_MAIN_DELAY_MILLIS);
+        }
+    }
+
+    protected void postInteraction() {
+
+        removeToMain();
+        postToMain();
+    }
+
+
+    Runnable toMainRunnable = new Runnable() {
+        @Override
+        public void run() {
+            ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
+
+            String className = info.topActivity.getClassName();
+            if (className.equals("com.fanfan.robot.activity.MainActivity")) {
+                Print.e("当前页面");
+            } else {
+                Print.e("跳转到main");
+                startActivity(new Intent(BaseActivity.this, MainActivity.class));
+            }
+        }
+    };
+
     @Override
     public void showTipsView() {
-        LockActivity.newInstance(this);
+        if (mContext instanceof MainActivity) {
+//            LockActivity.newInstance(this);
+        } else {
+            finish();
+        }
     }
 
     public interface OnPermissionCallback {

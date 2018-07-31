@@ -315,6 +315,11 @@ public class PublicNumberActivity extends BarBaseActivity implements
     }
 
     @Override
+    public void onMoveSpeak() {
+
+    }
+
+    @Override
     public void onAlarm(Alarm alarm) {
 
     }

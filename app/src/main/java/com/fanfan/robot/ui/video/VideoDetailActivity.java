@@ -48,6 +48,11 @@ public class VideoDetailActivity extends BarBaseActivity implements ISerialPrese
     private String upfile;
 
     @Override
+    protected boolean whetherNotReturn() {
+        return true;
+    }
+
+    @Override
     protected int getLayoutId() {
         return R.layout.activity_video_detail;
     }
@@ -145,6 +150,11 @@ public class VideoDetailActivity extends BarBaseActivity implements ISerialPrese
 
     @Override
     public void onMoveStop() {
+
+    }
+
+    @Override
+    public void onMoveSpeak() {
 
     }
 

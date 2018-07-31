@@ -84,6 +84,11 @@ public class SplashActivity extends BarBaseActivity implements SplashView, BaseH
     private Handler handler = new BaseHandler<>(SplashActivity.this);
 
     @Override
+    protected boolean whetherNotReturn() {
+        return true;
+    }
+
+    @Override
     protected int getLayoutId() {
         return R.layout.activity_splash;
     }

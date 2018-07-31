@@ -115,6 +115,13 @@ public class LocalSoundPresenter extends ILocalSoundPresenter {
     }
 
     @Override
+    public boolean isSpeaking() {
+        if (mySynthesizer == null)
+            return false;
+        return mySynthesizer.isSpeaking();
+    }
+
+    @Override
     public void stopEvery() {
         mySynthesizer.stop();
         myRecognizer.stop();

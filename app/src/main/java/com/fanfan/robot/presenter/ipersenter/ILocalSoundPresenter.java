@@ -22,6 +22,8 @@ public abstract class ILocalSoundPresenter implements BasePresenter {
 
     public abstract void onPause();
 
+    public abstract boolean isSpeaking();
+
     public abstract void stopEvery();
 
     public abstract void onCompleted();

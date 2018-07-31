@@ -64,25 +64,25 @@ public class SerialPresenter extends ISerialPresenter {
         String motion = serialBean.getMotion();
         if (iBaudRate == 9600) {
             String absolute = serialBean.getAbsolute();
-            if(absolute.endsWith(SerialService.devName)){
+            if (absolute.endsWith(SerialService.devName)) {
 
-            }else if(absolute.endsWith(SerialService.alarmName)){
-                String alarmStr= serialBean.getMotion();
+            } else if (absolute.endsWith(SerialService.alarmName)) {
+                String alarmStr = serialBean.getMotion();
 //                Alarm alarm = GsonUtil.GsonToBean(alarmStr, Alarm.class);
                 String tempAlarmStr = alarmStr;
                 int length = tempAlarmStr.length();
                 String replace = tempAlarmStr.replace(",", "");
                 int replaceLength = replace.length();
-                if(length - replaceLength == 4){
+                if (length - replaceLength == 4) {
 
                     String[] arr = alarmStr.split(",");
-                    if(arr.length == 5) {
+                    if (arr.length == 5) {
                         int fog = Integer.valueOf(arr[0]);
                         int flame = Integer.valueOf(arr[1]);
                         double dust = Double.valueOf(arr[2]);
                         double humidity = Double.valueOf(arr[3]);
                         double temperature = Double.valueOf(arr[4]);
-                        Alarm alarm = new Alarm(fog,flame,dust,humidity, temperature);
+                        Alarm alarm = new Alarm(fog, flame, dust, humidity, temperature);
                         mSerialView.onAlarm(alarm);
                     }
                 }
@@ -95,18 +95,22 @@ public class SerialPresenter extends ISerialPresenter {
                 mSerialView.stopAll();
                 if (motion.toString().contains("##### IFLYTEK")) {
 
-                    String str = motion.toString().substring(motion.toString().indexOf("angle:") + 6, motion.toString().indexOf("##### IFLYTEK"));
+                    String str = motion.toString().substring(motion.toString().indexOf("angle:") + 6, motion.toString().indexOf("score:"));
                     int angle = Integer.parseInt(str.trim());
 
                     Print.e("解析到应该旋转的角度 : " + angle);
                     if (0 <= angle && angle < 30) {
                         receiveMotion(SerialService.DEV_BAUDRATE, "A521821EAA");
+                        receiveMotion(SerialService.VOICE_BAUDRATE, "BEAM 0\n\r");//0
                     } else if (30 <= angle && angle <= 60) {
                         receiveMotion(SerialService.DEV_BAUDRATE, "A521823CAA");
+                        receiveMotion(SerialService.VOICE_BAUDRATE, "BEAM 0\n\r");//0
                     } else if (120 <= angle && angle <= 150) {
                         receiveMotion(SerialService.DEV_BAUDRATE, "A5218278AA");
+                        receiveMotion(SerialService.VOICE_BAUDRATE, "BEAM 0\n\r");//0
                     } else if (150 < angle && angle <= 180) {
                         receiveMotion(SerialService.DEV_BAUDRATE, "A5218296AA");
+                        receiveMotion(SerialService.VOICE_BAUDRATE, "BEAM 0\n\r");//0
                     }
 
                     receiveMotion(SerialService.VOICE_BAUDRATE, "BEAM 0\n\r");//0
@@ -119,6 +123,8 @@ public class SerialPresenter extends ISerialPresenter {
 
 //                receiveMotion(SerialService.DEV_BAUDRATE, "A50C8001AA");
                 mSerialView.onMoveStop();
+            } else if (motion.toString().trim().equals("stop")) {
+                mSerialView.onMoveSpeak();
             }
         }
     }

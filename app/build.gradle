@@ -91,10 +91,13 @@ dependencies {
     implementation files('libs/poi-3.15.jar')
     implementation files('libs/poi-scratchpad-3.15.jar')
     implementation files('libs/hanlp-portable-1.6.2.jar')
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     implementation project(':print')
     implementation project(':lib_zxing')
+    implementation project(':library')
+    implementation project(':orbbec')
 
     testImplementation 'junit:junit:4.12'
     implementation rootProject.ext.dependencies["multidex"]
@@ -108,13 +111,18 @@ dependencies {
     implementation rootProject.ext.dependencies["cardview"]
     implementation rootProject.ext.dependencies["customtabs"]
     implementation rootProject.ext.dependencies["support-annotations"]
+    implementation rootProject.ext.dependencies["constraint-layout"]
+
     androidTestImplementation rootProject.ext.dependencies["runner"]
     androidTestImplementation rootProject.ext.dependencies["espresso-core"]
+
     debugImplementation rootProject.ext.dependencies["leakcanary"]
     releaseImplementation rootProject.ext.dependencies["leakcanary-no-op"]
     testImplementation rootProject.ext.dependencies["leakcanary-no-op"]
+
     implementation rootProject.ext.dependencies["stetho"]
     implementation rootProject.ext.dependencies["stetho-okhttp3"]
+
     implementation rootProject.ext.dependencies["greendao"]
     implementation rootProject.ext.dependencies["eventbus"]
     implementation rootProject.ext.dependencies["glide"]
@@ -122,14 +130,17 @@ dependencies {
     implementation rootProject.ext.dependencies["gson"]
     implementation rootProject.ext.dependencies["butterknife"]
     annotationProcessor rootProject.ext.dependencies["butterknife-compiler"]
+
     implementation rootProject.ext.dependencies["retrofit2"]
     implementation rootProject.ext.dependencies["converter-gson"]
     implementation rootProject.ext.dependencies["okhttp"]
     implementation rootProject.ext.dependencies["logging-interceptor"]
-    implementation rootProject.ext.dependencies["constraint-layout"]
+
     implementation rootProject.ext.dependencies["BaseAdapterHelper"]
+
     implementation rootProject.ext.dependencies["material-core"]
     implementation rootProject.ext.dependencies["material-commons"]
+
     implementation rootProject.ext.dependencies["rollviewpager"]
     implementation rootProject.ext.dependencies["ultra-ptr"]
     implementation rootProject.ext.dependencies["kenburnsview"]
@@ -138,13 +149,18 @@ dependencies {
     implementation rootProject.ext.dependencies["flowlayout"]
     implementation rootProject.ext.dependencies["viewanimator"]
     implementation rootProject.ext.dependencies["nineoldandroids"]
+
     implementation rootProject.ext.dependencies["gms"]
+
     implementation rootProject.ext.dependencies["3dmap"]
     implementation rootProject.ext.dependencies["location"]
     implementation rootProject.ext.dependencies["search"]
+
     implementation rootProject.ext.dependencies["panowidget"]
+
     implementation rootProject.ext.dependencies["dagger"]
     annotationProcessor rootProject.ext.dependencies["dagger-compiler"]
+
     implementation rootProject.ext.dependencies["exoplayer"]
     implementation rootProject.ext.dependencies["rxjava"]
     implementation rootProject.ext.dependencies["rxandroid"]

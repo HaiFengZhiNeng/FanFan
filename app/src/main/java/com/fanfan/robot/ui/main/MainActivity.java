@@ -14,7 +14,11 @@ import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.media.FaceDetector;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -40,6 +44,7 @@ import com.fanfan.robot.app.enums.RobotType;
 import com.fanfan.robot.app.enums.SpecialType;
 import com.fanfan.robot.db.manager.CheckInDBManager;
 import com.fanfan.robot.db.manager.FaceAuthDBManager;
+import com.fanfan.robot.db.manager.NavigationDBManager;
 import com.fanfan.robot.db.manager.VoiceDBManager;
 import com.fanfan.novel.im.init.LoginBusiness;
 import com.fanfan.robot.listener.base.recog.AlarmListener;
@@ -51,6 +56,7 @@ import com.fanfan.robot.listener.base.synthesizer.cloud.MySynthesizer;
 import com.fanfan.robot.model.Alarm;
 import com.fanfan.robot.model.CheckIn;
 import com.fanfan.robot.model.FaceAuth;
+import com.fanfan.robot.model.NavigationBean;
 import com.fanfan.robot.model.RobotBean;
 import com.fanfan.robot.model.SerialBean;
 import com.fanfan.robot.model.SpeakBean;
@@ -103,6 +109,7 @@ import com.fanfan.robot.ui.media.MultimediaActivity;
 import com.fanfan.robot.ui.media.act.DanceActivity;
 import com.fanfan.robot.ui.naviga.NavigationActivity;
 import com.fanfan.robot.ui.setting.SettingActivity;
+import com.fanfan.robot.ui.setting.act.other.GreetingActivity;
 import com.fanfan.robot.ui.site.PublicNumberActivity;
 import com.fanfan.robot.ui.video.VideoIntroductionActivity;
 import com.fanfan.robot.ui.voice.ProblemConsultingActivity;
@@ -111,6 +118,9 @@ import com.fanfan.youtu.Youtucode;
 import com.fanfan.youtu.api.base.Constant;
 import com.fanfan.youtu.api.face.bean.FaceIdentify;
 import com.fanfan.youtu.api.face.bean.GetInfo;
+import com.fanfan.youtu.api.face.bean.detectFace.DetectFace;
+import com.fanfan.youtu.api.face.bean.detectFace.Face;
+import com.fanfan.youtu.api.face.event.DetectFaceEvent;
 import com.fanfan.youtu.api.face.event.FaceIdentifyEvent;
 import com.fanfan.youtu.api.face.event.GetInfoEvent;
 import com.fanfan.youtu.api.hfrobot.bean.Check;
@@ -134,28 +144,48 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Rect;
+import org.opencv.core.Size;
+import org.opencv.facedetect.DetectionBasedTracker;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
+import static com.fanfan.robot.app.common.Constants.unusual;
+
 public class MainActivity extends BarBaseActivity implements ISynthesizerPresenter.ITtsView, IChatPresenter.IChatView,
         ISerialPresenter.ISerialView, ILineSoundPresenter.ILineSoundView, SurfaceHolder.Callback, Camera.PreviewCallback {
 
-    public static final int DELAY_MILLIS = 10 * 1000;
+//    public static final int DELAY_MILLIS = 10 * 1000;
+
+    public static final int PREVIEW_DELAY_MILLIS = 30 * 1000 * 1;
+    public static final int GREETING_DELAY_MILLIS = 60 * 1000 * 1;
 
     @BindView(R.id.iv_fanfan)
     ImageView ivFanfan;
@@ -179,6 +209,14 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     SurfaceView surfaceView;
 
     private boolean quit;
+
+    static {
+        if (!OpenCVLoader.initDebug()) {
+            System.out.println("opencv 初始化失败！");
+        } else {
+            System.loadLibrary("detection_based_tracker");
+        }
+    }
 
 //    @Inject
 //    MainManager mMainManager;
@@ -284,10 +322,102 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         }
     };
 
+    Runnable greetingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (PreferencesUtils.getBoolean(MainActivity.this, GreetingActivity.GREETING_STATE)) {
+                int anInt = new Random().nextInt(3);
+                String greetingStr = null;
+                switch (anInt) {
+                    case 0:
+                        greetingStr = PreferencesUtils.getString(MainActivity.this, GreetingActivity.GREETING1);
+                        break;
+                    case 1:
+                        greetingStr = PreferencesUtils.getString(MainActivity.this, GreetingActivity.GREETING2);
+                        break;
+                    case 2:
+                        greetingStr = PreferencesUtils.getString(MainActivity.this, GreetingActivity.GREETING3);
+                        break;
+                }
+                if (greetingStr != null && !greetingStr.equals("")) {
+                    addSpeakAnswer("greetingStr", greetingStr, true, false);
+                } else {
+                    resetAll();
+                    onCompleted();
+                }
+            } else {
+                resetAll();
+                onCompleted();
+            }
+        }
+    };
+
     //人脸识别
     private boolean isFaceIdentify;
+    private boolean isDetect;
 
     private FaceAuthDBManager mFaceAuthDBManager;
+
+    private boolean isSave;
+
+    //直接导航
+    private NavigationDBManager mNavigationDBManager;
+
+    //opencv
+    private Mat mRgba = new Mat();
+    private Mat mGray = new Mat();
+    private int mAbsoluteFaceSize = 0;
+    private float mRelativeFaceSize = 0.2f;
+
+    private File mCascadeFile;
+    private CascadeClassifier mJavaDetector;
+    private DetectionBasedTracker mNativeDetector;
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS: {
+                    System.loadLibrary("detection_based_tracker");
+
+                    try {
+                        InputStream is = getResources().openRawResource(R.raw.lbpcascade_frontalface);
+                        File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
+                        mCascadeFile = new File(cascadeDir, "lbpcascade_frontalface.xml");
+                        FileOutputStream os = new FileOutputStream(mCascadeFile);
+
+                        byte[] buffer = new byte[4096];
+                        int bytesRead;
+                        while ((bytesRead = is.read(buffer)) != -1) {
+                            os.write(buffer, 0, bytesRead);
+                        }
+                        is.close();
+                        os.close();
+
+                        mJavaDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
+                        if (mJavaDetector.empty()) {
+                            mJavaDetector = null;
+                        } else
+
+                            mNativeDetector = new DetectionBasedTracker(mCascadeFile.getAbsolutePath(), 0);
+
+                        cascadeDir.delete();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+                default: {
+                    super.onManagerConnected(status);
+                }
+                break;
+            }
+        }
+    };
+
+    private boolean isDetector;
+
 
     @Override
     protected int getLayoutId() {
@@ -356,10 +486,12 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mHolder.addCallback(this);
 
+        mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
     }
 
     @Override
     protected void initData() {
+        sendOrder(SerialService.DEV_BAUDRATE, "A50C80F3AA");
         mVoiceDBManager = new VoiceDBManager();
         mFaceAuthDBManager = new FaceAuthDBManager();
 
@@ -396,7 +528,10 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         myRecognizer.onResume();
 
         mHandler.post(countRunnable);
-        mHandler.postDelayed(previewRunnable, DELAY_MILLIS);
+        mHandler.postDelayed(previewRunnable, PREVIEW_DELAY_MILLIS);
+        mHandler.postDelayed(greetingRunnable, GREETING_DELAY_MILLIS);
+
+        isSave = true;
     }
 
     @Override
@@ -414,6 +549,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         surfaceView.setVisibility(View.GONE);
         mHandler.removeCallbacks(countRunnable);
         mHandler.removeCallbacks(previewRunnable);
+        mHandler.removeCallbacks(greetingRunnable);
 
         setChatView(false);
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
@@ -456,10 +592,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        surfaceView.setVisibility(View.GONE);
-
-        mHandler.removeCallbacks(previewRunnable);
-        mHandler.postDelayed(previewRunnable, DELAY_MILLIS);
+        resetAll();
     }
 
     @Override
@@ -498,7 +631,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
                 break;
             case R.id.iv_face:
                 FaceRecognitionActivity.newInstance(this);
-//                DetectfaceActivity.newInstance(this);
                 break;
             case R.id.iv_seting_up:
                 clickSetting();
@@ -629,13 +761,18 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     private void bindService(boolean isPlay) {
-        this.isPlay = isPlay;
-        if (!PreferencesUtils.getBoolean(MainActivity.this, Constants.MUSIC_UPDATE, false))
-            showLoading();
-        Intent intent = new Intent();
-        intent.setClass(this, PlayService.class);
-        mPlayServiceConnection = new PlayServiceConnection();
-        bindService(intent, mPlayServiceConnection, Context.BIND_AUTO_CREATE);
+        boolean meida = PreferencesUtils.getBoolean(this, SettingActivity.MEDIA_CHECK, false);
+        if (meida) {
+            this.isPlay = isPlay;
+            if (!PreferencesUtils.getBoolean(MainActivity.this, Constants.MUSIC_UPDATE, false))
+                showLoading();
+            Intent intent = new Intent();
+            intent.setClass(this, PlayService.class);
+            mPlayServiceConnection = new PlayServiceConnection();
+            bindService(intent, mPlayServiceConnection, Context.BIND_AUTO_CREATE);
+        } else {
+            addSpeakAnswer("other", "管理员还没有帮我添加多媒体内容，您可以尝试问我些其它问题呢", false, false);
+        }
     }
 
     @Override
@@ -787,8 +924,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     private void addSpeakAnswer(String problem, String messageContent, boolean isAction, boolean isUrl) {
 
-        mHandler.removeCallbacks(previewRunnable);
-        mHandler.postDelayed(previewRunnable, DELAY_MILLIS);
+        resetAll();
 
         mSoundPresenter.stopVoice();
         stopRecognizerListener();
@@ -813,13 +949,6 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     private void speakingAddAction(int length) {
-//        if (length <= 13) {
-//            mSerialPresenter.sendOrder(SerialService.DEV_BAUDRATE, "A50C8001AA");
-//        } else if (length > 13 && length <= 40) {
-//            mSerialPresenter.sendOrder(SerialService.DEV_BAUDRATE, "A50C8003AA");
-//        } else {
-//            mSerialPresenter.sendOrder(SerialService.DEV_BAUDRATE, "A50C8021AA");
-//        }
         sendOrder(SerialService.DEV_BAUDRATE, Constants.SPEAK_ACTION);
     }
 
@@ -829,7 +958,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             @Override
             public void run() {
 //                FanFanIntroduceActivity.newInstance(MainActivity.this);
-                PPTActivity.newInstance(MainActivity.this);
+//                PPTActivity.newInstance(MainActivity.this);
+                String speak = "您好，智能小秘书芳芳，一些常见问题咨询您都可以问我，虽然我还没有哥哥姐姐们那么优秀，但我一定会尽心为您服务!";
+                addSpeakAnswer("ClickMsg", speak, true, false);
             }
         }, 400);
         ViewAnimator
@@ -882,7 +1013,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
                 if (curVersion < newversioncode) {
 
-                    Progress progress = DownloadDBDao.getInstance().get(Constant.APK_URL);
+                    String apkUrl = Constant.APK_URL + appVerBean.getAppName();
+
+                    Progress progress = DownloadDBDao.getInstance().get(apkUrl);
                     if (progress == null) {
                         return;
                     }
@@ -988,44 +1121,49 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
 
     private void setChatView(boolean isShow) {
+//        if (isShow) {
+//            ViewAnimator
+//                    .animate(chatContent)
+//                    .alpha(0, 1)
+//                    .interpolator(new LinearInterpolator())
+//                    .duration(300)
+//                    .onStart(new AnimationListener.Start() {
+//                        @Override
+//                        public void onStart() {
+//
+//                        }
+//                    })
+//                    .onStop(new AnimationListener.Stop() {
+//                        @Override
+//                        public void onStop() {
+//                            chatContent.setVisibility(View.VISIBLE);
+//                        }
+//                    })
+//                    .start();
+//        } else {
+//            ViewAnimator
+//                    .animate(chatContent)
+//                    .alpha(1, 0)
+//                    .interpolator(new LinearInterpolator())
+//                    .duration(1000)
+//                    .onStart(new AnimationListener.Start() {
+//                        @Override
+//                        public void onStart() {
+//
+//                        }
+//                    })
+//                    .onStop(new AnimationListener.Stop() {
+//                        @Override
+//                        public void onStop() {
+//                            chatContent.setVisibility(View.GONE);
+//                        }
+//                    })
+//                    .start();
+//        }
         if (isShow) {
-            ViewAnimator
-                    .animate(chatContent)
-                    .alpha(0, 1)
-                    .interpolator(new LinearInterpolator())
-                    .duration(300)
-                    .onStart(new AnimationListener.Start() {
-                        @Override
-                        public void onStart() {
-
-                        }
-                    })
-                    .onStop(new AnimationListener.Stop() {
-                        @Override
-                        public void onStop() {
-                            chatContent.setVisibility(View.VISIBLE);
-                        }
-                    })
-                    .start();
+            chatContent.setVisibility(View.VISIBLE);
         } else {
-            ViewAnimator
-                    .animate(chatContent)
-                    .alpha(1, 0)
-                    .interpolator(new LinearInterpolator())
-                    .duration(1000)
-                    .onStart(new AnimationListener.Start() {
-                        @Override
-                        public void onStart() {
-
-                        }
-                    })
-                    .onStop(new AnimationListener.Stop() {
-                        @Override
-                        public void onStop() {
-                            chatContent.setVisibility(View.GONE);
-                        }
-                    })
-                    .start();
+            chatContent.setVisibility(View.GONE);
         }
     }
 
@@ -1252,6 +1390,11 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     @Override
+    public void onMoveSpeak() {
+
+    }
+
+    @Override
     public void onAlarm(Alarm alarm) {
 
     }
@@ -1265,16 +1408,22 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         } else if (unicode.equals("新闻")) {
             IntentUtil.openUrl(mContext, "http://www.cepb.gov.cn/");
         } else {
-            List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
-            if (voiceBeanList != null && voiceBeanList.size() > 0) {
-                for (VoiceBean voiceBean : voiceBeanList) {
-                    if (voiceBean.getShowTitle().equals(unicode)) {
-                        refHomePage(voiceBean);
-                        return;
+            List<NavigationBean> navigationBeans = mNavigationDBManager.queryNavigationByQuestion(result);
+            if (navigationBeans != null && navigationBeans.size() > 0) {
+                NavigationActivity.newInstance(this, result);
+            } else {
+
+                List<VoiceBean> voiceBeanList = mVoiceDBManager.loadAll();
+                if (voiceBeanList != null && voiceBeanList.size() > 0) {
+                    for (VoiceBean voiceBean : voiceBeanList) {
+                        if (voiceBean.getShowTitle().equals(unicode)) {
+                            refHomePage(voiceBean);
+                            return;
+                        }
                     }
                 }
+                mSoundPresenter.onlineResult(unicode);
             }
-            mSoundPresenter.onlineResult(unicode);
         }
     }
 
@@ -1405,12 +1554,22 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             case Turnright:
                 sendOrder(SerialService.DEV_BAUDRATE, "A5038006AA");
                 break;
+            case StartMove:
+                sendAutoAction();
+                break;
+            case StopMove:
+                stopAutoAction();
+                break;
         }
     }
 
     @Override
     public void openMap() {
-        AMapActivity.newInstance(this);
+//        AMapActivity.newInstance(this);
+        Intent intent = new Intent("android.intent.action.VIEW",
+                Uri.parse("androidamap://showTraffic?sourceApplication=softname&amp;poiid=BGVIS1&amp;lat=36.2&amp;lon=116.1&amp;level=10&amp;dev=0"));
+        intent.setPackage("com.autonavi.minimap");
+        startActivity(intent);
     }
 
     @Override
@@ -1436,13 +1595,13 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
     @Override
     public void onCompleted() {
-
+        onRunable();
     }
 
     @Override
     public void noAnswer(String question) {
         String identifier = UserInfo.getInstance().getIdentifier();
-        youtucode.requestProblem(identifier, question, id);
+        youtucode.requestProblem(identifier, question, id, 1);
     }
 
     @Override
@@ -1539,22 +1698,24 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         Bitmap copyBitmap = faceBitmap.copy(Bitmap.Config.RGB_565, true);
 
+//        if (faceDetector(detector, copyBitmap)) return;
+
         FaceDetector.Face[] faces = new FaceDetector.Face[10];
         int faceNumber = detector.findFaces(copyBitmap, faces);
         if (faceNumber > 0) {
 
-            Print.e("isPreviewFrame " + isPreviewFrame + "   count :" + count);
-            if (!isPreviewFrame) {
-                return;
-            }
+            int opencv = opencvDraw(copyBitmap);
 
-            count++;
-            if (count == 2) {
-                isPreviewFrame = false;
+            if (opencv > 0) {
+
                 distinguish(copyBitmap);
+            } else {
+                Print.i("opencv检测人脸失败");
+                isDetector = true;
             }
         } else {
-            Print.i("camera no face");
+            Print.i("系统检测人脸失败");
+            isDetector = true;
         }
 
         copyBitmap.recycle();
@@ -1563,11 +1724,68 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
 
+    private boolean faceDetector(FaceDetector detector, Bitmap copyBitmap) {
+
+        if (isSave) {
+            isSave = false;
+//            BitmapUtils.saveBitmapToFile(copyBitmap, "test", System.currentTimeMillis() + ".jpg");
+        }
+
+        FaceDetector.Face[] faces = new FaceDetector.Face[10];
+        int faceNumber = detector.findFaces(copyBitmap, faces);
+        if (faceNumber > 0) {
+
+            int opencv = opencvDraw(copyBitmap);
+            Print.e("opencv : " + opencv);
+            if (opencv > 0) {
+
+                Print.e("isPreviewFrame " + isPreviewFrame + "   count :" + count);
+                if (!isPreviewFrame) {
+                    return true;
+                }
+
+                count++;
+                if (count == 2) {
+                    isPreviewFrame = false;
+                    distinguish(copyBitmap);
+                }
+            } else {
+                Print.i("opencv no face");
+            }
+        } else {
+            Print.i("camera no face");
+        }
+        return false;
+    }
+
+
+    private int opencvDraw(Bitmap bitmap) {
+
+        Utils.bitmapToMat(bitmap, mRgba);
+        Mat mat1 = new Mat();
+        Utils.bitmapToMat(bitmap, mat1);
+        Imgproc.cvtColor(mat1, mGray, Imgproc.COLOR_BGR2GRAY);
+        if (mAbsoluteFaceSize == 0) {
+            int height = mGray.rows();
+            if (Math.round(height * mRelativeFaceSize) > 0) {
+                mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
+            }
+            mNativeDetector.setMinFaceSize(mAbsoluteFaceSize);
+        }
+        MatOfRect faces = new MatOfRect();
+
+        if (mJavaDetector != null)
+            mJavaDetector.detectMultiScale(mGray, faces, 1.1, 2, 2, new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
+
+        Rect[] facesArray = faces.toArray();
+        return facesArray.length;
+    }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         openCamera();
         doStartPreview();
-        mHandler.postDelayed(previewRunnable, DELAY_MILLIS);
+        mHandler.postDelayed(previewRunnable, PREVIEW_DELAY_MILLIS);
     }
 
     @Override
@@ -1600,7 +1818,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
             mCamera.release();
             mCamera = null;
         }
-        Print.e("相机关闭...");
+        Print.i("相机关闭...");
     }
 
     private void doStartPreview() {
@@ -1614,7 +1832,14 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         parameters.setPreviewSize(previewWidth, previewHeight);
         mCamera.setParameters(parameters);
 
-        orientionOfCamera = CameraUtils.getInstance().getCameraDisplayOrientation(this, mCameraId);
+
+        if (unusual) {
+            // 设置显示的偏转角度，大部分机器是顺时针90度，某些机器需要按情况设置
+            orientionOfCamera = CameraUtils.getInstance().getCameraDisplayOrientation(this, mCameraId);
+        } else {
+            // TODO: 2018/7/4/004
+            orientionOfCamera = 270;
+        }
         mCamera.setDisplayOrientation(orientionOfCamera);
 
         mCamera.startPreview();
@@ -1636,12 +1861,78 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         surfaceView.setVisibility(View.VISIBLE);
         count = 0;
         isPreviewFrame = true;
-        againIdentify();
+        isFaceIdentify = false;
+        isDetector = true;
     }
 
-    private void distinguish(Bitmap bitmap) {
-        faceIdentifyFace(bitmap);
+    private void resetAll() {
+        surfaceView.setVisibility(View.GONE);
+
+        mHandler.removeCallbacks(previewRunnable);
+        mHandler.postDelayed(previewRunnable, PREVIEW_DELAY_MILLIS);
+        mHandler.removeCallbacks(greetingRunnable);
+        mHandler.postDelayed(greetingRunnable, GREETING_DELAY_MILLIS);
     }
+
+
+    private void distinguish(Bitmap bitmap) {
+//        faceIdentifyFace(bitmap);
+//        detectFace(bitmap);
+//        greetingFace();
+        detectorFace();
+    }
+
+    private void detectorFace() {
+        String cameraSpeak = resFoFinal(R.array.camera_speak);
+        addSpeakAnswer("cameraMsg", cameraSpeak, true, false);
+    }
+
+    private void greetingFace() {
+        String cameraSpeak = resFoFinal(R.array.camera_speak);
+        addSpeakAnswer("cameraMsg", cameraSpeak, true, false);
+    }
+
+    private void detectFace(Bitmap bitmap) {
+        if (isDetect) {
+            return;
+        }
+
+        isDetect = true;
+        youtucode.detectFace(bitmap, 1);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResultEvent(DetectFaceEvent event) {
+        if (event.isOk()) {
+            DetectFace detectFace = event.getBean();
+            Print.e(detectFace);
+            if (detectFace.getErrorcode() == 0) {
+                List<Face> faces = detectFace.getFace();
+                if (faces != null && faces.size() > 0) {
+                    if (faces.size() == 1) {
+
+                        Face face = faces.get(0);
+                        if (face.getGender() > 50) {
+                            sayHello("你好, 先生");
+                        } else {
+                            sayHello("你好, 女士");
+                        }
+                    } else {
+                        sayHello("大家好, 欢迎光临");
+                    }
+                } else {
+                    againDetect();
+                }
+            } else {
+                onError(detectFace.getErrorcode(), detectFace.getErrormsg());
+                againDetect();
+            }
+        } else {
+            onError(event);
+            againDetect();
+        }
+    }
+
 
     public void faceIdentifyFace(Bitmap bitmap) {
         if (isFaceIdentify)
@@ -1732,7 +2023,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     private void compareFaceAuth(String person) {
         FaceAuth faceAuth = mFaceAuthDBManager.queryByPersonId(person);
         if (faceAuth != null) {
-            sayHello(faceAuth.getAuthId());
+            sayHello("您好" + faceAuth.getAuthId() + ", 欢迎光临");
         } else {
             getPersonInfo(person);
         }
@@ -1760,31 +2051,42 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
     }
 
     private void fromCloud(GetInfo getInfo) {
-        sayHello(getInfo.getPerson_name());
+        sayHello("您好" + getInfo.getPerson_name() + ", 欢迎光临");
     }
 
     private void confidenceLow(FaceIdentify.IdentifyItem identifyItem) {
         Print.e(String.format("识别度为 %s， 较低。请正对屏幕或您未注册个人信息", identifyItem.getConfidence()));
-        sayHello("");
+        sayHello("您好, 欢迎光临");
     }
 
     private void identifyNoFace() {
         Print.e("没有返回人脸信息或者服务器未注册任何人信息");
-        sayHello("");
+        sayHello("您好, 欢迎光临");
+    }
+
+    private void againDetect() {
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                isDetect = false;
+            }
+        }, 500);
     }
 
     private void againIdentify() {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                count = 0;
+                isPreviewFrame = true;
                 isFaceIdentify = false;
             }
         }, 500);
     }
 
-    private void sayHello(String userName) {
-        surfaceView.setVisibility(View.GONE);
-        addSpeakAnswer("CameraMsg", "您好" + userName + ", 欢迎光临", true, false);
+
+    private void sayHello(String msg) {
+        addSpeakAnswer("CameraMsg", msg, true, false);
     }
 
 

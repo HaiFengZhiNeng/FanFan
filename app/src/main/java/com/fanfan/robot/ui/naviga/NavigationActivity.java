@@ -18,8 +18,10 @@ import com.fanfan.robot.db.manager.NavigationDBManager;
 import com.fanfan.robot.model.Alarm;
 import com.fanfan.robot.model.NavigationBean;
 import com.fanfan.robot.model.SerialBean;
+import com.fanfan.robot.presenter.ChatPresenter;
 import com.fanfan.robot.presenter.LocalSoundPresenter;
 import com.fanfan.robot.presenter.SerialPresenter;
+import com.fanfan.robot.presenter.ipersenter.IChatPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILocalSoundPresenter;
 import com.fanfan.robot.presenter.ipersenter.ISerialPresenter;
 import com.fanfan.robot.service.SerialService;
@@ -33,6 +35,7 @@ import com.fanfan.robot.model.ImageBean;
 import com.fanfan.robot.ui.voice.ImageFragment;
 import com.fanfan.robot.view.RangeClickImageView;
 import com.seabreeze.log.Print;
+import com.tencent.TIMMessage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -53,8 +56,14 @@ import butterknife.OnClick;
 public class NavigationActivity extends BarBaseActivity implements
         ILocalSoundPresenter.ILocalSoundView,
         ISerialPresenter.ISerialView,
+        IChatPresenter.IChatView,
         RangeClickImageView.OnResourceReadyListener,
         RangeClickImageView.OnRangeClickListener {
+
+    public static final String NAVIGATION_ADDRESS = "navigation_address";
+
+    public static final String START = "start";
+    public static final String END = "end";
 
     //    @BindView(R.id.iv_navigation)
     RangeClickImageView ivNavigation;
@@ -69,8 +78,16 @@ public class NavigationActivity extends BarBaseActivity implements
         context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
+    public static void newInstance(Activity context, String address) {
+        Intent intent = new Intent(context, NavigationActivity.class);
+        intent.putExtra(NAVIGATION_ADDRESS, address);
+        context.startActivity(intent);
+        context.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
     private LocalSoundPresenter mSoundPresenter;
     private SerialPresenter mSerialPresenter;
+    private ChatPresenter mChatPresenter;
 
     private NavigationDBManager mNavigationDBManager;
 
@@ -86,7 +103,16 @@ public class NavigationActivity extends BarBaseActivity implements
 
     private ImageFragment imageFragment;
     private boolean isShow;
-    private Handler handler = new Handler();
+
+    private String mAddress;
+
+    private boolean isSpeakMove;
+
+    @Override
+    protected boolean whetherNotReturn() {
+        return true;
+    }
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_navigation;
@@ -96,10 +122,14 @@ public class NavigationActivity extends BarBaseActivity implements
     protected void initView() {
         super.initView();
 
+        mAddress = getIntent().getStringExtra(NAVIGATION_ADDRESS);
+
         mSoundPresenter = new LocalSoundPresenter(this);
         mSoundPresenter.start();
         mSerialPresenter = new SerialPresenter(this);
         mSerialPresenter.start();
+        mChatPresenter = new ChatPresenter(this);
+        mChatPresenter.start();
 
 
 //        initImage();
@@ -134,7 +164,12 @@ public class NavigationActivity extends BarBaseActivity implements
         super.onResume();
         mSoundPresenter.onResume();
 
-        addSpeakAnswer("你好，这里是导航页面，点击地图上地点可到达指定区域");
+        if (mAddress != null) {
+            refLocalPage(mAddress);
+            mAddress = null;
+        } else {
+            addSpeakAnswer("你好，这里是导航页面，点击地图上地点可到达指定区域");
+        }
     }
 
     @Override
@@ -151,6 +186,8 @@ public class NavigationActivity extends BarBaseActivity implements
 
     @Override
     protected void onDestroy() {
+        mHandler.removeCallbacks(moveSpeakrunnable);
+
         super.onDestroy();
         mSoundPresenter.finish();
     }
@@ -244,10 +281,16 @@ public class NavigationActivity extends BarBaseActivity implements
 //    }
 
     private void addSpeakAnswer(String messageContent) {
+
+        postInteraction();
+
         mSoundPresenter.doAnswer(messageContent);
     }
 
     private void addSpeakAnswer(int res) {
+
+        postInteraction();
+
         mSoundPresenter.doAnswer(getResources().getString(res));
     }
 
@@ -274,6 +317,8 @@ public class NavigationActivity extends BarBaseActivity implements
     }
 
     private void refNavigation(NavigationBean itemData, int position) {
+
+        isSpeakMove = false;
         mCurrentPos = position;
         navigationAdapter.notifyClick(mCurrentPos);
         mNavigationBean = itemData;
@@ -282,6 +327,10 @@ public class NavigationActivity extends BarBaseActivity implements
             mSerialPresenter.receiveMotion(SerialService.CRUISE_BAUDRATE, itemData.getNavigationData());
         }
         ImageLoader.loadLargeImage(mContext, ivNavigationImage, itemData.getImgUrl(), R.mipmap.video_image);
+        if (mCurrentPos > -1) {
+            NavigationBean bean = navigationBeanList.get(mCurrentPos);
+            showImage(bean);
+        }
     }
 
     @Override
@@ -380,7 +429,7 @@ public class NavigationActivity extends BarBaseActivity implements
                 itemData = navigationBeans.get(new Random().nextInt(navigationBeans.size()));
             }
             int index = navigationBeanList.indexOf(itemData);
-            refNavigation(itemData, index);
+
             if (index != -1) {
                 refNavigation(itemData, index);
             } else {
@@ -411,10 +460,15 @@ public class NavigationActivity extends BarBaseActivity implements
 
     @Override
     public void onMoveStop() {
+        mHandler.removeCallbacks(moveSpeakrunnable);
+
+        mSerialPresenter.receiveMotion(SerialService.CRUISE_BAUDRATE, END);
+
         if (mNavigationBean != null) {
+            dismissImage();
             Print.e(mNavigationBean.getDatail());
             addSpeakAnswer(mNavigationBean.getDatail());
-            handler.postDelayed(new Runnable() {
+            mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mSerialPresenter.receiveMotion(SerialService.DEV_BAUDRATE, Constants.SPEAK_ACTION);
@@ -423,6 +477,32 @@ public class NavigationActivity extends BarBaseActivity implements
 
         }
     }
+
+    @Override
+    public void onMoveSpeak() {
+        if (!mSoundPresenter.isSpeaking()) {
+            if (!isSpeakMove) {
+                Print.e("navi" + "发送让一让指令");
+                isSpeakMove = true;
+                mHandler.removeCallbacks(moveSpeakrunnable);
+                mHandler.postDelayed(moveSpeakrunnable, 3000);
+            } else {
+                Print.e("navi" + "已经发送了让一让指令");
+            }
+        } else {
+            Print.e("navi" + "有人在说话");
+        }
+    }
+
+    Runnable moveSpeakrunnable = new Runnable() {
+        @Override
+        public void run() {
+            Print.e("navi" + "navi" + "说出让一让");
+            addSpeakAnswer(resFoFinal(R.array.navigation_move));
+            isSpeakMove = false;
+        }
+    };
+
 
     @Override
     public void onAlarm(Alarm alarm) {
@@ -452,6 +532,40 @@ public class NavigationActivity extends BarBaseActivity implements
             }
         }
         return false;
+    }
+
+    @Override
+    public void onSendMessageSuccess(TIMMessage message) {
+
+    }
+
+    @Override
+    public void onSendMessageFail(int code, String desc, TIMMessage message) {
+
+    }
+
+    @Override
+    public void parseMsgcomplete(String str) {
+
+    }
+
+    @Override
+    public void parseCustomMsgcomplete(String customMsg) {
+
+    }
+
+    @Override
+    public void parseServerMsgcomplete(String txt) {
+        txt = txt.trim();
+        if (txt.equals("b")) {
+            if (isShow) {
+                dismissImage();
+                mSoundPresenter.onCompleted();
+            } else {
+                finish();
+            }
+
+        }
     }
 
 }

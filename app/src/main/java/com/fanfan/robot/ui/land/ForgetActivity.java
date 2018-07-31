@@ -46,6 +46,11 @@ public class ForgetActivity extends BarBaseActivity implements IForgetPresenter.
     private ForgetPresenter mForgetPresenter;
 
     @Override
+    protected boolean whetherNotReturn() {
+        return true;
+    }
+
+    @Override
     protected int getLayoutId() {
         return R.layout.activity_forget;
     }

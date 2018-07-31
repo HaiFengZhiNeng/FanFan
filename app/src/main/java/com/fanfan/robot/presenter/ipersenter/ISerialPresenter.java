@@ -27,6 +27,8 @@ public abstract class ISerialPresenter implements BasePresenter {
 
         void onMoveStop();
 
+        void onMoveSpeak();
+
         void onAlarm(Alarm alarm);
     }
 }

@@ -19,6 +19,11 @@ import java.util.Random;
 public abstract class BarBaseActivity extends BaseActivity {
 
     @Override
+    protected boolean whetherNotReturn() {
+        return false;
+    }
+
+    @Override
     protected int setBackgroundGlide() {
         return 0;
     }
@@ -56,6 +61,11 @@ public abstract class BarBaseActivity extends BaseActivity {
             rlLayout.setVisibility(View.VISIBLE);
             tvEmpty.setVisibility(View.GONE);
         }
+    }
+
+    public String resFoFinal(int id) {
+        String[] arrResult = getResources().getStringArray(id);
+        return arrResult[new Random().nextInt(arrResult.length)];
     }
 
 }
