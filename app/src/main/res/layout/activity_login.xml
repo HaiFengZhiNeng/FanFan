@@ -76,7 +76,7 @@
                     android:layout_marginLeft="6dp"
                     android:background="@null"
                     android:hint="用户名"
-                    android:text="hotel001"
+                    android:text="hotel002"
                     android:inputType="textEmailAddress|text"
                     android:textSize="16sp" />
 

@@ -92,6 +92,10 @@ dependencies {
     implementation files('libs/poi-scratchpad-3.15.jar')
     implementation files('libs/hanlp-portable-1.6.2.jar')
 
+//    implementation files('libs/baidu_license.jar')
+//    implementation files('libs/FaceSDK.jar')
+//    implementation files('libs/liantian_3-1-6-1-286_0614.jar')
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     implementation project(':print')
@@ -164,4 +168,5 @@ dependencies {
     implementation rootProject.ext.dependencies["exoplayer"]
     implementation rootProject.ext.dependencies["rxjava"]
     implementation rootProject.ext.dependencies["rxandroid"]
+    implementation rootProject.ext.dependencies["adapter-rxjava2"]
 }

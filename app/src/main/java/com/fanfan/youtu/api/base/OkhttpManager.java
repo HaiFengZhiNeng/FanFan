@@ -5,14 +5,23 @@ import android.text.TextUtils;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.youtu.token.YoutuSign;
+import com.fanfan.youtu.utils.OkHttpUtils;
 import com.seabreeze.log.Print;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Authenticator;
 import okhttp3.Cache;
@@ -51,6 +60,28 @@ public class OkhttpManager {
     public void init() {
         putDomain(Constant.YOUTU_NAME, Constant.API_YOUTU_BASE);
         putDomain(Constant.ROBOT_NAME, Constant.API_ROBOT_BASE);
+
+        //创建keyManagers
+        KeyManager[] keyManagers = OkHttpUtils.prepareKeyManager(null, null);
+
+        //创建TrustManager
+        TrustManager[] trustManagers = OkHttpUtils.prepareTrustManager();
+
+        //创建X509TrustManager
+        X509TrustManager manager = new SafeTrustManager();
+
+        SSLContext sslContext = null;
+        try {
+            // 创建TLS类型的SSLContext对象， that uses our TrustManager
+            sslContext = SSLContext.getInstance("TLS");
+            // 用上面得到的trustManagers初始化SSLContext，这样sslContext就会信任keyStore中的证书
+            // 第一个参数是授权的密钥管理器，用来授权验证，比如授权自签名的证书验证。第二个是被授权的证书管理器，用来验证服务器端的证书
+            sslContext.init(keyManagers, new TrustManager[]{manager}, new SecureRandom());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
 
         // 设置 Log 拦截器，可以用于以后处理一些异常情况
         HttpLoggingInterceptor.Logger logger = new HttpLoggingInterceptor.Logger() {
@@ -141,6 +172,8 @@ public class OkhttpManager {
                 .addNetworkInterceptor(mTokenInterceptor)   // 自动附加 token
                 .addNetworkInterceptor(new StethoInterceptor())
 //                .authenticator(mAuthenticator)              // 认证失败自动刷新token
+                .sslSocketFactory(sslContext.getSocketFactory(), manager)
+                .hostnameVerifier(new SafeHostnameVerifier())
                 .cache(cache)
                 .build();
     }
@@ -180,4 +213,5 @@ public class OkhttpManager {
                 .port(domainUrl.port())
                 .build();
     }
+
 }

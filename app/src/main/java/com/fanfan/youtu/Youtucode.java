@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
+import com.fanfan.youtu.api.baidu.api.BaiduApi;
+import com.fanfan.youtu.api.baidu.api.BaiduImpl;
+import com.fanfan.youtu.api.baidu.bean.Activate;
 import com.fanfan.youtu.api.base.OkhttpManager;
 import com.fanfan.youtu.api.face.api.FaceAPI;
 import com.fanfan.youtu.api.face.api.FaceImpl;
@@ -15,15 +18,18 @@ import com.fanfan.youtu.api.uploadfile.api.FilezooImpl;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.Observable;
+
 /**
  * Created by android on 2018/1/4.
  */
 
-public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
+public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI, BaiduApi {
 
     private static FilezooImpl sFilezooImplement;
     private static FaceImpl sFaceImplement;
     private static RobotImpl sRobotImplement;
+    private static BaiduImpl sBaiduImplement;
 
     private volatile static Youtucode mYoutucode;
 
@@ -54,6 +60,7 @@ public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
             sFilezooImplement = new FilezooImpl(context);
             sFaceImplement = new FaceImpl(context);
             sRobotImplement = new RobotImpl(context);
+            sBaiduImplement = new BaiduImpl(context);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -177,5 +184,10 @@ public class Youtucode implements FilezooAPI, FaceAPI, RobotAPI {
     @Override
     public String selectSet(String user_name) {
         return sRobotImplement.selectSet(user_name);
+    }
+
+    @Override
+    public Observable<Activate> activateKey(String deviceId, String key) {
+        return sBaiduImplement.activateKey(deviceId, key);
     }
 }

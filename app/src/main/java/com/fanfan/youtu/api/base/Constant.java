@@ -14,6 +14,8 @@ public class Constant {
 
     public final static String API_ROBOT_BASE = "http://47.104.142.138/";
 
+    public final static String BAIDU_ACTIVATION_API = "https://ai.baidu.com/activation/key/activate";
+
     public static final String H_NAME = "H_NAME";
 
     public static final String YOUTU_NAME = "youtu";

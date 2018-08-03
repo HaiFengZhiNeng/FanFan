@@ -83,6 +83,11 @@
     <string name="title_import_file">文 件 导 入</string>
     <string name="title_greeting_function">打招呼功能设置</string>
     <string name="title_xf_set">语 音 设 置</string>
+    <string name="title_user_group_manager">用户及组管理</string>
+    <string name="title_user_group">用 户 组</string>
+    <string name="title_user_group_user">用 户 face</string>
+    <string name="title_user_face_info">人 脸 信 息</string>
+    <string name="title_add_group">添 加 分 组</string>
 
     <string name="open_map">此页面暂不支持打开地图</string>
     <string name="open_artificial">此页面暂不支持人工客服</string>

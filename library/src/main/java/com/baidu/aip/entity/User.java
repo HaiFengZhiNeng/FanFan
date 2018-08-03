@@ -20,6 +20,8 @@ public class User {
 
     private List<Feature> featureList = new ArrayList<Feature>();
 
+    private String userName = "";
+
     public String getUserId() {
         return userId;
     }
@@ -66,5 +68,13 @@ public class User {
 
     public void setFeatureList(List<Feature> featureList) {
         this.featureList = featureList;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

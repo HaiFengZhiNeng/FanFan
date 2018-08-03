@@ -96,6 +96,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.main.MainActivity"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.map.AMapActivity"
@@ -239,6 +240,36 @@
             android:theme="@style/AppThemeAction" />
         <activity
             android:name=".ui.setting.act.other.XFSetActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.face.aip.AddGroupActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.face.local.UserGroupManagerActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.face.local.GroupListActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.face.local.UserListActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.face.local.UserActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.face.local.AddGroupActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.face.local.RegActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.face.local.LivenessSettingActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.face.local.RgbDetectActivity"
+            android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.setting.act.face.local.RgbVideoIdentityActivity"
             android:theme="@style/AppThemeAction" />
 
         <service android:name=".service.SpeakService" />

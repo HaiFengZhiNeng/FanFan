@@ -11,6 +11,7 @@ import java.lang.reflect.ParameterizedType;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -41,6 +42,7 @@ public class BaseImpl<Service> {
                 .baseUrl(Constant.API_YOUTU_BASE)                         // 设置 base url
                 .client(OkhttpManager.getInstance().getOkhttpClient())                                     // 设置 client
                 .addConverterFactory(GsonConverterFactory.create()) // 设置 Json 转换工具
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
     }

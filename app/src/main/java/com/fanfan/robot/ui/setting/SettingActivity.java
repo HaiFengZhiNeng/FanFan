@@ -1,10 +1,14 @@
 package com.fanfan.robot.ui.setting;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -14,6 +18,9 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.baidu.aip.api.FaceApi;
+import com.baidu.aip.entity.Group;
+import com.baidu.aip.utils.PreferencesUtil;
 import com.fanfan.novel.utils.system.PreferencesUtils;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
@@ -31,6 +38,9 @@ import com.fanfan.robot.ui.auxiliary.SelectCtiyActivity;
 import com.fanfan.robot.ui.map.AMapActivity;
 import com.fanfan.robot.ui.setting.act.dance.DanceAddActivity;
 import com.fanfan.robot.ui.setting.act.face.FaceDataActivity;
+import com.fanfan.robot.ui.setting.act.face.local.LivenessSettingActivity;
+import com.fanfan.robot.ui.setting.act.face.local.RgbVideoIdentityActivity;
+import com.fanfan.robot.ui.setting.act.face.local.UserGroupManagerActivity;
 import com.fanfan.robot.ui.setting.act.naviga.DataNavigationActivity;
 import com.fanfan.robot.ui.setting.act.other.GreetingActivity;
 import com.fanfan.robot.ui.setting.act.other.SettingPwdActivity;
@@ -52,6 +62,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -104,6 +115,10 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
     RelativeLayout fileLayout;
     @BindView(R.id.rl_gf)
     RelativeLayout rlGreeting;
+    @BindView(R.id.user_groud_manager)
+    RelativeLayout userGroudManager;
+    @BindView(R.id.video_identify_faces)
+    RelativeLayout videoIdentifyFaces;
 
     private Youtucode youtucode;
 
@@ -171,7 +186,8 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
 
     @OnClick({R.id.add_video, R.id.add_voice, R.id.add_navigation, R.id.add_site, R.id.import_layout,
             R.id.rl_face, R.id.rl_dance, R.id.tv_xf, R.id.logout, R.id.rl_city, R.id.tv_vr,
-            R.id.tv_map, R.id.rl_update, R.id.rl_setpwd, R.id.tb_media, R.id.file_layout, R.id.rl_gf})
+            R.id.tv_map, R.id.rl_update, R.id.rl_setpwd, R.id.tb_media, R.id.file_layout, R.id.rl_gf,
+            R.id.user_groud_manager, R.id.video_identify_faces})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.add_video:
@@ -232,8 +248,64 @@ public class SettingActivity extends BarBaseActivity implements ProgressListener
             case R.id.rl_gf:
                 GreetingActivity.newInstance(this);
                 break;
+            case R.id.user_groud_manager:
+                UserGroupManagerActivity.newInstance(this);
+                break;
+            case R.id.video_identify_faces:
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager
+                        .PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
+                    return;
+                }
+                showSingleAlertDialog();
+                break;
         }
     }
+
+
+    private AlertDialog alertDialog;
+    private String[] items;
+
+    public void showSingleAlertDialog() {
+
+        List<Group> groupList = FaceApi.getInstance().getGroupList(0, 1000);
+        if (groupList.size() <= 0) {
+            showToast("还没有分组，请创建分组并添加用户");
+            return;
+        }
+        items = new String[groupList.size()];
+        for (int i = 0; i < groupList.size(); i++) {
+            Group group = groupList.get(i);
+            items[i] = group.getGroupId();
+        }
+
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle("请选择分组groupID");
+        alertBuilder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int index) {
+                showToast(items[index]);
+
+                choiceIdentityType(items[index]);
+                alertDialog.dismiss();
+            }
+        });
+
+        alertDialog = alertBuilder.create();
+        alertDialog.show();
+    }
+
+    private void choiceIdentityType(String groupId) {
+        int type = PreferencesUtil.getInt(LivenessSettingActivity.TYPE_LIVENSS, LivenessSettingActivity.TYPE_NO_LIVENSS);
+
+        if (type == LivenessSettingActivity.TYPE_NO_LIVENSS || type == LivenessSettingActivity.TYPE_RGB_LIVENSS) {
+            RgbVideoIdentityActivity.newInstance(SettingActivity.this, groupId);
+        } else {
+            showToast("暂不支持");
+        }
+    }
+
 
     public void showLoading() {
         if (materialDialog == null) {

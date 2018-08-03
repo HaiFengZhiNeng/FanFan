@@ -3,6 +3,8 @@ package com.fanfan.robot.app;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.baidu.aip.db.DBManager;
+import com.baidu.aip.utils.PreferencesUtil;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.robot.app.common.base.BaseApplication;
 import com.fanfan.robot.app.common.lifecycle.Foreground;
@@ -46,6 +48,9 @@ public class NovelApp extends BaseApplication {
         Foreground.init(this);
         //初始化数据库
         BaseManager.initOpenHelper(this);
+        //百度人脸数据库
+        DBManager.getInstance().init(this);
+        PreferencesUtil.initPrefs(this);
         //初始化讯飞
         initXf();
         //初始化有道

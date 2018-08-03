@@ -167,39 +167,58 @@ public class FaceRecognitionActivity extends BarBaseActivity implements
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_face_check_in:
-                viewAnimator(ivFaceCheckIn, -30, -30, new AnimationListener.Stop() {
-                    @Override
-                    public void onStop() {
-                        FaceCheckinActivity.newInstance(FaceRecognitionActivity.this);
-                    }
-                });
+                faceCheckIn();
                 break;
             case R.id.iv_face_instagram:
-                viewAnimator(ivFaceInstagram, 30, -30, new AnimationListener.Stop() {
-                    @Override
-                    public void onStop() {
-                        InstagramPhotoActivity.newInstance(FaceRecognitionActivity.this);
-                    }
-                });
+                faceInstagram();
                 break;
             case R.id.iv_face_witness_contrast:
-                viewAnimator(ivFaceWitnessContrast, -30, 30, new AnimationListener.Stop() {
-                    @Override
-                    public void onStop() {
-                        AuthenticationActivity.newInstance(FaceRecognitionActivity.this);
-                    }
-                });
+                faceWitness();
                 break;
             case R.id.iv_face_extraction:
-                viewAnimator(ivFaceExtraction, 30, 30, new AnimationListener.Stop() {
-                    @Override
-                    public void onStop() {
-                        startExtraction();
-                    }
-                });
+                faceLiftingArea();
                 break;
         }
     }
+
+
+
+    private void faceInstagram() {
+        viewAnimator(ivFaceInstagram, 30, -30, new AnimationListener.Stop() {
+            @Override
+            public void onStop() {
+                InstagramPhotoActivity.newInstance(FaceRecognitionActivity.this);
+            }
+        });
+    }
+
+    private void faceLiftingArea() {
+        viewAnimator(ivFaceExtraction, 30, 30, new AnimationListener.Stop() {
+            @Override
+            public void onStop() {
+                startExtraction();
+            }
+        });
+    }
+
+    private void faceWitness() {
+        viewAnimator(ivFaceWitnessContrast, -30, 30, new AnimationListener.Stop() {
+            @Override
+            public void onStop() {
+                AuthenticationActivity.newInstance(FaceRecognitionActivity.this);
+            }
+        });
+    }
+
+    private void faceCheckIn() {
+        viewAnimator(ivFaceCheckIn, -30, -30, new AnimationListener.Stop() {
+            @Override
+            public void onStop() {
+                FaceCheckinActivity.newInstance(FaceRecognitionActivity.this);
+            }
+        });
+    }
+
 
     private void viewAnimator(View view, int x, int y, AnimationListener.Stop stop) {
         ViewAnimator
@@ -338,36 +357,16 @@ public class FaceRecognitionActivity extends BarBaseActivity implements
     public void face(SpecialType type, String result) {
         switch (type) {
             case Face_lifting_area:
-                viewAnimator(ivFaceExtraction, 30, 30, new AnimationListener.Stop() {
-                    @Override
-                    public void onStop() {
-                        startExtraction();
-                    }
-                });
+                faceLiftingArea();
                 break;
             case Face_check_in:
-                viewAnimator(ivFaceCheckIn, -30, -30, new AnimationListener.Stop() {
-                    @Override
-                    public void onStop() {
-                        FaceCheckinActivity.newInstance(FaceRecognitionActivity.this);
-                    }
-                });
+                faceCheckIn();
                 break;
             case Instagram:
-                viewAnimator(ivFaceInstagram, 30, -30, new AnimationListener.Stop() {
-                    @Override
-                    public void onStop() {
-                        InstagramPhotoActivity.newInstance(FaceRecognitionActivity.this);
-                    }
-                });
+                faceInstagram();
                 break;
             case Witness_contrast:
-                viewAnimator(ivFaceWitnessContrast, -30, 30, new AnimationListener.Stop() {
-                    @Override
-                    public void onStop() {
-                        AuthenticationActivity.newInstance(FaceRecognitionActivity.this);
-                    }
-                });
+                faceWitness();
                 break;
         }
     }

@@ -126,6 +126,7 @@ public class DBManager {
             cv.put("user_id", user.getUserId());
             cv.put("user_info", user.getUserInfo());
             cv.put("group_id", user.getGroupId());
+            cv.put("user_name", user.getUserName());
             cv.put("update_time", System.currentTimeMillis());
             cv.put("ctime", System.currentTimeMillis());
 
@@ -335,6 +336,7 @@ public class DBManager {
             if (cursor != null && cursor.getCount() > 0 && cursor.moveToNext()) {
                 int dbId = cursor.getInt(cursor.getColumnIndex("_id"));
                 String userInfo = cursor.getString(cursor.getColumnIndex("user_info"));
+                String userName = cursor.getString(cursor.getColumnIndex("user_name"));
                 long updateTime = cursor.getLong(cursor.getColumnIndex("update_time"));
                 long ctime = cursor.getLong(cursor.getColumnIndex("ctime"));
 
@@ -342,6 +344,7 @@ public class DBManager {
                 user.setUserId(userId);
                 user.setGroupId(groupId);
                 user.setUserInfo(userInfo);
+                user.setUserName(userName);
                 user.setCtime(ctime);
                 user.setUpdateTime(updateTime);
                 return user;
@@ -367,6 +370,7 @@ public class DBManager {
                 int dbId = cursor.getInt(cursor.getColumnIndex("_id"));
                 String userInfo = cursor.getString(cursor.getColumnIndex("user_info"));
                 String userId = cursor.getString(cursor.getColumnIndex("user_id"));
+                String userName = cursor.getString(cursor.getColumnIndex("user_name"));
                 long updateTime = cursor.getLong(cursor.getColumnIndex("update_time"));
                 long ctime = cursor.getLong(cursor.getColumnIndex("ctime"));
 
@@ -374,6 +378,7 @@ public class DBManager {
                 user.setUserId(userId);
                 user.setGroupId(groupId);
                 user.setUserInfo(userInfo);
+                user.setUserName(userName);
                 user.setCtime(ctime);
                 user.setUpdateTime(updateTime);
                 users.add(user);
@@ -432,6 +437,7 @@ public class DBManager {
 
                 cv.put("user_id", user.getUserInfo());
                 cv.put("user_info", user.getUserInfo());
+                cv.put("user_name", user.getUserName());
                 cv.put("group_id", user.getGroupId());
                 cv.put("update_time", System.currentTimeMillis());
                 if (mDatabase.update(DBHelper.TABLE_USER, cv, where, whereValue) < 0) {

@@ -24,7 +24,7 @@ public class TexturePreviewView extends FrameLayout implements PreviewView {
 
     private int videoWidth = 0;
     private int videoHeight = 0;
-    private boolean mirrored = true;
+    private boolean mirrored = false;
 
     public TexturePreviewView(@NonNull Context context) {
         super(context);
@@ -50,6 +50,7 @@ public class TexturePreviewView extends FrameLayout implements PreviewView {
 
     /**
      * 有些ImageSource如系统相机前置设置头为镜面效果。这样换算坐标的时候会不一样
+     *
      * @param mirrored 是否为镜面效果。
      */
     public void setMirrored(boolean mirrored) {
@@ -132,7 +133,6 @@ public class TexturePreviewView extends FrameLayout implements PreviewView {
         int selfHeight = getHeight();
         if (videoWidth == 0 || videoHeight == 0 || selfWidth == 0 || selfHeight == 0) {
             return;
-            // TODO
         }
 
         Matrix matrix = new Matrix();

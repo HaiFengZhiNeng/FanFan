@@ -19,6 +19,8 @@ public class Constants {
 
     public static int IMSDK_ACCOUNT_TYPE = 17967;
 
+    public static final String FACE_KEY = "UH6A-VRJO-DMHU-0S0H";
+
     public static String controlId = "hotel002";
     public static String serverId = "fanw108";
     public static final String roomAVId = "@TGS#2GOCMM6EN";

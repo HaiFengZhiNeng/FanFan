@@ -34,6 +34,8 @@ import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.baidu.aip.manager.FaceSDKManager;
+import com.fanfan.novel.face.FaceInitManager;
 import com.fanfan.novel.utils.TimeUtils;
 import com.fanfan.novel.utils.camera.CameraUtils;
 import com.fanfan.novel.utils.youdao.TranslateLanguage;
@@ -179,8 +181,14 @@ import butterknife.OnClick;
 
 import static com.fanfan.robot.app.common.Constants.unusual;
 
-public class MainActivity extends BarBaseActivity implements ISynthesizerPresenter.ITtsView, IChatPresenter.IChatView,
-        ISerialPresenter.ISerialView, ILineSoundPresenter.ILineSoundView, SurfaceHolder.Callback, Camera.PreviewCallback {
+public class MainActivity extends BarBaseActivity implements
+        IChatPresenter.IChatView,
+        ISerialPresenter.ISerialView,
+        ISynthesizerPresenter.ITtsView,
+        ILineSoundPresenter.ILineSoundView,
+        SurfaceHolder.Callback,
+        Camera.PreviewCallback,
+        FaceInitManager.SdkInitListener {
 
 //    public static final int DELAY_MILLIS = 10 * 1000;
 
@@ -442,7 +450,7 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         youtucode = Youtucode.getSingleInstance();
 
-        youtucode.updateProgram(1);
+//        youtucode.updateProgram(1);
 
         Intent intent = new Intent(this, SpeakService.class);
         bindService(intent, mSpeakConn, BIND_AUTO_CREATE);
@@ -487,6 +495,8 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         mHolder.addCallback(this);
 
         mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+
+        FaceInitManager.getInstance().init(this, this);
     }
 
     @Override
@@ -540,7 +550,9 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
 
         isOpening = false;
 
-        mSpeakBinder.clear();
+        if (mSpeakBinder != null) {
+            mSpeakBinder.clear();
+        }
 
         myRecognizer.onPause();
 
@@ -2089,6 +2101,16 @@ public class MainActivity extends BarBaseActivity implements ISynthesizerPresent
         addSpeakAnswer("CameraMsg", msg, true, false);
     }
 
+    //百度人脸识别初始化回调
+    @Override
+    public void initSuccess() {
+        showMsg("sdk init success");
+    }
+
+    @Override
+    public void initFail(String msg) {
+        showMsg("sdk init fail:" + msg);
+    }
 
     private class PlayServiceConnection implements ServiceConnection {
         @Override

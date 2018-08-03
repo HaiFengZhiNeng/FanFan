@@ -81,7 +81,7 @@ public class DBHelper extends SQLiteOpenHelper {
         userSql.append(" user_id").append(" varchar(32) default \"\"   ,");
         userSql.append(" user_info").append(" varchar(32) default \"\"   ,");
         userSql.append(" group_id").append(" varchar(32) default \"\"   ,");
-
+        userSql.append(" user_name").append(" TEXT ,");
         userSql.append(" ctime").append(" long ,");
         userSql.append(" update_time").append(" long )");
 

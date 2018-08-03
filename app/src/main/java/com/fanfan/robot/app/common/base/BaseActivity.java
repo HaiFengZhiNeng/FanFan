@@ -370,7 +370,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
 
             String className = info.topActivity.getClassName();
-            if (className.equals("com.fanfan.robot.activity.MainActivity")) {
+            if (className.equals("com.fanfan.robot.ui.main.MainActivity")) {
                 Print.e("当前页面");
             } else {
                 Print.e("跳转到main");
