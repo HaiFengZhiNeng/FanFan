@@ -70,6 +70,7 @@ import static com.fanfan.robot.ui.face.act.FaceRegisterActivity.State.NEWPERSON;
 /**
  * 人脸提取页面
  */
+@Deprecated
 public class FaceRegisterActivity extends BarBaseActivity implements
         SurfaceHolder.Callback,
         ICameraPresenter.ICameraView,

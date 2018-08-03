@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -13,12 +14,14 @@ import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.baidu.aip.entity.User;
 import com.fanfan.robot.app.common.act.BarBaseActivity;
 import com.fanfan.robot.app.enums.SpecialType;
 import com.fanfan.robot.db.manager.FaceAuthDBManager;
 import com.fanfan.robot.model.Alarm;
 import com.fanfan.robot.model.FaceAuth;
 import com.fanfan.robot.model.SerialBean;
+import com.fanfan.robot.model.UserInfo;
 import com.fanfan.robot.presenter.LocalSoundPresenter;
 import com.fanfan.robot.presenter.SerialPresenter;
 import com.fanfan.robot.presenter.ipersenter.ILocalSoundPresenter;
@@ -29,9 +32,12 @@ import com.fanfan.robot.other.event.ServiceToActivityEvent;
 import com.fanfan.robot.other.udp.SocketManager;
 import com.fanfan.robot.R;
 import com.fanfan.robot.ui.face.act.AuthenticationActivity;
+import com.fanfan.robot.ui.face.act.FaceCheckin2Activity;
 import com.fanfan.robot.ui.face.act.FaceCheckinActivity;
+import com.fanfan.robot.ui.face.act.FaceRegister2Activity;
 import com.fanfan.robot.ui.face.act.FaceRegisterActivity;
 import com.fanfan.robot.ui.face.act.InstagramPhotoActivity;
+import com.fanfan.robot.ui.setting.act.face.local.RegActivity;
 import com.github.florent37.viewanimator.AnimationListener;
 import com.github.florent37.viewanimator.ViewAnimator;
 import com.seabreeze.log.Print;
@@ -41,7 +47,11 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.opencv.android.OpenCVLoader;
 
+import java.io.File;
 import java.net.DatagramPacket;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -182,7 +192,6 @@ public class FaceRecognitionActivity extends BarBaseActivity implements
     }
 
 
-
     private void faceInstagram() {
         viewAnimator(ivFaceInstagram, 30, -30, new AnimationListener.Stop() {
             @Override
@@ -196,7 +205,8 @@ public class FaceRecognitionActivity extends BarBaseActivity implements
         viewAnimator(ivFaceExtraction, 30, 30, new AnimationListener.Stop() {
             @Override
             public void onStop() {
-                startExtraction();
+//                startExtraction();
+                FaceRegister2Activity.newInstance(FaceRecognitionActivity.this);
             }
         });
     }
@@ -214,7 +224,7 @@ public class FaceRecognitionActivity extends BarBaseActivity implements
         viewAnimator(ivFaceCheckIn, -30, -30, new AnimationListener.Stop() {
             @Override
             public void onStop() {
-                FaceCheckinActivity.newInstance(FaceRecognitionActivity.this);
+                FaceCheckin2Activity.newInstance(FaceRecognitionActivity.this);
             }
         });
     }
@@ -242,45 +252,45 @@ public class FaceRecognitionActivity extends BarBaseActivity implements
     }
 
     private void startExtraction() {
-        MaterialDialog materialDialog = new MaterialDialog.Builder(this)
-                .title(R.string.title_face_extraction)
-                .content(R.string.input_content)
-                .inputType(
-                        InputType.TYPE_CLASS_TEXT
-                                | InputType.TYPE_TEXT_VARIATION_PERSON_NAME
-                                | InputType.TYPE_TEXT_FLAG_CAP_WORDS)
-                .negativeText(R.string.cancel)
-                .positiveText(R.string.confirm)
-                .inputRange(2, 6)
-                .alwaysCallInputCallback()
-                .input(getString(R.string.input_hint), "", false, new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        Print.e(input);
-                        mInput = String.valueOf(input);
-                    }
-                })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mSoundPresenter.onCompleted();
-                    }
-                })
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        judgeInput();
-                    }
-                })
-                .build();
-        materialDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                return true;
-            }
-        });
-        materialDialog.setCancelable(false);
-        materialDialog.show();
+//        MaterialDialog materialDialog = new MaterialDialog.Builder(this)
+//                .title(R.string.title_face_extraction)
+//                .content(R.string.input_content)
+//                .inputType(
+//                        InputType.TYPE_CLASS_TEXT
+//                                | InputType.TYPE_TEXT_VARIATION_PERSON_NAME
+//                                | InputType.TYPE_TEXT_FLAG_CAP_WORDS)
+//                .negativeText(R.string.cancel)
+//                .positiveText(R.string.confirm)
+//                .inputRange(2, 6)
+//                .alwaysCallInputCallback()
+//                .input(getString(R.string.input_hint), "", false, new MaterialDialog.InputCallback() {
+//                    @Override
+//                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+//                        Print.e(input);
+//                        mInput = String.valueOf(input);
+//                    }
+//                })
+//                .onNegative(new MaterialDialog.SingleButtonCallback() {
+//                    @Override
+//                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                        mSoundPresenter.onCompleted();
+//                    }
+//                })
+//                .onPositive(new MaterialDialog.SingleButtonCallback() {
+//                    @Override
+//                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                        judgeInput();
+//                    }
+//                })
+//                .build();
+//        materialDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+//            @Override
+//            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+//                return true;
+//            }
+//        });
+//        materialDialog.setCancelable(false);
+//        materialDialog.show();
     }
 
     private void judgeInput() {

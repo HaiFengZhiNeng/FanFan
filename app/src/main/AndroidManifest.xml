@@ -271,6 +271,11 @@
         <activity
             android:name=".ui.setting.act.face.local.RgbVideoIdentityActivity"
             android:theme="@style/AppThemeAction" />
+        <activity
+            android:name=".ui.face.act.FaceRegister2Activity"
+            android:theme="@style/AppThemeAction" />
+        <activity android:name=".ui.face.act.FaceCheckin2Activity"
+            android:theme="@style/AppThemeAction" />
 
         <service android:name=".service.SpeakService" />
         <service android:name=".service.UdpService" />

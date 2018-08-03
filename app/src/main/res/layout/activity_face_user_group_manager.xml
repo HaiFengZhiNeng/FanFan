@@ -49,12 +49,14 @@
             android:text="用户组添加" />
 
         <Button
+            android:visibility="gone"
             android:id="@+id/user_reg_btn"
             android:layout_width="250dp"
             android:layout_height="60dp"
             android:text="用户人脸注册" />
 
         <Button
+            android:visibility="gone"
             android:id="@+id/batch_import_btn"
             android:layout_width="250dp"
             android:layout_height="60dp"

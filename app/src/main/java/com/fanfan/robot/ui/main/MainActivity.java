@@ -26,6 +26,7 @@ import android.util.ArrayMap;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -34,7 +35,27 @@ import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.baidu.aip.ImageFrame;
+import com.baidu.aip.api.FaceApi;
+import com.baidu.aip.db.DBManager;
+import com.baidu.aip.entity.Group;
+import com.baidu.aip.entity.IdentifyRet;
+import com.baidu.aip.entity.User;
+import com.baidu.aip.face.ArgbPool;
+import com.baidu.aip.face.CameraImageSource;
+import com.baidu.aip.face.FaceDetectManager;
+import com.baidu.aip.face.FaceFilter;
+import com.baidu.aip.face.FaceProcessor;
+import com.baidu.aip.face.OnFrameAvailableListener;
+import com.baidu.aip.face.PreviewView;
+import com.baidu.aip.face.TexturePreviewView;
+import com.baidu.aip.face.camera.CameraView;
+import com.baidu.aip.face.camera.ICameraControl;
+import com.baidu.aip.manager.FaceLiveness;
 import com.baidu.aip.manager.FaceSDKManager;
+import com.baidu.aip.utils.PreferencesUtil;
+import com.baidu.idl.facesdk.FaceInfo;
+import com.baidu.idl.facesdk.FaceTracker;
 import com.fanfan.novel.face.FaceInitManager;
 import com.fanfan.novel.utils.TimeUtils;
 import com.fanfan.novel.utils.camera.CameraUtils;
@@ -111,6 +132,7 @@ import com.fanfan.robot.ui.media.MultimediaActivity;
 import com.fanfan.robot.ui.media.act.DanceActivity;
 import com.fanfan.robot.ui.naviga.NavigationActivity;
 import com.fanfan.robot.ui.setting.SettingActivity;
+import com.fanfan.robot.ui.setting.act.face.local.LivenessSettingActivity;
 import com.fanfan.robot.ui.setting.act.other.GreetingActivity;
 import com.fanfan.robot.ui.site.PublicNumberActivity;
 import com.fanfan.robot.ui.video.VideoIntroductionActivity;
@@ -173,11 +195,19 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.fanfan.robot.app.common.Constants.unusual;
 
@@ -215,6 +245,10 @@ public class MainActivity extends BarBaseActivity implements
     ChatTextView chatContent;
     @BindView(R.id.surface_view)
     SurfaceView surfaceView;
+    @BindView(R.id.preview_view)
+    TexturePreviewView previewView;
+    @BindView(R.id.texture_view)
+    TextureView textureView;
 
     private boolean quit;
 
@@ -426,7 +460,6 @@ public class MainActivity extends BarBaseActivity implements
 
     private boolean isDetector;
 
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main1;
@@ -489,7 +522,7 @@ public class MainActivity extends BarBaseActivity implements
         mySynthesizer = new MySynthesizer(this, iSynthListener);
 
         //camera
-        surfaceView.setVisibility(View.GONE);
+        surfaceView.setVisibility(View.VISIBLE);
         mHolder = surfaceView.getHolder();
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mHolder.addCallback(this);
@@ -504,6 +537,7 @@ public class MainActivity extends BarBaseActivity implements
         sendOrder(SerialService.DEV_BAUDRATE, "A50C80F3AA");
         mVoiceDBManager = new VoiceDBManager();
         mFaceAuthDBManager = new FaceAuthDBManager();
+        mNavigationDBManager = new NavigationDBManager();
 
         loadImage(R.mipmap.fanfan_hand, R.mipmap.fanfan_lift_hand);
 
@@ -576,7 +610,6 @@ public class MainActivity extends BarBaseActivity implements
     @Override
     public void onStop() {
         super.onStop();
-
         EventBus.getDefault().unregister(this);
     }
 
@@ -594,7 +627,6 @@ public class MainActivity extends BarBaseActivity implements
             unbindService(mSpeakConn);
         }
         super.onDestroy();
-
         mSoundPresenter.finish();
 
         myRecognizer.release();
@@ -642,7 +674,7 @@ public class MainActivity extends BarBaseActivity implements
                 bindService(false);
                 break;
             case R.id.iv_face:
-                FaceRecognitionActivity.newInstance(this);
+                faceRecognition();
                 break;
             case R.id.iv_seting_up:
                 clickSetting();
@@ -654,6 +686,20 @@ public class MainActivity extends BarBaseActivity implements
                 NavigationActivity.newInstance(this);
                 break;
         }
+    }
+
+    private void faceRecognition() {
+        if (FaceSDKManager.getInstance().initStatus() == FaceSDKManager.SDK_UNACTIVATION) {
+            showMsg("SDK还未激活，请先激活");
+            return;
+        } else if (FaceSDKManager.getInstance().initStatus() == FaceSDKManager.SDK_UNINIT) {
+            showMsg("SDK还未初始化完成，请先初始化");
+            return;
+        } else if (FaceSDKManager.getInstance().initStatus() == FaceSDKManager.SDK_INITING) {
+            showMsg("SDK正在初始化，请稍后再试");
+            return;
+        }
+        FaceRecognitionActivity.newInstance(this);
     }
 
 
@@ -1533,7 +1579,7 @@ public class MainActivity extends BarBaseActivity implements
                 bindService(false);
                 break;
             case Face:
-                FaceRecognitionActivity.newInstance(this);
+                faceRecognition();
                 break;
             case Seting_up:
                 clickSetting();
@@ -1663,76 +1709,193 @@ public class MainActivity extends BarBaseActivity implements
         }
     }
 
+    private ArgbPool argbPool = new ArgbPool();
+    private FaceFilter faceFilter = new FaceFilter();
+
+    @SuppressLint("CheckResult")
     @Override
-    public void onPreviewFrame(byte[] bytes, Camera camera) {
-        Camera.Size size = camera.getParameters().getPreviewSize();
-        YuvImage yuvImage = new YuvImage(bytes, ImageFormat.NV21, size.width, size.height, null);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new android.graphics.Rect(0, 0, size.width, size.height), 80, baos);
-        byte[] byteArray = baos.toByteArray();
+    public void onPreviewFrame(final byte[] data, Camera camera) {
 
-        Bitmap previewBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        int width = previewBitmap.getWidth();
-        int height = previewBitmap.getHeight();
-
-        Matrix matrix = new Matrix();
-
-        FaceDetector detector = null;
-        Bitmap faceBitmap = null;
-
-        detector = new FaceDetector(previewBitmap.getWidth(), previewBitmap.getHeight(), 10);
-        int oriention = 360 - orientionOfCamera;
-        if (oriention == 360) {
-            oriention = 0;
+        if (identityStatus != IDENTITY_IDLE) {
+            return;
         }
-        switch (oriention) {
-            case 0:
-                detector = new FaceDetector(width, height, 10);
-                matrix.postRotate(0.0f, width / 2, height / 2);
-                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
-                break;
-            case 90:
-                detector = new FaceDetector(height, width, 1);
-                matrix.postRotate(-270.0f, height / 2, width / 2);
-                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
-                break;
-            case 180:
-                detector = new FaceDetector(width, height, 1);
-                matrix.postRotate(-180.0f, width / 2, height / 2);
-                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
-                break;
-            case 270:
-                detector = new FaceDetector(height, width, 1);
-                matrix.postRotate(-90.0f, height / 2, width / 2);
-                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
-                break;
+        identityStatus = IDENTITYING;
+
+        int rotation = 360 - orientionOfCamera;
+        if (rotation == 360) {
+            rotation = 0;
+        }
+        int width = previewWidth;
+        int height = previewHeight;
+
+        int[] argb = argbPool.acquire(width, height);
+
+        if (argb == null || argb.length != width * height) {
+            argb = new int[width * height];
         }
 
-        Bitmap copyBitmap = faceBitmap.copy(Bitmap.Config.RGB_565, true);
+        rotation = rotation < 0 ? 360 + rotation : rotation;
+        com.baidu.aip.manager.FaceDetector.yuvToARGB(data, width, height, argb, rotation, 0);
 
-//        if (faceDetector(detector, copyBitmap)) return;
+        // 旋转了90或270度。高宽需要替换
+        if (rotation % 180 == 90) {
+            int temp = width;
+            width = height;
+            height = temp;
+        }
 
-        FaceDetector.Face[] faces = new FaceDetector.Face[10];
-        int faceNumber = detector.findFaces(copyBitmap, faces);
-        if (faceNumber > 0) {
+        final ImageFrame frame = new ImageFrame();
+        frame.setArgb(argb);
+        frame.setWidth(width);
+        frame.setHeight(height);
+        frame.setPool(argbPool);
 
-            int opencv = opencvDraw(copyBitmap);
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> e) throws Exception {
+//                final Bitmap bitmap = Bitmap.createBitmap(frame.getArgb(), frame.getWidth(), frame.getHeight(), Bitmap.Config.ARGB_8888);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        ivFanfan.setImageBitmap(bitmap);
+//                    }
+//                });
 
-            if (opencv > 0) {
+                int value = FaceSDKManager.getInstance().getFaceDetector().detect(frame);
+                FaceInfo[] faces = FaceSDKManager.getInstance().getFaceDetector().getTrackedFaces();
 
-                distinguish(copyBitmap);
-            } else {
-                Print.i("opencv检测人脸失败");
-                isDetector = true;
+                if (value == 0) {
+                    faceFilter.filter(faces, frame);
+                }
+
+                if (value == FaceTracker.ErrCode.OK.ordinal() && faces != null && faces.length > 0) {
+
+                    FaceInfo faceInfo = faces[0];
+
+                    int liveType = PreferencesUtil.getInt(LivenessSettingActivity.TYPE_LIVENSS, LivenessSettingActivity.TYPE_NO_LIVENSS);
+                    if (liveType == LivenessSettingActivity.TYPE_RGB_LIVENSS) {
+
+                        float raw = Math.abs(faceInfo.headPose[0]);
+                        float patch = Math.abs(faceInfo.headPose[1]);
+                        float roll = Math.abs(faceInfo.headPose[2]);
+                        // 人脸的三个角度大于20不进行识别
+                        if (raw > 20 || patch > 20 || roll > 20) {
+                            return;
+                        }
+
+                        int[] argb = frame.getArgb();
+                        int rows = frame.getHeight();
+                        int cols = frame.getWidth();
+                        int[] landmarks = faceInfo.landmarks;
+                        IdentifyRet identifyRet = FaceApi.getInstance().identity(argb, rows, cols, landmarks, UserInfo.getInstance().getIdentifier());
+
+                        String userId = identifyRet.getUserId();
+                        e.onNext(userId);
+                        return;
+                    }
+                }
+
+                identityStatus = IDENTITY_IDLE;
             }
-        } else {
-            Print.i("系统检测人脸失败");
-            isDetector = true;
-        }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        User user = FaceApi.getInstance().getUserInfo(UserInfo.getInstance().getIdentifier(), s);
+                        if (user == null) {
+                            identityStatus = IDENTITY_IDLE;
+                            return;
+                        }
+                        String userName = user.getUserName();
+                        if (userName == null) {
+                            identityStatus = IDENTITY_IDLE;
+                            return;
+                        }
 
-        copyBitmap.recycle();
-        faceBitmap.recycle();
-        previewBitmap.recycle();
+                        sayHello("您好" + userName + ", 欢迎光临");
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
+                        identityStatus = IDENTITY_IDLE;
+                    }
+                });
+
+        frame.release();
+        argbPool.release(argb);
+
+
+//        Camera.Size size = camera.getParameters().getPreviewSize();
+//        YuvImage yuvImage = new YuvImage(bytes, ImageFormat.NV21, size.width, size.height, null);
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        yuvImage.compressToJpeg(new android.graphics.Rect(0, 0, size.width, size.height), 80, baos);
+//        byte[] byteArray = baos.toByteArray();
+//
+//        Bitmap previewBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+//        int width = previewBitmap.getWidth();
+//        int height = previewBitmap.getHeight();
+//
+//        Matrix matrix = new Matrix();
+//
+//        FaceDetector detector = null;
+//        Bitmap faceBitmap = null;
+//
+//        detector = new FaceDetector(previewBitmap.getWidth(), previewBitmap.getHeight(), 10);
+//        int oriention = 360 - orientionOfCamera;
+//        if (oriention == 360) {
+//            oriention = 0;
+//        }
+//        switch (oriention) {
+//            case 0:
+//                detector = new FaceDetector(width, height, 10);
+//                matrix.postRotate(0.0f, width / 2, height / 2);
+//                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
+//                break;
+//            case 90:
+//                detector = new FaceDetector(height, width, 1);
+//                matrix.postRotate(-270.0f, height / 2, width / 2);
+//                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
+//                break;
+//            case 180:
+//                detector = new FaceDetector(width, height, 1);
+//                matrix.postRotate(-180.0f, width / 2, height / 2);
+//                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
+//                break;
+//            case 270:
+//                detector = new FaceDetector(height, width, 1);
+//                matrix.postRotate(-90.0f, height / 2, width / 2);
+//                faceBitmap = Bitmap.createBitmap(previewBitmap, 0, 0, width, height, matrix, true);
+//                break;
+//        }
+//
+//        Bitmap copyBitmap = faceBitmap.copy(Bitmap.Config.RGB_565, true);
+//
+////        if (faceDetector(detector, copyBitmap)) return;
+//
+//        FaceDetector.Face[] faces = new FaceDetector.Face[10];
+//        int faceNumber = detector.findFaces(copyBitmap, faces);
+//        if (faceNumber > 0) {
+//
+//            int opencv = opencvDraw(copyBitmap);
+//
+//            if (opencv > 0) {
+//
+//                distinguish(copyBitmap);
+//            } else {
+//                Print.i("opencv检测人脸失败");
+//                isDetector = true;
+//            }
+//        } else {
+//            Print.i("系统检测人脸失败");
+//            isDetector = true;
+//        }
+//
+//        copyBitmap.recycle();
+//        faceBitmap.recycle();
+//        previewBitmap.recycle();
     }
 
 
@@ -1875,6 +2038,7 @@ public class MainActivity extends BarBaseActivity implements
         isPreviewFrame = true;
         isFaceIdentify = false;
         isDetector = true;
+        identityStatus = IDENTITY_IDLE;
     }
 
     private void resetAll() {
@@ -1891,7 +2055,7 @@ public class MainActivity extends BarBaseActivity implements
 //        faceIdentifyFace(bitmap);
 //        detectFace(bitmap);
 //        greetingFace();
-        detectorFace();
+//        detectorFace();
     }
 
     private void detectorFace() {
@@ -2102,15 +2266,78 @@ public class MainActivity extends BarBaseActivity implements
     }
 
     //百度人脸识别初始化回调
+    @SuppressLint("CheckResult")
     @Override
     public void initSuccess() {
-        showMsg("sdk init success");
+
+        boolean isCreateGroup = false;
+        List<Group> groupList = FaceApi.getInstance().getGroupList(0, 1000);
+        String identifier = UserInfo.getInstance().getIdentifier();
+        for (Group group : groupList) {
+            if (group.getGroupId().equals(identifier)) {
+                isCreateGroup = true;
+            }
+        }
+        if (!isCreateGroup) {
+            Group group = new Group();
+            group.setGroupId(UserInfo.getInstance().getIdentifier());
+            boolean ret = FaceApi.getInstance().groupAdd(group);
+            if (ret) {
+                showMsg("人脸识别群组创建成功");
+            }
+        }
+
+        DBManager.getInstance().init(this);
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+                String groupId = UserInfo.getInstance().getIdentifier();
+                FaceApi.getInstance().loadFacesFromDB(groupId);
+                showToast("人脸数据加载完成，即将开始1：N");
+                e.onNext(IDENTITY_IDLE);
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+
+                        identityStatus = integer;
+                    }
+                });
+
+//        faceDetectManager = new FaceDetectManager(getApplicationContext());
+//
+//        previewView.setScaleType(PreviewView.ScaleType.FIT_WIDTH);
+//        previewView.getTextureView().setScaleX(-1);
+//
+//        CameraImageSource cameraImageSource = new CameraImageSource(this);
+//        cameraImageSource.getCameraControl().setPreferredPreviewSize(640, 480);
+//        cameraImageSource.getCameraControl().setDisplayOrientation(CameraView.ORIENTATION_PORTRAIT);
+//        cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_FACING_FRONT);
+//        cameraImageSource.setPreviewView(previewView);
+//
+////        textureView.setOpaque(false);
+////        textureView.setKeepScreenOn(true);
+//
+//        faceDetectManager.getFaceFilter().setAngle(20);
+//        faceDetectManager.setImageSource(cameraImageSource);
+//        faceDetectManager.setOnFaceDetectListener(this);
+//        faceDetectManager.setUseDetect(true);
+//        faceDetectManager.start();
+
     }
 
     @Override
     public void initFail(String msg) {
         showMsg("sdk init fail:" + msg);
     }
+
+    private volatile int identityStatus = FEATURE_DATAS_UNREADY;
+
+    private static final int FEATURE_DATAS_UNREADY = 1;
+    private static final int IDENTITY_IDLE = 2;
+    private static final int IDENTITYING = 3;
 
     private class PlayServiceConnection implements ServiceConnection {
         @Override

@@ -2,9 +2,11 @@ package com.fanfan.robot.app;
 
 import android.content.Context;
 
+import com.baidu.aip.utils.PreferencesUtil;
 import com.fanfan.novel.utils.youdao.TranslateLanguage;
 import com.fanfan.robot.app.common.Constants;
 import com.fanfan.novel.utils.system.PreferencesUtils;
+import com.fanfan.robot.ui.setting.act.face.local.LivenessSettingActivity;
 import com.iflytek.cloud.SpeechConstant;
 import com.seabreeze.log.Print;
 
@@ -46,6 +48,7 @@ public class RobotInfo {
         setCityName(PreferencesUtils.getString(NovelApp.getInstance().getApplicationContext(), Constants.CITY_NAME, "北京"));
         isInitialization = PreferencesUtils.getBoolean(context, Constants.IS_INITIALIZATION, false);
         setLanguageType(PreferencesUtils.getInt(context, Constants.LANGUAGE_TYPE, 0));
+        PreferencesUtil.putInt(LivenessSettingActivity.TYPE_LIVENSS, LivenessSettingActivity.TYPE_RGB_LIVENSS);
         return getInstance();
     }
 

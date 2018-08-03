@@ -50,6 +50,7 @@ public class FaceSDKManager {
         FaceSDK.livenessSilentInit(context, FaceSDK.LivenessTypeId.LIVEID_VIS);
         FaceSDK.livenessSilentInit(context, FaceSDK.LivenessTypeId.LIVEID_IR);
         FaceSDK.livenessSilentInit(context, FaceSDK.LivenessTypeId.LIVEID_DEPTH);
+        initStatus = SDK_INITED;
     }
 
     public FaceDetector getFaceDetector() {
@@ -60,4 +61,10 @@ public class FaceSDKManager {
         return faceFeature;
     }
 
+
+    public int initStatus() {
+        return initStatus;
+    }
+
+    private volatile int initStatus = SDK_UNACTIVATION;
 }

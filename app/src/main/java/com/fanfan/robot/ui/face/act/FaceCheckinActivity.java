@@ -81,6 +81,7 @@ import static com.fanfan.robot.app.common.Constants.unusual;
 /**
  * 人脸签到页面
  */
+@Deprecated
 public class FaceCheckinActivity extends BarBaseActivity implements
         SurfaceHolder.Callback,
         ICameraPresenter.ICameraView,

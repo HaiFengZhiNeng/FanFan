@@ -245,7 +245,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/y5"
                     android:background="@color/white"
-                    android:padding="@dimen/y8">
+                    android:padding="@dimen/y8"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -460,7 +461,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/y10"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="match_parent"

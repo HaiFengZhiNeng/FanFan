@@ -102,6 +102,8 @@
     <string name="input_navigation">输入到达地点后的命令词</string>
     <string name="input_content">此处所注册的姓名用于人脸签到中.</string>
     <string name="play_time_start">00:00</string>
+    <string name="input_hint_info">请输入id</string>
+    <string name="input_hint_name">请输入姓名</string>
 
     <string name="mode_loop">列表循环</string>
     <string name="mode_shuffle">随机播放</string>
