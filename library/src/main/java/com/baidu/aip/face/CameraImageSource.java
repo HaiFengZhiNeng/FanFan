@@ -73,6 +73,10 @@ public class CameraImageSource extends ImageSource {
                     argb = new int[width * height];
                 }
 
+                rotation = 360 - rotation;
+                if (rotation == 360) {
+                    rotation = 0;
+                }
                 rotation = rotation < 0 ? 360 + rotation : rotation;
                 long starttime = System.currentTimeMillis();
                 FaceDetector.yuvToARGB(data, width, height, argb, rotation, 0);

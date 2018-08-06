@@ -67,4 +67,14 @@ public class FaceSDKManager {
     }
 
     private volatile int initStatus = SDK_UNACTIVATION;
+
+    private boolean unusual;
+
+    public void cameraOrientation(boolean unusual) {
+        this.unusual = unusual;
+    }
+
+    public boolean isUnusual() {
+        return unusual;
+    }
 }

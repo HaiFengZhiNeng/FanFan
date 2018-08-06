@@ -118,6 +118,7 @@ public class FaceInitManager {
         FaceSDKManager.getInstance().getFaceDetector().init(context);
         FaceSDKManager.getInstance().getFaceFeature().init(context);
         FaceSDKManager.getInstance().initLiveness(context);
+        FaceSDKManager.getInstance().cameraOrientation(Constants.unusual);
         if (listener != null) {
             listener.initSuccess();
         }

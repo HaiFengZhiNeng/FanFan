@@ -5,6 +5,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.TextureView;
@@ -135,6 +141,7 @@ public class FaceCheckin2Activity extends BarBaseActivity implements FaceDetectM
         cameraImageSource.getCameraControl().setDisplayOrientation(CameraView.ORIENTATION_PORTRAIT);
         cameraImageSource.getCameraControl().setCameraFacing(ICameraControl.CAMERA_FACING_FRONT);
         previewView.getTextureView().setScaleX(-1);
+        faceDetectManager.setUseDetect(true);
         faceDetectManager.setOnFaceDetectListener(this);
 
         DBManager.getInstance().init(this);
@@ -167,7 +174,6 @@ public class FaceCheckin2Activity extends BarBaseActivity implements FaceDetectM
         super.onStart();
 
         faceDetectManager.start();
-        faceDetectManager.setUseDetect(true);
     }
 
     @Override
@@ -198,7 +204,7 @@ public class FaceCheckin2Activity extends BarBaseActivity implements FaceDetectM
         if (status == FaceTracker.ErrCode.OK.ordinal() && infos != null) {
             asyncIdentity(imageFrame, infos);
         }
-//        showFrame(imageFrame, infos);
+        showFrame(imageFrame, infos);
     }
 
     @SuppressLint("CheckResult")
@@ -238,9 +244,14 @@ public class FaceCheckin2Activity extends BarBaseActivity implements FaceDetectM
                         int[] landmarks = faceInfo.landmarks;
                         IdentifyRet identifyRet = FaceApi.getInstance().identity(argb, rows, cols, landmarks, UserInfo.getInstance().getIdentifier());
 
-                        String userId = identifyRet.getUserId();
+                        float score = identifyRet.getScore();
+                        if (score > 70) {
+                            String userId = identifyRet.getUserId();
+                            e.onNext(userId);
+                        } else {
+                            displayTip("识别率较低，请正对摄像头或您未注册", tvSignInfo);
+                        }
 
-                        e.onNext(userId);
                     } else {
                         displayTip("rgb活体分数过低", tvSignInfo);
                     }
@@ -352,5 +363,89 @@ public class FaceCheckin2Activity extends BarBaseActivity implements FaceDetectM
                 SignAllActivity.newInstance(this);
                 break;
         }
+    }
+
+
+    private Paint paint = new Paint();
+
+    {
+        paint.setColor(Color.YELLOW);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setTextSize(30);
+    }
+
+    RectF rectF = new RectF();
+
+    /**
+     * 绘制人脸框。
+     */
+    private void showFrame(ImageFrame imageFrame, FaceInfo[] faceInfos) {
+        Canvas canvas = textureView.lockCanvas();
+        if (canvas == null) {
+            return;
+        }
+        if (faceInfos == null || faceInfos.length == 0) {
+            // 清空canvas
+            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+            textureView.unlockCanvasAndPost(canvas);
+            return;
+        }
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+        FaceInfo faceInfo = faceInfos[0];
+
+
+        rectF.set(getFaceRect(faceInfo, imageFrame));
+
+        // 检测图片的坐标和显示的坐标不一样，需要转换。
+        previewView.mapFromOriginalRect(rectF);
+
+        float yaw = Math.abs(faceInfo.headPose[0]);
+        float patch = Math.abs(faceInfo.headPose[1]);
+        float roll = Math.abs(faceInfo.headPose[2]);
+        if (yaw > 20 || patch > 20 || roll > 20) {
+            // 不符合要求，绘制黄框
+            paint.setColor(Color.YELLOW);
+
+            String text = "请正视屏幕";
+            float width = paint.measureText(text) + 50;
+            float x = rectF.centerX() - width / 2;
+            paint.setColor(Color.RED);
+            paint.setStyle(Paint.Style.FILL);
+            canvas.drawText(text, x + 25, rectF.top - 20, paint);
+            paint.setColor(Color.YELLOW);
+
+        } else {
+            // 符合检测要求，绘制绿框
+            paint.setColor(Color.GREEN);
+        }
+        paint.setStyle(Paint.Style.STROKE);
+        // 绘制框
+        canvas.drawRect(rectF, paint);
+        textureView.unlockCanvasAndPost(canvas);
+    }
+
+    public Rect getFaceRect(FaceInfo faceInfo, ImageFrame frame) {
+        Rect rect = new Rect();
+        int[] points = new int[8];
+        faceInfo.getRectPoints(points);
+
+        int left = points[2];
+        int top = points[3];
+        int right = points[6];
+        int bottom = points[7];
+
+        int width = (right - left);
+        int height = (bottom - top);
+
+        left = (int) (faceInfo.mCenter_x - width / 2);
+        top = (int) (faceInfo.mCenter_y - height / 2);
+
+        rect.top = top < 0 ? 0 : top;
+        rect.left = left < 0 ? 0 : left;
+        rect.right = (left + width) > frame.getWidth() ? frame.getWidth() : (left + width);
+        rect.bottom = (top + height) > frame.getHeight() ? frame.getHeight() : (top + height);
+
+        return rect;
     }
 }

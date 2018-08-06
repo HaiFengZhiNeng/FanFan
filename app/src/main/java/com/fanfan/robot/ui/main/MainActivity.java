@@ -338,8 +338,8 @@ public class MainActivity extends BarBaseActivity implements
 
     private int mCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
 
-    private int previewWidth = 320;
-    private int previewHeight = 240;
+    private int previewWidth = 640;
+    private int previewHeight = 480;
 
     private boolean isPreviewing = false;
 
@@ -522,14 +522,14 @@ public class MainActivity extends BarBaseActivity implements
         mySynthesizer = new MySynthesizer(this, iSynthListener);
 
         //camera
-        surfaceView.setVisibility(View.VISIBLE);
+        surfaceView.setVisibility(View.GONE);
         mHolder = surfaceView.getHolder();
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mHolder.addCallback(this);
 
         mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
 
-        FaceInitManager.getInstance().init(this, this);
+        FaceInitManager.getInstance().init(getApplicationContext(), this);
     }
 
     @Override
@@ -1789,9 +1789,14 @@ public class MainActivity extends BarBaseActivity implements
                         int[] landmarks = faceInfo.landmarks;
                         IdentifyRet identifyRet = FaceApi.getInstance().identity(argb, rows, cols, landmarks, UserInfo.getInstance().getIdentifier());
 
-                        String userId = identifyRet.getUserId();
-                        e.onNext(userId);
-                        return;
+                        float score = identifyRet.getScore();
+                        if (score > 70) {
+                            String userId = identifyRet.getUserId();
+                            e.onNext(userId);
+                            return;
+                        } else {
+                            e.onNext("");
+                        }
                     }
                 }
 
@@ -1803,18 +1808,22 @@ public class MainActivity extends BarBaseActivity implements
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(String s) throws Exception {
-                        User user = FaceApi.getInstance().getUserInfo(UserInfo.getInstance().getIdentifier(), s);
-                        if (user == null) {
-                            identityStatus = IDENTITY_IDLE;
-                            return;
-                        }
-                        String userName = user.getUserName();
-                        if (userName == null) {
-                            identityStatus = IDENTITY_IDLE;
-                            return;
-                        }
+                        if (!s.equals("")) {
+                            User user = FaceApi.getInstance().getUserInfo(UserInfo.getInstance().getIdentifier(), s);
+                            if (user == null) {
+                                identityStatus = IDENTITY_IDLE;
+                                return;
+                            }
+                            String userName = user.getUserName();
+                            if (userName == null) {
+                                identityStatus = IDENTITY_IDLE;
+                                return;
+                            }
 
-                        sayHello("您好" + userName + ", 欢迎光临");
+                            sayHello("您好" + userName + ", 欢迎光临");
+                        } else {
+                            sayHello("您好" + ", 欢迎光临");
+                        }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -2013,7 +2022,7 @@ public class MainActivity extends BarBaseActivity implements
             orientionOfCamera = CameraUtils.getInstance().getCameraDisplayOrientation(this, mCameraId);
         } else {
             // TODO: 2018/7/4/004
-            orientionOfCamera = 270;
+            orientionOfCamera = 90;
         }
         mCamera.setDisplayOrientation(orientionOfCamera);
 

@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.baidu.aip.face.LogUtil;
 import com.baidu.aip.face.PreviewView;
+import com.baidu.aip.manager.FaceSDKManager;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -101,7 +102,6 @@ public class Camera1Control implements ICameraControl {
 //        this.flashMode = flashMode;
 //        updateFlashMode(flashMode);
 //    }
-
     @Override
     public int getFlashMode() {
         return flashMode;
@@ -171,11 +171,15 @@ public class Camera1Control implements ICameraControl {
 //        }
 
 
-
         int detectRotation = 0;
         if (cameraFacing == ICameraControl.CAMERA_FACING_FRONT) {
             int rotation = ORIENTATIONS.get(displayOrientation);
             rotation = getCameraDisplayOrientation(rotation, cameraId, camera);
+            if (FaceSDKManager.getInstance().isUnusual()) {
+                //手机
+            } else {
+                rotation = 90;
+            }
             camera.setDisplayOrientation(rotation);
             detectRotation = rotation;
             if (displayOrientation == CameraView.ORIENTATION_PORTRAIT) {
@@ -183,12 +187,12 @@ public class Camera1Control implements ICameraControl {
                     detectRotation = (detectRotation + 180) % 360;
                 }
             }
-        } else if (cameraFacing == ICameraControl.CAMERA_FACING_BACK){
+        } else if (cameraFacing == ICameraControl.CAMERA_FACING_BACK) {
             int rotation = ORIENTATIONS.get(displayOrientation);
             rotation = getCameraDisplayOrientation(rotation, cameraId, camera);
             camera.setDisplayOrientation(rotation);
             detectRotation = rotation;
-        } else if (cameraFacing == ICameraControl.CAMERA_USB){
+        } else if (cameraFacing == ICameraControl.CAMERA_USB) {
             camera.setDisplayOrientation(0);
             detectRotation = 0;
         }
@@ -411,7 +415,7 @@ public class Camera1Control implements ICameraControl {
             try {
                 Camera.Parameters parameters = camera.getParameters();
                 Camera.Size optSize = getOptimalSize(width, height, camera.getParameters().getSupportedPreviewSizes());
-                Log.i("wtf", "opPreviewSize-> " + optSize.width + " " +  optSize.height);
+                Log.i("wtf", "opPreviewSize-> " + optSize.width + " " + optSize.height);
                 parameters.setPreviewSize(optSize.width, optSize.height);
                 // parameters.setPreviewFpsRange(10, 15);
                 camera.setParameters(parameters);

@@ -81,6 +81,8 @@ public class FaceRegister2Activity extends BarBaseActivity implements FaceDetect
     RelativeLayout cameraLayout;
     @BindView(R.id.camera_bottom)
     LinearLayout cameraBottom;
+    @BindView(R.id.testimg)
+    ImageView testimg;
 
     public static void newInstance(Activity context) {
         Intent intent = new Intent(context, FaceRegister2Activity.class);
@@ -120,8 +122,6 @@ public class FaceRegister2Activity extends BarBaseActivity implements FaceDetect
 
         faceDetectManager.setImageSource(cameraImageSource);
         faceDetectManager.setUseDetect(true);
-
-        FaceSDKManager.getInstance().getFaceDetector().clearTrackedFaces();
 
         textureView.setOpaque(false);
         textureView.setKeepScreenOn(true);
@@ -190,6 +190,13 @@ public class FaceRegister2Activity extends BarBaseActivity implements FaceDetect
 
     @Override
     public void onDetectFace(int status, FaceInfo[] infos, ImageFrame imageFrame) {
+//        final Bitmap bitmap1 = Bitmap.createBitmap(imageFrame.getArgb(), imageFrame.getWidth(), imageFrame.getHeight(), Bitmap.Config.ARGB_8888);
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                testimg.setImageBitmap(bitmap1);
+//            }
+//        });
         if (status == FaceTracker.ErrCode.OK.ordinal() && infos != null) {
             FaceInfo faceInfo = infos[0];
 

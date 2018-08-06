@@ -54,6 +54,7 @@ public class FaceDetector {
 
     /**
      * FaceSDK 初始化，用户可以根据自己的需求实例化FaceTracker 和 FaceRecognize ，具体功能参考文档
+     *
      * @param context
      */
     public void init(final Context context) {
@@ -106,7 +107,6 @@ public class FaceDetector {
      * @param argb   人脸argb_8888图片。
      * @param width  图片宽度
      * @param height 图片高度
-     *
      * @return 检测结果代码。
      */
     public int detect(int[] argb, int width, int height) {
@@ -128,7 +128,6 @@ public class FaceDetector {
      * 进行人脸检测。返回检测结果代码。如果返回值为DETECT_CODE_OK 可调用 getTrackedFaces 获取人脸相关信息。
      *
      * @param imageFrame 人脸图片帧
-     *
      * @return 检测结果代码。
      */
     public int detect(ImageFrame imageFrame) {
@@ -178,12 +177,19 @@ public class FaceDetector {
      * 重置跟踪人脸。下次将重新开始跟踪。
      */
     public void clearTrackedFaces() {
-        mFaceTracker.clearTrackedFaces();
+//        if (mFaceTracker == null) {
+//
+//            FaceSDKManager.getInstance().getFaceDetector().init(context);
+//        }
+        if (mFaceTracker != null) {
+            mFaceTracker.clearTrackedFaces();
+        }
     }
 
 
     /**
      * 根据设备的cpu核心数设定人脸sdk使用的线程数，如双核设置为2，四核设置为4
+     *
      * @param numberOfThreads
      */
     public void setNumberOfThreads(int numberOfThreads) {
@@ -209,7 +215,9 @@ public class FaceDetector {
         this.faceEnvironment.setMinFaceSize(faceSize);
     }
 
-    /** 设置最低光照强度（YUV中的Y分量）取值范围0-255，建议值大于40.
+    /**
+     * 设置最低光照强度（YUV中的Y分量）取值范围0-255，建议值大于40.
+     *
      * @param threshold 最低光照强度。
      */
     public void setIlluminationThreshold(float threshold) {
@@ -227,6 +235,7 @@ public class FaceDetector {
 
     /**
      * 人脸遮挡阀值
+     *
      * @param threshold
      */
     public void setOcclulationThreshold(float threshold) {
@@ -261,6 +270,7 @@ public class FaceDetector {
 
     /**
      * 检测间隔设置，单位ms.该值控制检测间隔。值越大，检测时间越长，性能消耗越低。值越小，能更快的检测到人脸。
+     *
      * @param interval 间隔时间，单位ms;
      */
     public void setDetectInterval(int interval) {

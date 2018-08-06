@@ -19,7 +19,7 @@ public class Constants {
 
     public static int IMSDK_ACCOUNT_TYPE = 17967;
 
-    public static final String FACE_KEY = "UH6A-VRJO-DMHU-0S0H";
+    public static final String FACE_KEY = "HWQV-HLEQ-NV33-HMWU";
 
     public static String controlId = "hotel002";
     public static String serverId = "fanw108";
@@ -88,7 +88,7 @@ public class Constants {
     public static String STOP_DANCE = "A50C80E2AA";
 
     //true 是手机端的
-    public static boolean unusual = true;
+    public static boolean unusual = false;
 
     public static String DOWNLOAD_FILENAME = "files" + File.separator;
 

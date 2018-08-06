@@ -24,7 +24,7 @@ public class TexturePreviewView extends FrameLayout implements PreviewView {
 
     private int videoWidth = 0;
     private int videoHeight = 0;
-    private boolean mirrored = false;
+    private boolean mirrored = true;
 
     public TexturePreviewView(@NonNull Context context) {
         super(context);

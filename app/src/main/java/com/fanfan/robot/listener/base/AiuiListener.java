@@ -87,11 +87,18 @@ public class AiuiListener implements AIUIListener {
                     String text = null;
                     if (jsonIntent.has("data")) {
                         JSONObject jsonData = jsonIntent.getJSONObject("data");
-                        jsonResult = jsonData.getJSONArray("result");
+                        if (jsonData.has("result")) {
+                            String result = jsonData.getString("result");
+                            if (result != null && !result.equals("null")) {
+                                jsonResult = jsonData.getJSONArray("result");
+                            }
+                        }
                     }
                     if (jsonIntent.has("answer")) {
                         JSONObject jsonAnswer = jsonIntent.getJSONObject("answer");
-                        text = jsonAnswer.getString("text");
+                        if (jsonAnswer.has("text")) {
+                            text = jsonAnswer.getString("text");
+                        }
                     }
 
 
@@ -336,6 +343,8 @@ public class AiuiListener implements AIUIListener {
                     } else if (service.equals("wordFinding")) {
                         WordFinding wordFinding = analysisRandom(jsonResult.toString(), WordFinding.class);
                         aiListener.onDoAnswer(question, text, wordFinding);
+                    } else if (service.equals("CHANGXS.music_demo")) {
+                        aiListener.onDoAnswer(question, text);
                     } else if (service.equals("openQA")) {
                         aiListener.onDoAnswer(question, text);
                     } else {

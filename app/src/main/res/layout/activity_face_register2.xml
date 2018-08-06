@@ -21,6 +21,12 @@
             android:id="@+id/texture_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/testimg"
+            android:visibility="gone"
+            android:layout_width="640px"
+            android:layout_height="480px" />
     </RelativeLayout>
 
     <android.support.v7.widget.Toolbar
